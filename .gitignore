@@ -1,0 +1,11 @@
+.idea/
+.vscode/
+angular/package-lock.json
+angular/src/output.scss
+api/app/Console/Commands/Dev/Test.php
+.history/
+dumping/oz-finance-anon.sql
+dumping/oz-finance-anon_1.sql
+.DS_Store
+settings.json
+oz_conn.session.sql
