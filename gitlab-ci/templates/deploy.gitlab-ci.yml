@@ -1,0 +1,47 @@
+.deploy-k8s:
+  stage: deploy
+  image: $CI_REGISTRY_IMAGE/helm:latest
+  environment:
+    name: $CI_COMMIT_REF_SLUG
+    url: https://${KUBE_NAMESPACE}.dev-k8s.cyrextech.net
+  before_script:
+    - kubectl config get-contexts
+    - kubectl config use-context dev-awesome/oz-finance:dev-k8s
+  script:
+    - helm upgrade
+      --install
+      --set app.name="${KUBE_NAMESPACE}"
+      --set app_key="${APP_KEY}"
+      --set project_path="${CI_PROJECT_PATH_SLUG}"
+      --set environment="${CI_COMMIT_REF_SLUG}"
+      --set environment_slug="${CI_ENVIRONMENT_SLUG}"
+      --set enable_2fa="${ENABLE_2FA}"
+      --set php.image="${CI_REGISTRY_IMAGE}/php"
+      --set nginx.image="${CI_REGISTRY_IMAGE}/nginx"
+      --set secrets.xero_client_id="${XERO_CLIENT_ID}"
+      --set secrets.xero_client_secret="${XERO_CLIENT_SECRET}"
+      --set secrets.fixer_key="${FIXER_ACCESS_KEY}"
+      --set imageCredentials.registry="${CI_REGISTRY}"
+      --set imageCredentials.username="${CI_DEPLOY_USER}"
+      --set imageCredentials.password="${CI_DEPLOY_PASSWORD}"
+      --set imageCredentials.email="${GITLAB_USER_EMAIL}"
+      --wait
+      app-${KUBE_NAMESPACE}
+      ./gitlab-ci/k8s
+
+.deploy-app:
+  stage: deploy
+  image: ${CI_REGISTRY_IMAGE}/php:latest
+  before_script:
+    - 'which ssh-agent || ( apk add bash openssh-client )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - cd api/
+    - php ~/.config/composer/vendor/bin/envoy run deploy --commit="${CI_COMMIT_SHA}" --env="${ENV_NAME}" --branch="${CI_COMMIT_BRANCH}"
+  environment:
+    name: ${ENV_NAME}
+    url: https://${ENV_NAME}.finance.emgoz.studio

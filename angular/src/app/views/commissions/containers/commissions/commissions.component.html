@@ -1,0 +1,25 @@
+<oz-finance-page-header
+  [heading]="'Commissions Summary'"></oz-finance-page-header>
+<div class="max-w-screen-8xl mx-auto sm:px-6 lg:px-8">
+  <div class="my-6">
+    <oz-finance-commissions-summary
+      (filtersChanged)="filtersChanged($event)"
+      (confirmPayment)="confirmPayment($event)"
+      (createPaymentLog)="createPaymentLog($event)"
+      (createIndividualCommissionPayment)="
+        createIndividualCommissionPayment($event)
+      "
+      (removeIndividualCommissionPayment)="
+        removeIndividualCommissionPayment($event)
+      "
+      [responseMessage]="responseMessage"
+      [errorsMessage]="errorsMessage"
+      [totalOpenAmount]="totalOpenAmount"
+      [commissionSummary]="summary"
+      [paymentLogs]="paymentLogs"
+      [isLoading]="isLoading"
+      [currency]="currency"
+      [userRole]="userRole">
+    </oz-finance-commissions-summary>
+  </div>
+</div>

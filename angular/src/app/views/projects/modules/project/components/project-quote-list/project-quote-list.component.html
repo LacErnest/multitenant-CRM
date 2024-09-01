@@ -1,0 +1,31 @@
+<oz-finance-datatable
+  (addClicked)="addQuote()"
+  (cloneClicked)="cloneQuote($event)"
+  (downloadClicked)="downloadQuote($event)"
+  (editClicked)="editQuote($event)"
+  (orderClicked)="createOrder($event)"
+  (pageUpdated)="pageUpdated($event)"
+  (selectionDeleted)="deleteQuotes($event)"
+  (cancelClicked)="cancelQuote($event)"
+  (filtersUpdated)="filtersUpdated($event)"
+  (sortsUpdated)="sortsUpdated($event)"
+  (columnsUpdated)="columnsUpdated($event)"
+  (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+  (exportClicked)="exportQuotes()"
+  [allColumns]="preferences.all_columns"
+  [buttonConfig]="buttonConfig"
+  [columns]="preferences.columns"
+  [count]="quotes?.count"
+  [isLoading]="isLoading"
+  [page]="page"
+  [project]="project"
+  [projectEntity]="projectEntity.QUOTES"
+  [rowMenuConfig]="rowMenuConfig"
+  [rows]="quotes?.data"
+  [sorts]="preferences?.sorts"
+  [filters]="preferences?.filters"
+  [title]="'Quotes'">
+</oz-finance-datatable>
+
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>
+<oz-finance-deadline-modal #deadlineModal></oz-finance-deadline-modal>

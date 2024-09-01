@@ -1,0 +1,80 @@
+<div
+  class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <img
+      class="w-14 mx-auto cursor-pointer outline-none"
+      src="/assets/oz-logo.png"
+      alt="logo"
+      [routerLink]="'/'" />
+    <h2
+      class="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">
+      Recover your account
+    </h2>
+  </div>
+
+  <div [@displayAnimation] class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white relative py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div *ngIf="isLoading" class="loading-overlay rounded">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+      <form autocomplete="off" (ngSubmit)="recover()" [formGroup]="recoverForm">
+        <div>
+          <label
+            class="block text-sm font-medium leading-5 text-gray-700"
+            for="email">
+            Email
+          </label>
+          <div class="mt-1 rounded-md shadow-sm">
+            <input
+              ozFinanceAutoFocus
+              class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              formControlName="email"
+              id="email"
+              required
+              type="email"
+              autofocus />
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <span class="block w-full rounded-md shadow-sm">
+            <button
+              class="w-full flex indigo-button button"
+              [disabled]="!isLoading && recoverForm.valid ? undefined : true"
+              type="submit">
+              Recover
+            </button>
+          </span>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="relative">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-t border-gray-300"></div>
+      </div>
+      <div class="relative flex justify-center text-sm leading-5">
+        <a
+          class="px-2 bg-gray-50 text-gray-500 hover:text-indigo-700 cursor-pointer"
+          [routerLink]="['/auth/login']">
+          Back to Login
+        </a>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="showMessage"
+    [@alertAnimation]
+    class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <oz-finance-alert
+      [description]="messageDescription"
+      [title]="messageTitle"
+      [type]="messageType"></oz-finance-alert>
+  </div>
+
+  <p class="developed-by">Developed by Cyrex</p>
+</div>

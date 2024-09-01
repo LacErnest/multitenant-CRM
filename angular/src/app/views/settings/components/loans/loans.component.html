@@ -1,0 +1,32 @@
+<div class="overflow-x-hidden shadow rounded-lg">
+  <oz-finance-datatable
+    (addClicked)="addLoan()"
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (editClicked)="editLoan($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (selectionDeleted)="onDeleteLoanClicked($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="loanColumns"
+    [count]="loans?.count"
+    [datatableType]="'loans'"
+    [isIndividualEdit]="true"
+    [isIndividualDeletion]="true"
+    [isLoading]="isLoading"
+    [filters]="preferences?.filters"
+    [page]="page"
+    [reorderable]="false"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="loans?.data"
+    [selectionType]="'single'"
+    [sortable]="false"
+    [title]="'Loans'"
+    [currencyOverride]="companyCurrency"
+    (refreshClicked)="refreshClicked()">
+  </oz-finance-datatable>
+</div>
+
+<oz-finance-loan-modal #loanModal></oz-finance-loan-modal>

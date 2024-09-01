@@ -1,0 +1,34 @@
+<oz-finance-page-header
+  [heading]="'Resource Invoices'"></oz-finance-page-header>
+
+<div
+  class="overflow-x-hidden overflow-y-auto max-w-screen-8xl mx-auto sm:px-6 lg:px-8 py-6">
+  <oz-finance-datatable
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (downloadClicked)="download($event)"
+    (editClicked)="viewResourceInvoice($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (exportClicked)="exportResourceInvoices()"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [defaultColumns]="preferences?.default_columns"
+    [defaultFilters]="preferences?.default_filters"
+    [count]="resourceInvoices?.count"
+    [filters]="preferences?.filters"
+    [isIndividualDownload]="true"
+    [isLoading]="isLoading"
+    [page]="page"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="resourceInvoices?.data"
+    [selectionType]="'single'"
+    [sorts]="preferences?.sorts"
+    [title]="'Resource Invoices'"
+    [datatableType]="'resource_invoices'"
+    (refreshClicked)="refreshClicked()"></oz-finance-datatable>
+</div>
+
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>

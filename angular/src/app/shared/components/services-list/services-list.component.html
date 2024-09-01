@@ -1,0 +1,31 @@
+<div class="overflow-x-hidden shadow rounded-lg">
+  <oz-finance-datatable
+    (addClicked)="addService()"
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (editClicked)="editService($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (selectionDeleted)="onDeleteServiceClicked($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (exportClicked)="exportServices()"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [count]="services?.count"
+    [currencyOverride]="resourceCurrency"
+    [datatableType]="'services'"
+    [isLoading]="isLoading"
+    [filters]="preferences?.filters"
+    [minTableHeight]="!isGlobalServiceList"
+    [page]="page"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="services?.data"
+    [selectionType]="'single'"
+    [title]="'Services'">
+  </oz-finance-datatable>
+</div>
+
+<oz-finance-service-modal #serviceModal></oz-finance-service-modal>
+
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>

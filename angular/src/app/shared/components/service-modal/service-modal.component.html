@@ -1,0 +1,318 @@
+<div
+  *ngIf="showPriceModal"
+  [@modalContainerAnimation]
+  class="fixed bottom-0 top-0 inset-x-0 px-4 py-4 sm:inset-0 sm:flex sm:items-center sm:justify-center z-20">
+  <!--
+    Background overlay, show/hide based on modal state.
+
+    Entering: "ease-out duration-300"
+      From: "opacity-0"
+      To: "opacity-100"
+    Leaving: "ease-in duration-200"
+      From: "opacity-100"
+      To: "opacity-0"
+  -->
+  <div
+    [@modalBackdropAnimation]
+    (click)="dismissModal()"
+    class="fixed inset-0 transition-opacity">
+    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+  </div>
+
+  <!--
+    Modal panel, show/hide based on modal state.
+
+    Entering: "ease-out duration-300"
+      From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+      To: "opacity-100 translate-y-0 sm:scale-100"
+    Leaving: "ease-in duration-200"
+      From: "opacity-100 translate-y-0 sm:scale-100"
+      To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+  -->
+  <div
+    [@modalAnimation]
+    aria-labelledby="modal-headline"
+    aria-modal="true"
+    class="relative bg-white rounded-lg px-4 pt-5 pb-4 shadow-xl transform transition-all sm:max-w-lg sm:w-full sm:p-6"
+    role="dialog">
+    <!-- Form -->
+    <div class="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+      <button
+        (click)="dismissModal()"
+        aria-label="Close"
+        class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
+        type="button">
+        <svg
+          class="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+            d="M6 18L18 6M6 6l12 12"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="sm:flex sm:items-start">
+      <div class="mt-3 w-full text-center sm:mt-0 sm:text-left">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          {{ (service ? 'Edit' : 'Add') + ' service' }}
+        </h3>
+
+        <div class="max-w-7xl mx-auto">
+          <form
+            (submit)="submitPriceForm()"
+            [formGroup]="priceForm"
+            autocomplete="off"
+            id="priceForm">
+            <!-- Name -->
+            <div class="mt-6 sm:mt-5">
+              <div
+                class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                <label
+                  class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                  for="name">
+                  Name
+                </label>
+
+                <div class="mt-1 sm:mt-0 sm:col-span-2">
+                  <div
+                    class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                    <input
+                      [class.border-red-300]="
+                        priceForm.controls.name?.errors &&
+                        priceForm.controls.name?.dirty
+                      "
+                      [class.focus:border-red-300]="
+                        priceForm.controls.name?.errors &&
+                        priceForm.controls.name?.dirty
+                      "
+                      [class.focus:shadow-outline-red]="
+                        priceForm.controls.name?.errors &&
+                        priceForm.controls.name?.dirty
+                      "
+                      required
+                      class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                      formControlName="name"
+                      id="name"
+                      placeholder="Name"
+                      type="text" />
+
+                    <div
+                      *ngIf="
+                        priceForm.controls.name?.errors &&
+                        priceForm.controls.name?.dirty
+                      "
+                      class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <svg
+                        class="h-5 w-5 text-red-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          clip-rule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          fill-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <p
+                  *ngIf="
+                    priceForm.controls.name?.errors?.required &&
+                    priceForm.controls.name?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="name-error">
+                  This field is required
+                </p>
+              </div>
+            </div>
+
+            <!-- Price -->
+            <div class="mt-6 sm:mt-5">
+              <div
+                class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                <label
+                  class="required required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                  for="price">
+                  Price
+                </label>
+
+                <div class="mt-1 sm:mt-0 sm:col-span-2">
+                  <div
+                    class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                    <input
+                      [class.border-red-300]="
+                        priceForm.controls.price?.errors &&
+                        priceForm.controls.price?.dirty
+                      "
+                      [class.focus:border-red-300]="
+                        priceForm.controls.price?.errors &&
+                        priceForm.controls.price?.dirty
+                      "
+                      [class.focus:shadow-outline-red]="
+                        priceForm.controls.price?.errors &&
+                        priceForm.controls.price?.dirty
+                      "
+                      [min]="0"
+                      [options]="{ prefix: currencyPrefix, align: 'left' }"
+                      autocomplete="off"
+                      class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                      currencyMask
+                      formControlName="price"
+                      id="price"
+                      placeholder="Price"
+                      type="text" />
+
+                    <div
+                      *ngIf="
+                        priceForm.controls.price?.errors &&
+                        priceForm.controls.price?.dirty
+                      "
+                      class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <svg
+                        class="h-5 w-5 text-red-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          clip-rule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          fill-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <p
+                    *ngIf="
+                      priceForm.controls.price?.errors?.required &&
+                      priceForm.controls.price?.dirty
+                    "
+                    [@errorMessageAnimation]
+                    class="mt-2 text-sm text-red-600"
+                    id="price-error">
+                    This field is required
+                  </p>
+
+                  <p
+                    *ngIf="
+                      priceForm.controls.price?.errors?.pattern &&
+                      priceForm.controls.price?.dirty
+                    "
+                    [@errorMessageAnimation]
+                    class="mt-2 text-sm text-red-600"
+                    id="price-error-pattern">
+                    Please enter a valid amount
+                  </p>
+
+                  <p
+                    *ngIf="
+                      priceForm.controls.price?.errors?.min &&
+                      priceForm.controls.price?.dirty
+                    "
+                    [@errorMessageAnimation]
+                    class="mt-2 text-sm text-red-600"
+                    id="price-error-min">
+                    Value must be positive
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Price Unit -->
+            <div class="mt-6 sm:mt-5">
+              <div
+                class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                <label
+                  class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                  for="price_unit">
+                  Unit
+                </label>
+
+                <div class="mt-1 sm:mt-0 sm:col-span-2">
+                  <div
+                    class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                    <input
+                      [class.border-red-300]="
+                        priceForm.controls.price_unit?.errors &&
+                        priceForm.controls.price_unit?.dirty
+                      "
+                      [class.focus:border-red-300]="
+                        priceForm.controls.price_unit?.errors &&
+                        priceForm.controls.price_unit?.dirty
+                      "
+                      [class.focus:shadow-outline-red]="
+                        priceForm.controls.price_unit?.errors &&
+                        priceForm.controls.price_unit?.dirty
+                      "
+                      class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                      formControlName="price_unit"
+                      id="price_unit"
+                      placeholder="Unit"
+                      type="text" />
+
+                    <div
+                      *ngIf="
+                        priceForm.controls.price_unit?.errors &&
+                        priceForm.controls.price_unit?.dirty
+                      "
+                      class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <svg
+                        class="h-5 w-5 text-red-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          clip-rule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          fill-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <p
+                  *ngIf="
+                    priceForm.controls.price_unit?.errors?.required &&
+                    priceForm.controls.price_unit?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="price_unit-error">
+                  This field is required
+                </p>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5 sm:my-4 sm:flex sm:flex-row-reverse">
+      <span
+        class="mt-3 sm:ml-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+        <button
+          class="inline-flex justify-center w-full rounded-md border border-transparent py-2 px-4 bg-indigo-600 text-base leading-6 font-medium text-white focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out"
+          [class.opacity-50]="priceForm.invalid"
+          [class.cursor-not-allowed]="priceForm.invalid"
+          [class.hover:bg-indigo-500]="priceForm.valid"
+          form="priceForm"
+          type="submit">
+          Save
+        </button>
+      </span>
+
+      <span class="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+        <button
+          (click)="dismissModal()"
+          class="inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+          type="button">
+          Cancel
+        </button>
+      </span>
+    </div>
+  </div>
+</div>

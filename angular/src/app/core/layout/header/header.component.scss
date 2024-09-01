@@ -1,0 +1,25 @@
+.link,
+.active-link {
+  @apply block px-3 py-2 rounded-md font-medium cursor-pointer;
+}
+
+.link {
+  @apply text-indigo-200;
+
+  &:hover,
+  &:focus {
+    @apply bg-indigo-600 text-white;
+  }
+
+  &:focus {
+    @apply outline-none;
+  }
+}
+
+.active-link {
+  @apply text-white bg-indigo-800 !important;
+
+  &:focus {
+    @apply outline-none text-white;
+  }
+}

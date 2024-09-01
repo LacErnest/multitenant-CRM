@@ -1,0 +1,147 @@
+<angular-editor
+  [formControl]="control"
+  [config]="editorConfig"
+  [disabled]="disabled"></angular-editor>
+<!-- app.component.html -->
+<div class="floating-container">
+  <button
+    type="button"
+    [disabled]="disabled"
+    (click)="toggleModal()"
+    class="inline-flex leading-5 indigo-button button floating-button">
+    Help
+  </button>
+  <div *ngIf="isModalVisible" class="modal" #modalElement>
+    <div class="resize-handle" (mousedown)="initResize($event)"></div>
+    <!-- Your HTML content here -->
+    <div class="modal-content">
+      <p class="text-3xl font-bold leading-tight text-gray-900 my-3">
+        Available variables...
+      </p>
+      <div>
+        <p>
+          <strong>Id:</strong> <span ngNonBindable>{{ id }}</span>
+        </p>
+        <p>
+          <strong>See Invoice Button:</strong>
+          <span ngNonBindable>{{ see_invoice }}</span>
+        </p>
+        <p>
+          <strong>Project Id:</strong>
+          <span ngNonBindable>{{ project_id }}</span>
+        </p>
+        <p>
+          <strong>Project Name:</strong>
+          <span ngNonBindable>{{ project_name }}</span>
+        </p>
+        <p>
+          <strong>Order Id:</strong> <span ngNonBindable>{{ order_id }}</span>
+        </p>
+        <p>
+          <strong>Type:</strong> <span ngNonBindable>{{ type }}</span>
+        </p>
+        <p>
+          <strong>Date:</strong> <span ngNonBindable>{{ date }}</span>
+        </p>
+        <p>
+          <strong>Pay Date:</strong> <span ngNonBindable>{{ pay_date }}</span>
+        </p>
+        <p>
+          <strong>Due Date:</strong> <span ngNonBindable>{{ due_date }}</span>
+        </p>
+        <p>
+          <strong>Close Date:</strong>
+          <span ngNonBindable>{{ close_date }}</span>
+        </p>
+        <p>
+          <strong>Status:</strong> <span ngNonBindable>{{ status }}</span>
+        </p>
+        <p>
+          <strong>Number:</strong> <span ngNonBindable>{{ number }}</span>
+        </p>
+        <p>
+          <strong>Reference:</strong> <span ngNonBindable>{{ reference }}</span>
+        </p>
+        <p>
+          <strong>Currency Code:</strong>
+          <span ngNonBindable>{{ currency_code }}</span>
+        </p>
+        <p>
+          <strong>Total Price:</strong>
+          <span ngNonBindable>{{ total_price }}</span>
+        </p>
+        <p>
+          <strong>Total Vat:</strong> <span ngNonBindable>{{ total_vat }}</span>
+        </p>
+        <p>
+          <strong>Total Price USD:</strong>
+          <span ngNonBindable>{{ total_price_usd }}</span>
+        </p>
+        <p>
+          <strong>Total Vat USD:</strong>
+          <span ngNonBindable>{{ total_vat_usd }}</span>
+        </p>
+        <p>
+          <strong>Total Price Customer Currency:</strong>
+          <span ngNonBindable>{{ total_price_customer_cur }}</span>
+        </p>
+        <p>
+          <strong>Total Vat Customer Currency:</strong>
+          <span ngNonBindable>{{ total_vat_customer_cur }}</span>
+        </p>
+        <p>
+          <strong>Total Paid Customer Currency:</strong>
+          <span ngNonBindable>{{ total_paid_customer_cur }}</span>
+        </p>
+        <p>
+          <strong>Currency Rate Company:</strong>
+          <span ngNonBindable>{{ currency_rate_company }}</span>
+        </p>
+        <p>
+          <strong>Currency Rate Customer:</strong>
+          <span ngNonBindable>{{ currency_rate_customer }}</span>
+        </p>
+        <p>
+          <strong>Purchase Order Id:</strong>
+          <span ngNonBindable>{{ purchase_order_id }}</span>
+        </p>
+        <p>
+          <strong>Manual Price:</strong>
+          <span ngNonBindable>{{ manual_price }}</span>
+        </p>
+        <p>
+          <strong>Manual Vat:</strong>
+          <span ngNonBindable>{{ manual_vat }}</span>
+        </p>
+        <p>
+          <strong>Legal Entity Id:</strong>
+          <span ngNonBindable>{{ legal_entity_id }}</span>
+        </p>
+        <p>
+          <strong>VAT Status:</strong>
+          <span ngNonBindable>{{ vat_status }}</span>
+        </p>
+        <p>
+          <strong>VAT Percentage:</strong>
+          <span ngNonBindable>{{ vat_percentage }}</span>
+        </p>
+        <p>
+          <strong>Total Paid:</strong>
+          <span ngNonBindable>{{ total_paid }}</span>
+        </p>
+        <p>
+          <strong>Payment Terms:</strong>
+          <span ngNonBindable>{{ payment_terms }}</span>
+        </p>
+        <p>
+          <strong>Submitted Date:</strong>
+          <span ngNonBindable>{{ submitted_date }}</span>
+        </p>
+        <p>
+          <strong>Created By:</strong>
+          <span ngNonBindable>{{ created_by }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

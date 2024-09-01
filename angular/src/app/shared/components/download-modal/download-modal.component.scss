@@ -1,0 +1,13 @@
+pdf-viewer {
+  display: block;
+  height: 300px;
+  margin: 15px 0 20px;
+
+  @screen md {
+    height: 500px;
+  }
+
+  @screen xl {
+    height: 600px;
+  }
+}

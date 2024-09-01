@@ -1,0 +1,27 @@
+<oz-finance-datatable
+  (downloadClicked)="download($event)"
+  (cancelClicked)="cancelResourceInvoice($event)"
+  (editClicked)="viewResourceInvoice($event)"
+  (columnsUpdated)="columnsUpdated($event)"
+  (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+  (filtersUpdated)="filtersUpdated($event)"
+  (sortsUpdated)="sortsUpdated($event)"
+  (pageUpdated)="pageUpdated($event)"
+  (exportClicked)="exportResourceInvoices()"
+  [projectEntity]="projectEntity.RESOURCE_INVOICES"
+  [allColumns]="preferences.all_columns"
+  [buttonConfig]="buttonConfig"
+  [columns]="preferences.columns"
+  [count]="resourceInvoices?.count"
+  [isIndividualDownload]="true"
+  [isLoading]="isLoading"
+  [page]="page"
+  [project]="project"
+  [rowMenuConfig]="rowMenuConfig"
+  [rows]="resourceInvoices?.data"
+  [sorts]="preferences?.sorts"
+  [filters]="preferences?.filters"
+  [title]="'Resource Invoices'">
+</oz-finance-datatable>
+
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>

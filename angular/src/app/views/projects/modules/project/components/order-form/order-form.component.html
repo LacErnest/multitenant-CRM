@@ -1,0 +1,737 @@
+<div *ngIf="orderForm" class="mx-auto">
+  <div class="bg-white overflow-hidden shadow rounded-lg">
+    <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+      <div
+        class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+        <div class="ml-4 mt-2">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            {{ order ? 'Order: ' + order?.number : 'Create order' }}
+          </h3>
+
+          <span class="text-xs" [ngClass]="statusColor()">{{
+            order?.status | enumValue: 'orderstatus'
+          }}</span>
+        </div>
+
+        <div class="ml-4 mt-2 flex-shrink-0 table-btns">
+          <ng-container [ngSwitch]="order?.status" *ngIf="showOrderActionBtns">
+            <ng-container *ngSwitchCase="orderStatusEnum.DRAFT">
+              <!-- Set Active -->
+              <span
+                class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+                <button
+                  (click)="changeStatus(orderStatusEnum.ACTIVE)"
+                  *ngIf="isNotShadow()"
+                  class="action-btn"
+                  type="button">
+                  <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                    <path
+                      clip-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                      fill-rule="evenodd"></path>
+                  </svg>
+                </button>
+
+                <span class="tooltip w-auto">Mark order as active</span>
+              </span>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="orderStatusEnum.ACTIVE">
+              <!-- Set Delivered -->
+              <span
+                class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+                <button
+                  (click)="changeStatus(orderStatusEnum.DELIVERED)"
+                  *ngIf="isNotShadow()"
+                  class="action-btn"
+                  type="button">
+                  <svg
+                    class="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                    <path
+                      clip-rule="evenodd"
+                      d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      fill-rule="evenodd"></path>
+                  </svg>
+                </button>
+
+                <span class="tooltip w-auto">Mark order as delivered</span>
+              </span>
+            </ng-container>
+          </ng-container>
+
+          <!-- Cancel -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              (click)="changeStatus(orderStatusEnum.CANCELED)"
+              *ngIf="showCancelBtn()"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+            <span class="tooltip w-auto">Cancel order</span>
+          </span>
+          <!-- Download -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              (click)="download()"
+              *ngIf="showDownloadBtn"
+              class="action-btn"
+              type="button">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  clip-rule="evenodd"
+                  d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+                  fill-rule="evenodd"></path>
+              </svg>
+            </button>
+
+            <span class="tooltip w-auto">Download order</span>
+          </span>
+
+          <!-- Upload -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              *ngIf="showUploadBtn()"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg
+                class="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  clip-rule="evenodd"
+                  d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                  fill-rule="evenodd"></path>
+              </svg>
+              <input
+                #upload_file
+                (change)="uploadFile($event.target.files)"
+                class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                id="upload_file"
+                accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                type="file" />
+            </button>
+            <span class="tooltip w-auto">Upload document</span>
+          </span>
+
+          <!-- Export -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn"
+            *ngIf="canExportCosts">
+            <button
+              (click)="export()"
+              *ngIf="showExportBtn"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </button>
+            <span class="tooltip w-auto">Export costs </span>
+          </span>
+
+          <!-- Remove upload -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              (click)="removeDoc()"
+              *ngIf="showRemoveBtn()"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h5- w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+            <span class="tooltip w-auto">Delete document</span>
+          </span>
+
+          <!-- Set to draft -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              (click)="changeStatus(orderStatusEnum.DRAFT)"
+              *ngIf="showDraftButton()"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  clip-rule="evenodd"
+                  d="M5 2a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V4a2 2 0 00-2-2H5zm4.707 3.707a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L8.414 9H10a3 3 0 013 3v1a1 1 0 102 0v-1a5 5 0 00-5-5H8.414l1.293-1.293z"
+                  fill-rule="evenodd"></path>
+              </svg>
+            </button>
+            <span class="tooltip w-auto">Mark order as draft</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative px-4 py-5 sm:p-6">
+      <div *ngIf="isLoading" class="loading-overlay">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form (ngSubmit)="submit()" [formGroup]="orderForm" autocomplete="off">
+        <!-- Details Heading -->
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Details</h3>
+
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+            View and edit order details. Items marked with an asterisk are
+            required fields.
+          </p>
+        </div>
+
+        <!-- Legal entity -->
+        <div class="mt-6 sm:mt-5">
+          <div
+            class="sm:grid sm:grid-cols-3 sm:gap-4 sm:border-t sm:border-gray-200 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="legal_entity_id">
+              Legal Entity
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <oz-finance-legal-entity-select
+                  [legalEntityFormControlName]="'legal_entity_id'"
+                  [legalEntityParentFormGroup]="orderForm"
+                  [noCreatedEntity]="!order"
+                  [selectedLegalEntity]="order?.legal_entity"
+                  id="legal_entity_id">
+                </oz-finance-legal-entity-select>
+              </div>
+              <p
+                *ngIf="
+                  orderForm.controls.legal_entity_id?.errors &&
+                  orderForm.controls.legal_entity_id?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="legal_entity_id_error">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Production Center -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="company">
+              Production Center
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [readonly]="true"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="company"
+                  id="company">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="customer">
+              Customer
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [readonly]="true"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="customer"
+                  id="customer">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="date">
+              Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [maxLength]="128"
+                  [owlDateTimeTrigger]="datePicker"
+                  [owlDateTime]="datePicker"
+                  [readOnly]="true"
+                  [required]=""
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="date"
+                  id="date"
+                  placeholder="pick a date"
+                  type="text" />
+
+                <owl-date-time
+                  #datePicker
+                  [disabled]="readOnly"
+                  [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Due Date -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="deadline">
+              Deadline
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [maxLength]="128"
+                  [owlDateTimeTrigger]="dueDatePicker"
+                  [owlDateTime]="dueDatePicker"
+                  [readOnly]="true"
+                  [required]=""
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="deadline"
+                  id="deadline"
+                  placeholder="pick a date"
+                  type="text" />
+
+                <owl-date-time
+                  #dueDatePicker
+                  [disabled]="readOnly"
+                  [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery Date -->
+        <div
+          *ngIf="order?.status > orderStatusEnum.ACTIVE"
+          class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Delivery Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <span
+                  class="form-input border-none block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  >{{ order?.delivered_at | momentDate: 'DD/MM/YYYY' }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Manager -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="project_manager_id">
+            Project Manager
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                [bindLabel]="'name'"
+                [bindValue]="'id'"
+                [clearable]="false"
+                [items]="projectManagerSelect | async"
+                [loading]="isProjectManagerLoading"
+                [readonly]="!order || readOnly"
+                [required]="true"
+                [typeahead]="projectManagerInput"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="project_manager_id"
+                id="project_manager_id">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reference -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="reference">
+              Reference
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.read-only]="readOnly"
+                  [maxLength]="50"
+                  [readOnly]="readOnly"
+                  class="h-auto form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="reference"
+                  id="reference"
+                  placeholder="reference" />
+              </div>
+              <!--              <p class="mt-2 text-sm text-gray-500">Lorem ipsum dolor sit amet.</p>-->
+            </div>
+          </div>
+        </div>
+
+        <!-- Currency -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="currency_code">
+            Currency
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                (change)="changeCurrency()"
+                [bindLabel]="'value'"
+                [bindValue]="'key'"
+                [clearable]="false"
+                [items]="'currencycode' | enum: 'array'"
+                [readonly]="readOnly"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="currency_code"
+                id="currency_code">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manual input -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+            for="manual_input">
+            Manual input
+          </label>
+
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input
+              (ngModelChange)="changeCurrency()"
+              class="hidden"
+              formControlName="manual_input"
+              id="manual_input"
+              type="checkbox" />
+
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              [class.opacity-25]="readOnly || order?.shadow"
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="toggleManualInput(false)"
+                [ngClass]="[
+                  orderForm.get('manual_input').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200',
+                  readOnly || order?.shadow
+                    ? 'cursor-default'
+                    : 'cursor-pointer focus:shadow-outline'
+                ]"
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    orderForm.get('manual_input').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Master order -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+            for="master">
+            Shared order
+          </label>
+
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input
+              class="hidden"
+              formControlName="master"
+              id="master"
+              type="checkbox" />
+
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              [class.opacity-25]="!isOrderCanBeToggle()"
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="toggleShareOrder()"
+                [ngClass]="[
+                  orderForm.get('master').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200',
+                  !isOrderCanBeToggle()
+                    ? 'cursor-default'
+                    : 'cursor-pointer focus:shadow-outline'
+                ]"
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    orderForm.get('master').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Costs Heading -->
+        <div
+          *ngIf="
+            order?.status === orderStatusEnum.ACTIVE ||
+            order?.status === orderStatusEnum.DELIVERED ||
+            order?.status === orderStatusEnum.INVOICED
+          "
+          class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Costs</h3>
+        </div>
+
+        <!-- Gross margin -->
+        <div *ngIf="showMarkup" class="mt-6 sm:mt-5">
+          <div
+            class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Gross Margin
+            </label>
+
+            <div class="mt-1 sm:mt-0">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <span
+                  [ngClass]="
+                    order?.markup > 35
+                      ? order?.markup < 50
+                        ? 'text-orange-500'
+                        : 'text-green-500'
+                      : 'text-red-500'
+                  "
+                  class="form-input border-none block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                  {{ order?.markup }}%
+                </span>
+              </div>
+            </div>
+            <div class="mt-1 sm:mt-0">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <span
+                  class="form-input border-none block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                  {{
+                    order?.gross_margin
+                      | currency: (costCurrency | enumValue: 'currencycode')
+                  }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Potential Gross margin -->
+        <div *ngIf="showPotentialMarkup" class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Potential Gross Margin
+            </label>
+
+            <div class="mt-1 sm:mt-0">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <span
+                  [ngClass]="
+                    order?.potential_markup > 35
+                      ? order?.potential_markup < 50
+                        ? 'text-orange-500'
+                        : 'text-green-500'
+                      : 'text-red-500'
+                  "
+                  class="form-input border-none block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                  {{ order?.potential_markup }}%
+                </span>
+              </div>
+            </div>
+            <div class="mt-1 sm:mt-0">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <span
+                  class="form-input border-none block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                  {{
+                    order?.potential_gm
+                      | currency: (costCurrency | enumValue: 'currencycode')
+                  }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total costs -->
+        <div *ngIf="showCost" class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Costs and Potential Costs
+            </label>
+
+            <div class="mt-1 sm:mt-0">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <span
+                  class="form-input border-none block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                  {{
+                    order?.cost
+                      | currency: (costCurrency | enumValue: 'currencycode')
+                  }}
+                </span>
+              </div>
+            </div>
+            <div class="mt-1 sm:mt-0">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <span
+                  class="form-input border-none block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                  {{
+                    order?.potential_cost
+                      | currency: (costCurrency | enumValue: 'currencycode')
+                  }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Items Heading -->
+        <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Items</h3>
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+            Create and edit item quantity and price.
+          </p>
+        </div>
+
+        <!-- Items component -->
+        <div class="mt-6">
+          <oz-finance-entity-line-editor
+            (itemAdded)="itemAdded($event)"
+            (itemDeleted)="itemDeleted($event)"
+            (itemUpdated)="itemEdited($event)"
+            (itemsOrderChanged)="itemsOrderChanged($event)"
+            (modifierAdded)="modifierAdded($event)"
+            (modifierDeleted)="modifierDeleted($event)"
+            (modifierUpdated)="modifierEdited($event)"
+            (vatStatusChanged)="vatStatusChanged($event)"
+            (vatEdited)="vatEdited($event)"
+            [entity]="entity"
+            [countryForComparison]="project?.customer?.country"
+            [legalEntityCountry]="order?.legal_country"
+            [currency]="currency"
+            [isManualInput]="orderForm?.get('manual_input').value"
+            [isMasterInput]="orderForm?.get('master').value && !order?.shadow"
+            [isShadow]="order?.shadow"
+            [items]="items"
+            [modifiers]="modifiers"
+            [readOnly]="readOnly"
+            [taxRate]="taxRate"
+            [nonVatLiable]="customerIsNonVatLiable"
+            [vatStatus]="order?.vat_status"
+            [priceModifierService]="priceModifierLogicService">
+          </oz-finance-entity-line-editor>
+        </div>
+
+        <div *ngIf="!readOnly" class="mt-8 pt-5">
+          <div class="flex justify-end">
+            <span class="ml-3 inline-flex rounded-md shadow-sm">
+              <button
+                [class.disabled]="orderForm?.invalid"
+                [disabled]="!isLoading && (orderForm.valid ? undefined : true)"
+                class="inline-flex leading-5 indigo-button button"
+                type="submit">
+                Save Order
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>

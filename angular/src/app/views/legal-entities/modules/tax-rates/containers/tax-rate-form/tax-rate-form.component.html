@@ -1,0 +1,287 @@
+<div class="flex flex-col bg-white shadow rounded-lg relative">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 mt-2">
+        <h3 class="text-xl leading-6 font-medium text-gray-900">
+          {{ taxRate ? 'Edit' : 'Create' }} VAT Rate
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-4 py-5 sm:p-6">
+    <div class="max-w-7xl mx-auto">
+      <div *ngIf="isLoading" class="loading-overlay rounded">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form
+        (submit)="submitForm()"
+        [formGroup]="taxRateForm"
+        autocomplete="off">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            VAT rate details
+          </h3>
+        </div>
+
+        <!-- VAT rate -->
+        <div class="mt-6 sm:mt-5">
+          <div
+            class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="tax_rate">
+              Rate
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    taxRateForm.controls.tax_rate?.errors &&
+                    taxRateForm.controls.tax_rate?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    taxRateForm.controls.tax_rate?.errors &&
+                    taxRateForm.controls.tax_rate?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    taxRateForm.controls.tax_rate?.errors &&
+                    taxRateForm.controls.tax_rate?.dirty
+                  "
+                  [max]="100"
+                  [min]="0"
+                  [options]="{ suffix: '%', align: 'left' }"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  currencyMask
+                  formControlName="tax_rate"
+                  id="tax_rate"
+                  ozFinanceAutoFocus
+                  placeholder="rate"
+                  required
+                  type="text" />
+              </div>
+
+              <p
+                *ngIf="
+                  taxRateForm.controls.tax_rate?.errors &&
+                  taxRateForm.controls.tax_rate?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="tax_rate-error">
+                Please enter a number between 0 and 100
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Start date -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="start_date">
+              Start Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    taxRateForm.errors?.start_date_end_date &&
+                    taxRateForm.controls.start_date?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    taxRateForm.errors?.start_date_end_date &&
+                    taxRateForm.controls.start_date?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    taxRateForm.errors?.start_date_end_date &&
+                    taxRateForm.controls.start_date?.dirty
+                  "
+                  [owlDateTimeTrigger]="startDatePicker"
+                  [owlDateTime]="startDatePicker"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="start_date"
+                  id="start_date"
+                  placeholder="pick a date"
+                  required
+                  type="text" />
+
+                <owl-date-time #startDatePicker [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+
+              <p
+                *ngIf="
+                  taxRateForm.controls.start_date?.errors &&
+                  taxRateForm.controls.start_date?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="start_date-required-error">
+                This field is required.
+              </p>
+
+              <p
+                *ngIf="
+                  taxRateForm.errors?.start_date_end_date &&
+                  taxRateForm.controls.start_date?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="start_date-error">
+                Start date can't be after end date.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- End date -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="end_date">
+              End Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    taxRateForm.errors?.start_date_end_date &&
+                    taxRateForm.controls.end_date?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    taxRateForm.errors?.start_date_end_date &&
+                    taxRateForm.controls.end_date?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    taxRateForm.errors?.start_date_end_date &&
+                    taxRateForm.controls.end_date?.dirty
+                  "
+                  [owlDateTimeTrigger]="endDatePicker"
+                  [owlDateTime]="endDatePicker"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="end_date"
+                  id="end_date"
+                  placeholder="pick a date"
+                  type="text" />
+
+                <owl-date-time #endDatePicker [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+
+              <p
+                *ngIf="
+                  taxRateForm.errors?.start_date_end_date &&
+                  taxRateForm.controls.end_date?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="end_date-error">
+                End date can't be before start date.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Xero fields -->
+        <ng-container *ngIf="isXeroLinked; else xeroNotLinked">
+          <!-- Sales VAT type -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="xero_sales_tax_type">
+                Sales VAT Type
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <ng-select
+                    [bindLabel]="'name'"
+                    [bindValue]="'value'"
+                    [clearable]="false"
+                    [items]="salesTaxRates"
+                    [multiple]="false"
+                    (change)="updatePurchaseTaxRates()"
+                    class="custom form-select transition duration-150 ease-in-out"
+                    formControlName="xero_sales_tax_type"
+                    id="xero_sales_tax_type">
+                  </ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Purchase VAT type -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="xero_purchase_tax_type">
+                Purchase VAT Type
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <ng-select
+                    [bindLabel]="'name'"
+                    [bindValue]="'value'"
+                    [clearable]="false"
+                    [items]="purchaseTaxRates"
+                    [multiple]="false"
+                    (change)="updateSalesTaxRates()"
+                    class="custom form-select transition duration-150 ease-in-out"
+                    formControlName="xero_purchase_tax_type"
+                    id="xero_purchase_tax_type">
+                  </ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #xeroNotLinked>
+          <div class="mt-8 flex flex-col">
+            <span class="leading-6 font-medium text-gray-500">
+              Link Xero to set sales & purchase VAT types
+            </span>
+
+            <a
+              (click)="navToXeroLink()"
+              class="text-indigo-600 text-sm cursor-pointer">
+              Link Xero
+            </a>
+          </div>
+        </ng-template>
+
+        <!-- Submit -->
+        <div class="mt-8 border-t border-gray-200 pt-5">
+          <div class="flex justify-center lg:justify-end">
+            <span
+              class="ml-3 inline-flex rounded-md shadow-sm w-full md:w-64 lg:w-32">
+              <button
+                [class.cursor-not-allowed]="!canSubmit"
+                [class.hover:bg-indigo-500]="!canSubmit"
+                [class.opacity-50]="!canSubmit"
+                [disabled]="canSubmit ? undefined : true"
+                class="inline-flex leading-5 indigo-button button w-full"
+                type="submit">
+                {{ taxRate ? 'Update' : 'Create' }}
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

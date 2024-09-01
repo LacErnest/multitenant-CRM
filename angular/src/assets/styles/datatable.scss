@@ -1,0 +1,163 @@
+.ngx-datatable {
+  @apply min-w-full h-full overflow-visible !important;
+
+  &.visible {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &.import-entity {
+    .datatable-header-cell,
+    datatable-body-cell {
+      min-width: 250px;
+    }
+
+    .datatable-header .datatable-header-cell .sort-btn {
+      display: none;
+    }
+
+    &.scroll-horz .datatable-body {
+      overflow-x: scroll;
+    }
+  }
+}
+
+.datatable-header {
+  @apply h-auto !important;
+}
+
+.datatable-body-row {
+  .link {
+    @apply cursor-pointer underline;
+    &:hover {
+      @apply text-gray-800;
+    }
+  }
+
+  &.active {
+    @apply bg-indigo-700;
+
+    .datatable-body-cell {
+      @apply text-white !important;
+
+      .link:hover {
+        @apply text-gray-300;
+      }
+    }
+  }
+}
+
+.datatable-header-cell {
+  @apply h-auto px-4 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider;
+
+  &.column-hidden {
+    display: none !important;
+    width: 0 !important;
+  }
+}
+
+.datatable-body-cell {
+  @apply p-4 whitespace-no-wrap border-b border-gray-200 text-gray-500 !important;
+
+  &.column-hidden {
+    display: none !important;
+    width: 0 !important;
+  }
+}
+
+.datatable-body-cell-label {
+  @apply truncate !important;
+}
+
+.datatable-row-odd {
+  @apply bg-gray-50;
+}
+
+.datatable-footer {
+  @apply text-gray-500;
+}
+
+.datatable-body-cell-label {
+  @apply truncate !important;
+}
+
+.datatable-row-detail {
+  @apply h-auto !important;
+
+  > table {
+    @apply border-gray-200;
+    border-bottom-width: 1px;
+  }
+  .link {
+    @apply cursor-pointer underline;
+    &:hover {
+      @apply text-gray-800;
+    }
+  }
+
+  &.active {
+    @apply bg-indigo-700;
+
+    .datatable-body-cell {
+      @apply text-white !important;
+
+      .link:hover {
+        @apply text-gray-300;
+      }
+    }
+  }
+}
+
+.pager {
+  li {
+    @apply mx-1 !important;
+
+    a {
+      @apply w-5 h-5;
+    }
+  }
+
+  .pages {
+    a {
+      @apply leading-5 text-center rounded-full transition-colors duration-100 ease-in-out !important;
+    }
+
+    &:hover > a,
+    &.active > a {
+      @apply text-white bg-indigo-700 rounded-full transition-colors duration-100 ease-in-out;
+    }
+  }
+}
+
+.table-btns {
+  .table-btn {
+    @apply mr-1;
+  }
+
+  :last-child.table-btn {
+    @apply mr-0 !important;
+  }
+}
+
+.resize-handle {
+  @apply bg-gray-300;
+}
+
+.empty-row {
+  margin: 30px auto;
+  text-align: center;
+
+  @screen md {
+    margin: 60px auto;
+  }
+
+  img {
+    margin: 0 auto 10px;
+    width: 200px;
+  }
+
+  span {
+    color: #6b7280;
+  }
+}

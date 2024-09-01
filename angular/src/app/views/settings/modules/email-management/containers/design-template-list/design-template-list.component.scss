@@ -1,0 +1,10 @@
+.smtp-settings-datatable {
+}
+
+:host >>> .smtp-settings-datatable {
+  @apply shadow-none;
+  @apply bg-blue-500;
+}
+:host >>> oz-finance-datatable {
+  display: none !important;
+}

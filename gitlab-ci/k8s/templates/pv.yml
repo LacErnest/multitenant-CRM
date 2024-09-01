@@ -1,0 +1,53 @@
+## NOTE: these are cluster-scoped resources, added here fo visibilitry and ease of management
+## Do not change this file unless changes to MySQL storage on dev/staging is required
+{{- if eq .Values.environment_slug "dev" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: oz-mysql-dev
+  labels:
+    volume: oz-mysql-dev
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /data/volumes/oz-mysql-dev
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - dev-k8s
+{{- end }}
+
+{{- if eq .Values.environment_slug "staging" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: oz-mysql-staging
+  labels:
+    volume: oz-mysql-staging
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /data/volumes/oz-mysql-staging
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - dev-k8s
+{{- end }}

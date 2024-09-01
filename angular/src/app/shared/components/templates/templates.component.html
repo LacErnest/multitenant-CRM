@@ -1,0 +1,119 @@
+<div class="relative bg-white overflow-hidden shadow rounded-lg">
+  <oz-finance-loading-overlay *ngIf="isLoading"></oz-finance-loading-overlay>
+
+  <oz-finance-heading
+    [goBackUrl]="goBackUrl"
+    [heading]="templatesHeading"></oz-finance-heading>
+  <div class="flex align-center justify-between gap-4 px-4 py-3">
+    <div class="flex-grow">
+      <form
+        autocomplete="off"
+        [formGroup]="templateForm"
+        (submit)="submitForm()"
+        class="border-0 relative rounded-md w-full pr-3 mt-3">
+        <input
+          [class.border-red-300]="
+            templateForm.controls.name?.errors?.required &&
+            templateForm.controls.name?.dirty
+          "
+          [class.focus:border-red-300]="
+            templateForm.controls.name?.errors?.required &&
+            templateForm.controls.name?.dirty
+          "
+          [class.focus:shadow-outline-red]="
+            templateForm.controls.name?.errors?.required &&
+            templateForm.controls.name?.dirty
+          "
+          [maxLength]="255"
+          class="font-bold px-4 py-2 focus:shadow-none focus:border-transparent border-0 form-input block w-full transition duration-150 ease-in-out sm:text-md sm:leading-5"
+          formControlName="name"
+          id="name"
+          placeholder="Template category name..."
+          type="text" />
+
+        <div
+          *ngIf="
+            templateForm.controls.name?.errors?.required &&
+            templateForm.controls.name?.dirty
+          "
+          class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+          <svg
+            class="h-5 w-5 text-red-500"
+            fill="currentColor"
+            viewBox="0 0 20 20">
+            <path
+              clip-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+              fill-rule="evenodd" />
+          </svg>
+        </div>
+      </form>
+    </div>
+    <div class="inline-flex gap-4 items-center">
+      <span
+        (click)="submitForm()"
+        class="cursor-pointer text-white bg-indigo-600 inline-block p-2 rounded-full hover:opacity-80">
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M21.1213 2.70705C19.9497 1.53548 18.0503 1.53547 16.8787 2.70705L15.1989 4.38685L7.29289 12.2928C7.16473 12.421 7.07382 12.5816 7.02986 12.7574L6.02986 16.7574C5.94466 17.0982 6.04451 17.4587 6.29289 17.707C6.54127 17.9554 6.90176 18.0553 7.24254 17.9701L11.2425 16.9701C11.4184 16.9261 11.5789 16.8352 11.7071 16.707L19.5556 8.85857L21.2929 7.12126C22.4645 5.94969 22.4645 4.05019 21.2929 2.87862L21.1213 2.70705ZM18.2929 4.12126C18.6834 3.73074 19.3166 3.73074 19.7071 4.12126L19.8787 4.29283C20.2692 4.68336 20.2692 5.31653 19.8787 5.70705L18.8622 6.72357L17.3068 5.10738L18.2929 4.12126ZM15.8923 6.52185L17.4477 8.13804L10.4888 15.097L8.37437 15.6256L8.90296 13.5112L15.8923 6.52185ZM4 7.99994C4 7.44766 4.44772 6.99994 5 6.99994H10C10.5523 6.99994 11 6.55223 11 5.99994C11 5.44766 10.5523 4.99994 10 4.99994H5C3.34315 4.99994 2 6.34309 2 7.99994V18.9999C2 20.6568 3.34315 21.9999 5 21.9999H16C17.6569 21.9999 19 20.6568 19 18.9999V13.9999C19 13.4477 18.5523 12.9999 18 12.9999C17.4477 12.9999 17 13.4477 17 13.9999V18.9999C17 19.5522 16.5523 19.9999 16 19.9999H5C4.44772 19.9999 4 19.5522 4 18.9999V7.99994Z"
+            fill="currentColor" />
+        </svg>
+      </span>
+      <span
+        (click)="handleDeleteTemplate()"
+        class="cursor-pointer text-red-500 bg-gray-100 inline-block p-2 rounded-full hover:opacity-80">
+        <svg
+          width="24px"
+          height="24px"
+          viewBox="0 0 1024 1024"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              fill="currentColor"
+              d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"></path>
+          </g>
+        </svg>
+      </span>
+    </div>
+  </div>
+
+  <div class="px-4 sm:p-6 sm:py-2 flex gap-4 flex-col">
+    <ng-container *ngFor="let t of templatesKeys; let i = index">
+      <oz-finance-template
+        [isLastItem]="i === templatesValues.length - 1"
+        [templateLabel]="getTemplateLabel(templatesKeys[i])"
+        [templateType]="templatesKeys[i]"
+        [template]="templatesValues[i]"
+        (downloadClicked)="templateDownloadClicked($event)"
+        (viewClicked)="templateViewClicked($event)"
+        (showTemplateVariablesClicked)="
+          openTemplateVariablesModal($event)
+        "></oz-finance-template>
+    </ng-container>
+  </div>
+</div>
+
+<oz-finance-pdf-preview-modal
+  #pdfPreviewModal
+  [file]="file"
+  [templateType]="chosenEntity"></oz-finance-pdf-preview-modal>
+
+<oz-finance-template-variables-modal
+  #templateVariablesModal
+  [fields]="
+    templatesValues[templateIndex]?.fields
+  "></oz-finance-template-variables-modal>
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>

@@ -1,0 +1,252 @@
+<div
+  class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <img
+      class="w-14 mx-auto cursor-pointer outline-none"
+      src="/assets/oz-logo.png"
+      alt="logo"
+      [routerLink]="'/'" />
+
+    <h2
+      class="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">
+      Sign in to your account
+    </h2>
+  </div>
+
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white relative py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div *ngIf="isLoading" class="loading-overlay rounded">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <ng-container [ngSwitch]="display">
+        <div *ngSwitchCase="'login'" [@displayAnimation]>
+          <form autocomplete="off" [formGroup]="loginForm" (ngSubmit)="login()">
+            <div class="relative">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700"
+                for="email">
+                Email address
+              </label>
+
+              <div class="mt-1 rounded-md shadow-sm">
+                <input
+                  class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  [class.border-red-300]="
+                    loginForm.controls.email?.errors &&
+                    loginForm.controls.email?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    loginForm.controls.email?.errors &&
+                    loginForm.controls.email?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    loginForm.controls.email?.errors &&
+                    loginForm.controls.email?.dirty
+                  "
+                  formControlName="email"
+                  id="email"
+                  required
+                  type="email"
+                  autofocus />
+              </div>
+
+              <p
+                *ngIf="
+                  loginForm.controls.email?.errors &&
+                  loginForm.controls.email?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="email-error">
+                <ng-container *ngIf="loginForm.controls.email?.errors?.email">
+                  Please provide a valid email address
+                </ng-container>
+
+                <ng-container *ngIf="loginForm.controls.email?.errors?.error">
+                  {{ loginForm.controls.email?.errors.error }}
+                </ng-container>
+              </p>
+            </div>
+
+            <div class="mt-6">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700"
+                for="password">
+                Password
+              </label>
+
+              <div class="mt-1 relative rounded-md shadow-sm">
+                <input
+                  class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="password"
+                  id="password"
+                  required
+                  [type]="showPassword ? 'text' : 'password'" />
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <ng-container *ngIf="showPassword; else hidePassword">
+                    <svg
+                      (click)="showPassword = !showPassword"
+                      class="h-5 w-5 text-gray-700 cursor-pointer"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
+                        fill-rule="evenodd"></path>
+                      <path
+                        d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"></path>
+                    </svg>
+                  </ng-container>
+
+                  <ng-template #hidePassword>
+                    <svg
+                      (click)="showPassword = !showPassword"
+                      class="h-5 w-5 text-gray-700 cursor-pointer"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                      <path
+                        clip-rule="evenodd"
+                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                        fill-rule="evenodd"></path>
+                    </svg>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-between">
+              <div class="flex items-center">
+                <input
+                  [(ngModel)]="remember"
+                  [ngModelOptions]="{ standalone: true }"
+                  class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out cursor-pointer"
+                  id="remember_me"
+                  type="checkbox" />
+                <label
+                  class="ml-2 block text-sm leading-5 text-gray-900 cursor-pointer"
+                  for="remember_me">
+                  Remember me
+                </label>
+              </div>
+
+              <div class="text-sm leading-5">
+                <a
+                  class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150"
+                  [routerLink]="['/auth/recover']">
+                  Forgot your password?
+                </a>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <span class="block w-full rounded-md shadow-sm">
+                <button
+                  [disabled]="!isLoading && loginForm.valid ? undefined : true"
+                  class="w-full flex indigo-button button"
+                  type="submit">
+                  Sign in
+                </button>
+              </span>
+            </div>
+          </form>
+        </div>
+
+        <div *ngSwitchCase="'token'" [@displayAnimation]>
+          <form
+            autocomplete="off"
+            [formGroup]="tokenForm"
+            (ngSubmit)="verifyToken()">
+            <div>
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700"
+                for="token">
+                Two Factor Token
+              </label>
+
+              <div class="mt-1 rounded-md shadow-sm">
+                <input
+                  class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  id="token"
+                  formControlName="token"
+                  ozFinanceAutoFocus
+                  type="text"
+                  [maxLength]="6"
+                  [minLength]="6"
+                  [required]="true" />
+              </div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-between">
+              <div class="flex items-center">
+                <input
+                  formControlName="trust_device"
+                  class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out cursor-pointer"
+                  id="trust_device"
+                  type="checkbox" />
+                <label
+                  class="ml-2 block text-sm leading-5 text-gray-900 cursor-pointer"
+                  for="trust_device">
+                  Trust this device for 30 days?
+                </label>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <span class="block w-full rounded-md shadow-sm">
+                <button
+                  [disabled]="!isLoading && tokenForm.valid ? undefined : true"
+                  class="indigo-button button w-full flex"
+                  type="submit">
+                  Verify
+                </button>
+              </span>
+            </div>
+          </form>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div
+    *ngIf="display === 'token'"
+    class="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="relative">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-t border-gray-300"></div>
+      </div>
+
+      <div class="relative flex justify-center text-sm leading-5">
+        <a
+          (click)="backToLogin()"
+          class="px-2 bg-gray-50 text-gray-500 hover:text-indigo-700 cursor-pointer">
+          Back to Login
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showMessage"
+    [@alertAnimation]
+    class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <oz-finance-alert
+      [description]="messageDescription"
+      [title]="messageTitle"
+      [type]="messageType">
+    </oz-finance-alert>
+  </div>
+
+  <p class="developed-by">Developed by Cyrex</p>
+</div>
+
+<oz-finance-two-factor-activation-modal
+  #twoFactorActivationModal
+  [qrData]="qr"
+  [secret]="secret"
+  (modalClosed)="modalClosed($event)"
+  (modalDismissed)="modalDismissed()"></oz-finance-two-factor-activation-modal>

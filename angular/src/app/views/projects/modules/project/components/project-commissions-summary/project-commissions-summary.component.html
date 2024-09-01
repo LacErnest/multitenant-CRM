@@ -1,0 +1,51 @@
+<oz-finance-datatable
+  [isLoading]="isLoading"
+  [title]="'Project Commissions'"
+  [rows]="rows?.data"
+  [count]="rows?.count"
+  [columns]="preferences.columns"
+  [allColumns]="preferences.all_columns"
+  [page]="page"
+  [disablePaging]="true"
+  [buttonConfig]="buttonConfig"
+  [rowMenuConfig]="rowMenuConfig"
+  [datatableType]="'project-commission'"
+  [messageDescription]="messageDescription"
+  [messageTitle]="messageTitle"
+  [messageType]="messageType"
+  [showMessage]="showMessage"
+  (addClicked)="addSalesCommission()"
+  (refreshClicked)="refreshClicked()"
+  (pageUpdated)="pageUpdated($event)"
+  (columnsUpdated)="columnsUpdated($event)"
+  (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+  (sortsUpdated)="sortsUpdated($event)"
+  [sorts]="preferences?.sorts"
+  [defaultColumns]="preferences?.default_columns"
+  [defaultFilters]="preferences?.default_filters"
+  [showDetailRow]="true"
+  [detailConfig]="detailConfig"
+  [isAssignCommission]="true"
+  (editCommissions)="editSalesCommission($event)"
+  (payCommissions)="payIndividualSalesComission($event)"
+  (unPayCommissions)="unpayIndividualSalesComission($event)"
+  (deleteCommissions)="deleteSalesCommission($event)">
+</oz-finance-datatable>
+<oz-finance-pay-commission-modal #payCommissionModal [currency]="currency">
+</oz-finance-pay-commission-modal>
+<oz-finance-pay-individual-commission-modal
+  #payIndividualCommissionModal
+  [currency]="currency">
+</oz-finance-pay-individual-commission-modal>
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>
+<oz-finance-edit-sales-commission-modal
+  #editSalesCommissionModal
+  [commissionSettings]="
+    commissionSettings
+  "></oz-finance-edit-sales-commission-modal>
+<oz-finance-add-sales-commission-modal
+  #addSalesCommissionModal
+  [project]="project"
+  [commissionSummary]="commissionSummary"
+  [commissionSettings]="commissionSettings">
+</oz-finance-add-sales-commission-modal>

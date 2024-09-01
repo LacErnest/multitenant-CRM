@@ -1,0 +1,121 @@
+<div
+  class="nav-wrapper bg-white overflow-hidden shadow sm:rounded-lg mb-1 sm:mb-4 lg:mb-0">
+  <div class="px-4 py-5 sm:p-6">
+    <nav class="flex overflow-x-auto lg:flex-col">
+      <!-- Details Link -->
+      <a
+        [routerLinkActiveOptions]="{ exact: true }"
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'./'"
+        aria-current="page"
+        class="group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+
+        <span class="truncate"> Details </span>
+      </a>
+
+      <!-- VAT Rates Link -->
+      <a
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'tax_rates'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"></path>
+        </svg>
+
+        <span class="truncate"> VAT Rates </span>
+      </a>
+
+      <a
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'xero'"
+        class="mt-1 group nav-link">
+        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z"></path>
+        </svg>
+
+        <span class="truncate"> Accounting Platform Link </span>
+      </a>
+
+      <!-- Document Settings Link -->
+      <a
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'settings'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+
+        <span class="truncate"> Document Settings </span>
+      </a>
+      <!-- Contract Templates Link -->
+      <a
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'templates'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2" />
+        </svg>
+
+        <span class="truncate"> Contract Templates </span>
+      </a>
+      <!-- Notification -->
+      <a
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'notifications'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="m3.5 5.5 7.9 6c.4.3.8.3 1.2 0l7.9-6M4 19h16c.6 0 1-.4 1-1V6c0-.6-.4-1-1-1H4a1 1 0 0 0-1 1v12c0 .6.4 1 1 1Z" />
+        </svg>
+
+        <span class="truncate"> Notification settings </span>
+      </a>
+    </nav>
+  </div>
+</div>

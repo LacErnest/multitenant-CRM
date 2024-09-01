@@ -1,0 +1,7 @@
+.icon-wrapper {
+  height: 52px;
+
+  @screen sm {
+    height: auto;
+  }
+}

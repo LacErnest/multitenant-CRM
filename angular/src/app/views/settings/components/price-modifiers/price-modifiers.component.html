@@ -1,0 +1,441 @@
+<div class="flex flex-col bg-white shadow rounded-lg relative">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 mt-2">
+        <h3 class="text-xl leading-6 font-medium text-gray-900">
+          Price Modifier Settings
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div class="px-4 py-5 sm:p-6">
+    <div class="max-w-7xl mx-auto">
+      <div *ngIf="isLoading" class="loading-overlay rounded">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form
+        autocomplete="off"
+        [formGroup]="modifierSettingForm"
+        (submit)="submitForm()">
+        <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
+          <div class="sm:pt-5">
+            <label
+              for="last_name"
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Setting name
+            </label>
+          </div>
+          <div class="sm:pt-5">
+            <label
+              for="last_name"
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Default value
+            </label>
+          </div>
+          <div class="sm:pt-5">
+            <label
+              for="last_name"
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Maximal Value
+            </label>
+          </div>
+        </div>
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
+          <div class="sm:pt-5">
+            <label
+              for="vat_default_value"
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              VAT
+            </label>
+          </div>
+          <div class="sm:pt-5">
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div
+                class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs flex items-center">
+                <input
+                  id="vat_default_value"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="vat_default_value"
+                  placeholder="Vat default value"
+                  [min]="0"
+                  [max]="modifierSettingForm.controls.vat_max_value.value"
+                  [options]="{
+                    suffix: '%',
+                    align: 'left',
+                    min: 0,
+                    max: modifierSettingForm.controls.vat_max_value.value
+                  }"
+                  currencyMask />
+              </div>
+              <p
+                *ngIf="
+                  modifierSettingForm.controls.vat_default_value?.errors
+                    ?.required &&
+                  modifierSettingForm.controls.vat_default_value?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+          <div class="sm:pt-5">
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  id="vat_max_value"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="vat_max_value"
+                  placeholder="VAT maximum value"
+                  [min]="0"
+                  [max]="100"
+                  [options]="{ suffix: '%', align: 'left', min: 0, max: 100 }"
+                  currencyMask />
+              </div>
+              <p
+                *ngIf="
+                  modifierSettingForm.controls.vat_max_value?.errors
+                    ?.required &&
+                  modifierSettingForm.controls.vat_max_value?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
+          <div class="sm:pt-5">
+            <label
+              for="special_discount_default_value"
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Special Discount
+            </label>
+          </div>
+          <div class="sm:pt-5">
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div
+                class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs flex items-center">
+                <input
+                  id="special_discount_default_value"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="special_discount_default_value"
+                  placeholder="Specail discount default value"
+                  [min]="0"
+                  [max]="
+                    modifierSettingForm.controls.special_discount_max_value
+                      .value
+                  "
+                  [options]="{
+                    suffix: '%',
+                    align: 'left',
+                    min: 0,
+                    max: modifierSettingForm.controls.special_discount_max_value
+                      .value
+                  }"
+                  currencyMask />
+              </div>
+              <p
+                *ngIf="
+                  modifierSettingForm.controls.special_discount_default_value
+                    ?.errors?.required &&
+                  modifierSettingForm.controls.special_discount_default_value
+                    ?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+          <div class="sm:pt-5">
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  id="special_discount_max_value"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="special_discount_max_value"
+                  placeholder="Special discount maximum value"
+                  [min]="0"
+                  [max]="100"
+                  [options]="{ suffix: '%', align: 'left', min: 0, max: 100 }"
+                  currencyMask />
+              </div>
+              <p
+                *ngIf="
+                  modifierSettingForm.controls.special_discount_max_value
+                    ?.errors?.required &&
+                  modifierSettingForm.controls.special_discount_max_value?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
+          <div class="sm:pt-5">
+            <label
+              for="last_name"
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Project management
+            </label>
+          </div>
+          <div class="sm:pt-5">
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div
+                class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs flex items-center">
+                <input
+                  id="project_management_default_value"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="project_management_default_value"
+                  placeholder="Projet management default value"
+                  [min]="0"
+                  [max]="
+                    modifierSettingForm.controls.project_management_max_value
+                      .value
+                  "
+                  [options]="{
+                    suffix: '%',
+                    align: 'left',
+                    min: 0,
+                    max: modifierSettingForm.controls
+                      .project_management_max_value.value
+                  }"
+                  currencyMask />
+              </div>
+              <p
+                *ngIf="
+                  modifierSettingForm.controls.project_management_default_value
+                    ?.errors?.required &&
+                  modifierSettingForm.controls.project_management_default_value
+                    ?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+          <div class="sm:pt-5">
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  id="project_management_max_value"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="project_management_max_value"
+                  placeholder="Projet management maximum value"
+                  [min]="0"
+                  [max]="100"
+                  [options]="{ suffix: '%', align: 'left', min: 0, max: 100 }"
+                  currencyMask />
+              </div>
+              <p
+                *ngIf="
+                  modifierSettingForm.controls.project_management_max_value
+                    ?.errors?.required &&
+                  modifierSettingForm.controls.project_management_max_value
+                    ?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
+          <div class="sm:pt-5">
+            <label
+              for="last_name"
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Director fee
+            </label>
+          </div>
+          <div class="sm:pt-5">
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div
+                class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs flex items-center">
+                <input
+                  id="director_fee_default_value"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="director_fee_default_value"
+                  placeholder="Director fee default value"
+                  [min]="0"
+                  [max]="
+                    modifierSettingForm.controls.director_fee_max_value.value
+                  "
+                  [options]="{
+                    suffix: '%',
+                    align: 'left',
+                    min: 0,
+                    max: modifierSettingForm.controls.director_fee_max_value
+                      .value
+                  }"
+                  currencyMask />
+              </div>
+              <p
+                *ngIf="
+                  modifierSettingForm.controls.director_fee_default_value
+                    ?.errors?.required &&
+                  modifierSettingForm.controls.director_fee_default_value?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+          <div class="sm:pt-5">
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  id="director_fee_max_value"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="director_fee_max_value"
+                  placeholder="Director fee maximum value"
+                  [min]="0"
+                  [max]="100"
+                  [options]="{ suffix: '%', align: 'left', min: 0, max: 100 }"
+                  currencyMask />
+              </div>
+              <p
+                *ngIf="
+                  modifierSettingForm.controls.director_fee_max_value?.errors
+                    ?.required &&
+                  modifierSettingForm.controls.director_fee_max_value?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
+          <div class="sm:pt-5">
+            <label
+              for="last_name"
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Transaction fee
+            </label>
+          </div>
+          <div class="sm:pt-5">
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div
+                class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs flex items-center">
+                <input
+                  id="transaction_fee_default_value"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="transaction_fee_default_value"
+                  placeholder="Transaction fee default value"
+                  [min]="0"
+                  [max]="
+                    modifierSettingForm.controls.transaction_fee_max_value.value
+                  "
+                  [options]="{
+                    suffix: '%',
+                    align: 'left',
+                    min: 0,
+                    max: modifierSettingForm.controls.transaction_fee_max_value
+                      .value
+                  }"
+                  currencyMask />
+              </div>
+              <p
+                *ngIf="
+                  modifierSettingForm.controls.transaction_fee_default_value
+                    ?.errors?.required &&
+                  modifierSettingForm.controls.transaction_fee_default_value
+                    ?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+          <div class="sm:pt-5">
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  id="transaction_fee_max_value"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="transaction_fee_max_value"
+                  placeholder="Transactionfee maximum value"
+                  [min]="0"
+                  [max]="100"
+                  [options]="{ suffix: '%', align: 'left', min: 0, max: 100 }"
+                  currencyMask />
+              </div>
+              <p
+                *ngIf="
+                  modifierSettingForm.controls.transaction_fee_max_value?.errors
+                    ?.required &&
+                  modifierSettingForm.controls.transaction_fee_max_value?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-8 border-t border-gray-200 pt-5">
+          <div class="flex justify-center lg:justify-between">
+            <span
+              class="ml-3 inline-flex rounded-md shadow-sm w-full md:w-64 lg:w-32">
+              <button
+                type="submit"
+                class="inline-flex leading-5 indigo-button button w-full"
+                [disabled]="
+                  !isLoading && modifierSettingForm.valid ? undefined : true
+                "
+                [class.opacity-50]="isLoading || modifierSettingForm.invalid"
+                [class.cursor-not-allowed]="
+                  isLoading || modifierSettingForm.invalid
+                "
+                [class.hover:bg-indigo-500]="
+                  !isLoading && modifierSettingForm.valid
+                ">
+                {{ priceModifierSetting ? 'Update' : 'Create' }}
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

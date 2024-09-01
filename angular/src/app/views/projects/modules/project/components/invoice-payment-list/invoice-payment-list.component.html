@@ -1,0 +1,24 @@
+<oz-finance-datatable
+  [isLoading]="isLoading"
+  [isColumnCustomizable]="false"
+  [isFilterable]="false"
+  [title]="'Invoice Payments'"
+  [rows]="invoice_payments?.data"
+  [count]="invoice_payments?.count"
+  [columns]="preferences.columns"
+  [projectEntity]="projectEntity.INVOICES_PAYMENTS"
+  [allColumns]="preferences.all_columns"
+  [page]="page"
+  [buttonConfig]="buttonConfig"
+  [rowMenuConfig]="rowMenuConfig"
+  [showDetailRow]="true"
+  (addClicked)="addInvoicePayment()"
+  (editClicked)="editInvoicePayment($event)"
+  (selectionDeleted)="deleteInvoicesPayments($event)"
+  (pageUpdated)="pageUpdated($event)"
+  (columnsUpdated)="columnsUpdated($event)">
+</oz-finance-datatable>
+
+<oz-finance-invoice-payment-modal
+  [invoice]="invoice"
+  #invoicePaymentModal></oz-finance-invoice-payment-modal>

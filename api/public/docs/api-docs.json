@@ -1,0 +1,3209 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "OZ Finance API Documentation",
+        "description": "API documentation using Swagger",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080",
+            "description": "Local server"
+        }
+    ],
+    "paths": {
+        "/api/dashboard/": {
+            "post": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Get Analytic Counts",
+                "description": "Get Analytic Counts\n\nRetrieves analytic counts for graphs and statistics based on specified time periods.",
+                "operationId": "518f0f9cd9f773b882523a38925a8b90",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "day": {
+                                        "description": "Day of the month (1-31)",
+                                        "type": "integer",
+                                        "example": 15
+                                    },
+                                    "week": {
+                                        "description": "Week of the year (1-52)",
+                                        "type": "integer",
+                                        "example": 25
+                                    },
+                                    "month": {
+                                        "description": "Month of the year (1-12)",
+                                        "type": "integer",
+                                        "example": 6
+                                    },
+                                    "quarter": {
+                                        "description": "Quarter of the year (1-4)",
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "year": {
+                                        "description": "Year",
+                                        "type": "integer",
+                                        "example": 2024
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "metric_name": {
+                                                "description": "Value of the metric",
+                                                "type": "integer",
+                                                "example": 100
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "422": {
+                        "description": "Validation error - Invalid input data"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/{entity}/summary": {
+            "get": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Get Summary Numbers for Analytic Entity",
+                "description": "Overview of numbers for each analytic entity\n\nRetrieves summary numbers for the specified analytic entity based on provided time periods.",
+                "operationId": "49fa267bff488c31dac353d16a148e2b",
+                "parameters": [
+                    {
+                        "name": "entity",
+                        "in": "path",
+                        "description": "Analytic entity name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "day",
+                        "in": "query",
+                        "description": "Day of the month (1-31)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "week",
+                        "in": "query",
+                        "description": "Week of the year (1-52)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    },
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "description": "Month of the year (1-12)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 6
+                        }
+                    },
+                    {
+                        "name": "quarter",
+                        "in": "query",
+                        "description": "Quarter of the year (1-4)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Year",
+                        "schema": {
+                            "type": "integer",
+                            "example": 2024
+                        }
+                    },
+                    {
+                        "name": "periods",
+                        "in": "query",
+                        "description": "Number of periods",
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "metric_name": {
+                                                "description": "Value of the metric",
+                                                "type": "integer",
+                                                "example": 100
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "404": {
+                        "description": "Not Found - Entity not recognized"
+                    },
+                    "422": {
+                        "description": "Validation error - Invalid input data"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{company_id}/dashboard": {
+            "get": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Get Analytic Counts for One Company",
+                "description": "Analytic counts for graphs and stats of one company\n\nRetrieves analytic counts for graphs and statistics of a specific company based on specified time periods.",
+                "operationId": "5632632e7b26f95988d248878c8ea696",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "ID of the company",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "day",
+                        "in": "query",
+                        "description": "Day of the month (1-31)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "week",
+                        "in": "query",
+                        "description": "Week of the year (1-52)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    },
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "description": "Month of the year (1-12)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 6
+                        }
+                    },
+                    {
+                        "name": "quarter",
+                        "in": "query",
+                        "description": "Quarter of the year (1-4)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Year",
+                        "schema": {
+                            "type": "integer",
+                            "example": 2024
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "metric_name": {
+                                                "description": "Value of the metric",
+                                                "type": "integer",
+                                                "example": 100
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "404": {
+                        "description": "Not Found - Company not found"
+                    },
+                    "422": {
+                        "description": "Validation error - Invalid input data"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/{company_id}/{entity}/summary": {
+            "get": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Get Summary for Analytics of a Company",
+                "description": "Overview of numbers for each analytic of one company\n\nRetrieves summary data for analytics of a specific company based on the provided parameters.",
+                "operationId": "75f4460ae47c99b44dc850b8667baff6",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "ID of the company",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "entity",
+                        "in": "path",
+                        "description": "Entity name for analytics",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "day",
+                        "in": "query",
+                        "description": "Day of the month (1-31)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "week",
+                        "in": "query",
+                        "description": "Week of the year (1-52)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    },
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "description": "Month of the year (1-12)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 6
+                        }
+                    },
+                    {
+                        "name": "quarter",
+                        "in": "query",
+                        "description": "Quarter of the year (1-4)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Year",
+                        "schema": {
+                            "type": "integer",
+                            "example": 2024
+                        }
+                    },
+                    {
+                        "name": "periods",
+                        "in": "query",
+                        "description": "Number of periods",
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "404": {
+                        "description": "Not Found - Entity not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/{company_id}/earn_out_summary": {
+            "get": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Get Earnout Summary for Company",
+                "description": "Earnout Summary\n\nRetrieves earnout summary for a specific company based on specified quarter and year.",
+                "operationId": "ceeb76f7ca5cf4fac5da3baac842d4bc",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "ID of the company",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "quarter",
+                        "in": "query",
+                        "description": "Quarter of the year (1-4)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Year",
+                        "schema": {
+                            "type": "integer",
+                            "example": 2024
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "metric_name": {
+                                                "description": "Value of the metric",
+                                                "type": "integer",
+                                                "example": 100
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "404": {
+                        "description": "Not Found - Company not found"
+                    },
+                    "422": {
+                        "description": "Validation error - Invalid input data"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/{company_id}/earn_out_status/approve": {
+            "post": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Set Earn Out Status as Approved",
+                "description": "Set Earn Out Status as Approved\n\nSets the earn out status as approved for a specific company based on the provided parameters.",
+                "operationId": "fa97885d4f6ccdc12a55016ace3e8c93",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "ID of the company",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earn out status has been approved."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "404": {
+                        "description": "Not Found - Company not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/{company_id}/earn_out_status/confirm": {
+            "patch": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Set Earn Out Status as Confirmed",
+                "description": "Set Earn Out Status as Confirmed\n\nSets the earn out status as confirmed for a specific company based on the provided parameters.",
+                "operationId": "6da3b2ce6864d02e570833e43dff9e33",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "ID of the company",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earn out status has been confirmed."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "404": {
+                        "description": "Not Found - Company not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/{company_id}/earn_out_status/received": {
+            "patch": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Set Earn Out Status as Received",
+                "description": "Set Earn Out Status as Received\n\nSets the earn out status as received for a specific company based on the provided parameters.",
+                "operationId": "c5a6b2d8e773de6db35b5b4c44d8c3cb",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "ID of the company",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Earn out status has been set as received."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "404": {
+                        "description": "Not Found - Company not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/{company_id}/earn_out_status": {
+            "get": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Get Earn Out Status for Company",
+                "description": "Get Earn Out Status\n\nRetrieves earn out status data for a specific company based on the provided or current quarter and year.",
+                "operationId": "85ffd34caf0cfab3671205d5089c4e74",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "ID of the company",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "quarter",
+                        "in": "query",
+                        "description": "Quarter of the year (1-4)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Year",
+                        "schema": {
+                            "type": "integer",
+                            "example": 2024
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "204": {
+                        "description": "No Content - No earn out status found for the company"
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "404": {
+                        "description": "Not Found - Company not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/commission-summary": {
+            "get": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Get Commission Summary",
+                "description": "Commission Summary\n\nRetrieves commission summary based on specified time periods and salesperson ID.",
+                "operationId": "77db6dec473b4fb51ba3ebe635d544a8",
+                "parameters": [
+                    {
+                        "name": "day",
+                        "in": "query",
+                        "description": "Day of the month (1-31)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "week",
+                        "in": "query",
+                        "description": "Week of the year (1-52)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    },
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "description": "Month of the year (1-12)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 6
+                        }
+                    },
+                    {
+                        "name": "quarter",
+                        "in": "query",
+                        "description": "Quarter of the year (1-4)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Year",
+                        "schema": {
+                            "type": "integer",
+                            "example": 2024
+                        }
+                    },
+                    {
+                        "name": "sales_person_id",
+                        "in": "query",
+                        "description": "ID of the salesperson",
+                        "schema": {
+                            "type": "integer",
+                            "example": 123
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "metric_name": {
+                                                "description": "Value of the metric",
+                                                "type": "integer",
+                                                "example": 100
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "422": {
+                        "description": "Validation error - Invalid input data"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/{company_id}/earn_out_summary/export": {
+            "get": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Export Earn Out Summary for Company",
+                "description": "Export Earn Out Summary\n\nExports earn out summary data for a specific company based on the provided or current quarter and year.",
+                "operationId": "d5b4647212f35347d88fa57197d68f5a",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "ID of the company",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "quarter",
+                        "in": "query",
+                        "description": "Quarter of the year (1-4)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Year",
+                        "schema": {
+                            "type": "integer",
+                            "example": 2024
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation. Returns an Excel file.",
+                        "content": {
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                                "schema": {
+                                    "type": "file"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "404": {
+                        "description": "Not Found - Company not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/dashboard/{company_id}/earn_out_prospection": {
+            "get": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Get Earn Out Prospection for Company",
+                "description": "Earn Out Prospection\n\nRetrieves earn out prospection data for a specific company based on the current quarter and year.",
+                "operationId": "340f9bea57b7ac5cfaed76bb10833eee",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "ID of the company",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "metric_name": {
+                                                "description": "Value of the metric",
+                                                "type": "integer",
+                                                "example": 100
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing authentication token"
+                    },
+                    "404": {
+                        "description": "Not Found - Company not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/password/recover": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Forgot password",
+                "description": "Forgot password\n\nSend a reset link to the given user.",
+                "operationId": "983c3afc1bed7fd045fdcb236c991f00",
+                "requestBody": {
+                    "description": "User email",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset link sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "We have emailed your password reset link!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to send reset link"
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login",
+                "description": "Login\n\nHandles a login request to the application.",
+                "operationId": "f779238bce5c5b984c773808f46fd14c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    },
+                                    "token": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
+                                    "trust_device": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful login",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "access_token": {
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "bearer"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer",
+                                            "example": 3600
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid credentials or inactive account",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid credentials or inactive account"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity - Validation errors in input data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout",
+                "description": "Logout\n\nLog the user out of the application.",
+                "operationId": "a09608b2fbed6bd1841153fae1c6b7f2",
+                "responses": {
+                    "200": {
+                        "description": "Successfully logged out",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Successfully logged out"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/password/reset": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Reset password",
+                "description": "Reset password\n\nReset the given user's password",
+                "operationId": "26028d41df6b3f5dcbe0e925cae64eb1",
+                "requestBody": {
+                    "description": "User credentials and password reset token",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "token_value"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "new_password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "new_password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password reset successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Failed to reset password"
+                    }
+                }
+            }
+        },
+        "/api/auth/password/set": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Set password",
+                "description": "Set password\n\nSet password for a company user.",
+                "operationId": "3da2711e16a1c8675034858d0ebc44cc",
+                "requestBody": {
+                    "description": "User credentials and password reset token",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "token_value"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "new_password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "new_password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password set successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password set successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Failed to set password"
+                    }
+                }
+            }
+        },
+        "/api/commissions/percentage/{orderId}/{invoiceId}/{salesPersonId}": {
+            "put": {
+                "tags": [
+                    "Commissions"
+                ],
+                "summary": "Update commission percentage",
+                "description": "Update commission percentage\n\nUpdate an existing commission percentage for a specific order, invoice, and salesperson.",
+                "operationId": "c87250a1d7de2ce06dd805a35d314eb9",
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "description": "ID of the order",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "invoiceId",
+                        "in": "path",
+                        "description": "ID of the invoice",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "salesPersonId",
+                        "in": "path",
+                        "description": "ID of the salesperson",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Operation successful"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order or invoice not found"
+                    },
+                    "422": {
+                        "description": "Validation error: Invalid request parameters"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Commissions"
+                ],
+                "summary": "Create commission percentage",
+                "description": "Create commission percentage\n\nCreates a new commission percentage for a specific order, invoice, and salesperson.",
+                "operationId": "021f6f5df66241fe589f64d29263ed17",
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "description": "ID of the order",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "invoiceId",
+                        "in": "path",
+                        "description": "ID of the invoice",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "salesPersonId",
+                        "in": "path",
+                        "description": "ID of the salesperson",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Operation successful"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order or invoice not found"
+                    },
+                    "422": {
+                        "description": "Validation error: Invalid request parameters"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Commissions"
+                ],
+                "summary": "Remove commission percentage",
+                "description": "Remove commission for a given sales person\n\nDeletes the commission percentage for a specific order and salesperson.",
+                "operationId": "c4e26f5924d2744b6896c4271a021854",
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "description": "ID of the order",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "invoiceId",
+                        "in": "path",
+                        "description": "ID of the invoice",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "salesPersonId",
+                        "in": "path",
+                        "description": "ID of the salesperson",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Operation successful"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Order or salesperson not found"
+                    }
+                }
+            }
+        },
+        "/api/commissions/percentage/{percentageId}": {
+            "delete": {
+                "tags": [
+                    "Commissions"
+                ],
+                "summary": "Remove commission percentage by ID",
+                "description": "Remove commission percentage by ID\n\nDeletes the commission percentage by its unique ID.",
+                "operationId": "32732a304a4cfe07a1ded6e330d4552b",
+                "parameters": [
+                    {
+                        "name": "percentageId",
+                        "in": "path",
+                        "description": "ID of the commission percentage to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Operation successful"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Commission percentage not found"
+                    }
+                }
+            }
+        },
+        "/api/commissions/individual_commission_payment": {
+            "post": {
+                "tags": [
+                    "Commissions"
+                ],
+                "summary": "Create individual commission payment",
+                "description": "Create individual commission payment\n\nCreates a new individual commission payment based on the provided data.",
+                "operationId": "f7dc16c6a24528ce21257cea6b337a5d",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Operation successful"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error or failed operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/commissions/individual_commission_payment/{orderId}/{invoiceId}/{salesPersonId}": {
+            "delete": {
+                "tags": [
+                    "Commissions"
+                ],
+                "summary": "Cancel individual commission payment",
+                "description": "Cancel individual commission payment\n\nCancels an existing individual commission payment based on the provided identifiers.",
+                "operationId": "954d1a98dfc57e5cf4ca50b19bfc5e63",
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "description": "Order ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "invoiceId",
+                        "in": "path",
+                        "description": "Invoice ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "salesPersonId",
+                        "in": "path",
+                        "description": "Salesperson ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Operation successful"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error or failed operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/commissions/payment_log": {
+            "get": {
+                "tags": [
+                    "Commissions"
+                ],
+                "summary": "Get commission payment logs",
+                "description": "Get commission payment logs\n\nRetrieves commission payment logs based on the provided criteria.",
+                "operationId": "35b8645c83d1a6ac059fb2d9882a7f1e",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of records per page",
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: Invalid or missing JWT token"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Commissions"
+                ],
+                "summary": "Create commission payment log",
+                "description": "Create commission payment log\n\nCreates a new commission payment log based on the provided data.",
+                "operationId": "4bedba52f991dd9d5f4e594f677cd21f",
+                "responses": {
+                    "200": {
+                        "description": "Success: Payment log created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment log created"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: Invalid or missing JWT token"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity: Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/commissions/get_total_open_amount": {
+            "get": {
+                "tags": [
+                    "Commissions"
+                ],
+                "summary": "Get total open commission amount",
+                "description": "Get total open commission amount\n\nRetrieves the total open commission amount based on the specified criteria.",
+                "operationId": "673122fb9dd5a2d7dd853a508a8cd83d",
+                "parameters": [
+                    {
+                        "name": "day",
+                        "in": "query",
+                        "description": "Day of the commission to filter",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "week",
+                        "in": "query",
+                        "description": "Week of the commission to filter",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "description": "Month of the commission to filter",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "quarter",
+                        "in": "query",
+                        "description": "Quarter of the commission to filter",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Year of the commission to filter",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "sales_person_id",
+                        "in": "query",
+                        "description": "Salesperson ID to filter",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_commission_amount": {
+                                            "type": "integer",
+                                            "example": 5000
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: Invalid or missing JWT token"
+                    }
+                }
+            }
+        },
+        "/api/commissions/confirm_payment/{paymentLogId}": {
+            "put": {
+                "tags": [
+                    "Commissions"
+                ],
+                "summary": "Confirm payment by salesperson",
+                "description": "Confirm payment by salesperson\n\nMarks a commission payment log as approved by the salesperson.",
+                "operationId": "9868fbd31f5e6138512510e9833b7977",
+                "parameters": [
+                    {
+                        "name": "paymentLogId",
+                        "in": "path",
+                        "description": "ID of the commission payment log to confirm",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment confirmed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Payment log not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized: Invalid or missing JWT token"
+                    }
+                }
+            }
+        },
+        "/api/{company_id}/suggest/{value}": {
+            "get": {
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Auto-suggest for companies",
+                "description": "Auto-suggest for companies\n\nRetrieves suggestions based on the provided value for a specific company.",
+                "operationId": "c01b188a1bc4af4cab362056d431e048",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "value",
+                        "in": "path",
+                        "description": "Search value for suggestion",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {}
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: Missing or invalid authentication token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/home": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "Home",
+                "description": "Returns home",
+                "operationId": "home",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    }
+                }
+            }
+        },
+        "/api/orders-parsed": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Get all parsed orders",
+                "description": "Get all parsed orders\n\nRetrieves all parsed orders based on user role permissions.",
+                "operationId": "33b15c9fbbb5556ec323caa2a4a27e58",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User does not have necessary permissions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/profile/2fa": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get Google 2FA secret key",
+                "description": "Get a Google 2FA secret key\n\nRetrieves and saves a Google Authenticator secret key for the authenticated user.",
+                "operationId": "4f473fbcfbbf221edf01706c66da4791",
+                "responses": {
+                    "200": {
+                        "description": "Google 2FA secret key generated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "key": {
+                                            "type": "string",
+                                            "example": "generated_secret_key"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: Invalid or missing JWT token"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Activate Google 2FA",
+                "description": "Verify and activate Google 2FA\n\nVerifies the Google Authenticator token and activates two-factor authentication for the authenticated user.",
+                "operationId": "5fc0e4fe4311086458738521fed36207",
+                "requestBody": {
+                    "description": "Google Authenticator token",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "2-factor authentication activated successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized: Invalid or missing JWT token"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity: Invalid token or failed activation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{company_id}/projects/{project_id}/quotes/{quote_id}": {
+            "get": {
+                "tags": [
+                    "Quotes"
+                ],
+                "summary": "Get one quote of a specific company",
+                "description": "Get one quote of a specific company\n\nRetrieves details of a specific quote identified by quote ID within a project under a company.",
+                "operationId": "9a3547067921075472dee7db73aa44ee",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "description": "Project ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "quote_id",
+                        "in": "path",
+                        "description": "Quote ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User is not authorized to access the quote",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found: Quote not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Quote not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{company_id}/projects/{project_id}/quotes": {
+            "get": {
+                "tags": [
+                    "Quotes"
+                ],
+                "summary": "Get all quotes belonging to a project",
+                "description": "Get all quotes belonging to a project\n\nRetrieves all quotes associated with a specific project identified by project ID.",
+                "operationId": "12d24e4f72a7bc47e589f174d9d3f3ea",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "description": "Project ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User is not authorized to access quotes for this project",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Quotes"
+                ],
+                "summary": "Create a new quote for a project",
+                "description": "Create a new quote for a project\n\nCreates a new quote for a specific project under a company.",
+                "operationId": "7eaebb5acc943e9a4b55433e97f0dfbf",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "description": "Project ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successful creation"
+                    },
+                    "400": {
+                        "description": "Bad Request: Invalid input data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: User is not authorized to create a quote",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{company_id}/projects/{project_id}/quotes/{quote_id}/items": {
+            "post": {
+                "tags": [
+                    "Quotes"
+                ],
+                "summary": "Create a new quote item",
+                "description": "Create a new quote item\n\nCreates a new item for a specific quote under a project in a company.",
+                "operationId": "254b18e3f6f7719b86bf1546fcc6534d",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "description": "Project ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "quote_id",
+                        "in": "path",
+                        "description": "Quote ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Item data",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful creation"
+                    },
+                    "400": {
+                        "description": "Bad Request: Invalid input data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: User is not authorized to create items for the quote",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity: Quote is cancelled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Quote is cancelled. No create, update, delete of items, price modifiers allowed."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{company_id}/projects/{project_id}/quotes/{quote_id}/price_modifiers": {
+            "post": {
+                "tags": [
+                    "Quotes"
+                ],
+                "summary": "Create a new price modifier for a quote",
+                "description": "Create a new price modifier for a quote\n\nCreates a new price modifier for a specific quote under a project in a company.",
+                "operationId": "0960a8260095bed931cce743dfe2e258",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "description": "Project ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "quote_id",
+                        "in": "path",
+                        "description": "Quote ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Price modifier data",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful creation"
+                    },
+                    "400": {
+                        "description": "Bad Request: Invalid input data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: User is not authorized to create price modifiers for the quote",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity: Quote is cancelled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Quote is cancelled. No create, update, delete of items, price modifiers allowed."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/enum": {
+            "post": {
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get Enum Values",
+                "description": "Get Enum Values\n\nReturns every key-value pair in the Enum.",
+                "operationId": "1bc0c885fbe410da41d9f896610e5774",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Model not found"
+                    }
+                }
+            }
+        },
+        "/api/{company_id}/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get all users of a specific company",
+                "description": "Get all users of a specific company\n\nRetrieves all users associated with a specific company based on user role permissions.",
+                "operationId": "cc0b7dec76fa271b2d88d61026ddbc13",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User does not have necessary permissions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create a new user of a specific company",
+                "description": "Create a new user of a specific company\n\nCreates a new user within a specific company based on user role permissions.",
+                "operationId": "64e6c30c97c8a3748faaa1cf0ea34de7",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User does not have necessary permissions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Delete a user of a specific company",
+                "description": "Delete a user of a specific company\n\nDeletes user(s) based on the company ID and request parameters.",
+                "operationId": "807328f587658c7132a4742c79d9518c",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "User IDs to delete",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_ids"
+                                ],
+                                "properties": {
+                                    "user_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "1 user(s) deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: User is not an admin or owner",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{company_id}/users/{user_id}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get one user of a specific company",
+                "description": "Get one user of a specific company\n\nRetrieves details of a specific user within a company based on user role permissions.",
+                "operationId": "b0e58e316f39b396ed9f46f132e88bc5",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User does not have necessary permissions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found: User with given ID not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update a user of a specific company",
+                "description": "Update a user of a specific company\n\nUpdates a user's information based on the company ID and user ID.",
+                "operationId": "def159df73412e72c12cf9e01a498dc4",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "User data to update",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User is not an admin or owner",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found: User or company not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{company_id}/users/suggest/{value}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get certain users of a specific company using autocomplete",
+                "description": "Get certain users of a specific company using autocomplete\n\nRetrieves users of a specific company based on the provided search value for autocomplete.",
+                "operationId": "7a943921752c00105d58aee3f38f77b8",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "value",
+                        "in": "path",
+                        "description": "Search value for autocomplete",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User does not have necessary permissions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/suggest/sales_persons/{value}": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get salespersons for all companies (autocomplete)",
+                "description": "Get certain users with salesperson role for all companies using autocomplete\n\nRetrieves users with the salesperson role across all companies based on the provided value for autocomplete.",
+                "operationId": "88abce7a6dfe5967ff443dd3cc9aa6a1",
+                "parameters": [
+                    {
+                        "name": "value",
+                        "in": "path",
+                        "description": "Search value for autocomplete",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "company",
+                        "in": "query",
+                        "description": "Company ID to filter salespersons",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: Invalid or missing JWT token"
+                    },
+                    "404": {
+                        "description": "Not Found: Company not found or user not authorized"
+                    }
+                }
+            }
+        },
+        "/api/{company_id}/users/mail_preferences": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get mail preferences of a company owner",
+                "description": "Get mail preferences of a company owner\n\nRetrieves mail preferences of a company owner based on the company ID.",
+                "operationId": "6f41e387243bb4b2ea5686a346449f7d",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User is not the owner of the company",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found: Owner not found or company does not exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Owner not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update mail preferences of a company owner",
+                "description": "Update mail preferences of a company owner\n\nUpdates the mail preferences of a company owner based on the company ID.",
+                "operationId": "1fb664d97277930bcd601aa18d6caa7e",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Mail preferences data",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User is not the owner of the company",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found: Owner not found or company does not exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Owner not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{company_id}/users/pm_suggest/{value}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get certain users of a specific company using autocomplete for assigning project manager",
+                "description": "Get certain users of a specific company using autocomplete for assigning project manager\n\nRetrieves users of a specific company based on the provided search value for autocomplete, specifically for assigning project managers.",
+                "operationId": "59749c0ed333d5019dc41078c2da1852",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "value",
+                        "in": "path",
+                        "description": "Search value for autocomplete",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User does not have necessary permissions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{company_id}/users/{user_id}/resend_link": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Resend verification link to a user",
+                "description": "Resend verification link to a user\n\nResends the verification link to a user within a specific company based on user role permissions.",
+                "operationId": "14e73d078a692bc8d8b7fdbb480e609f",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Verification link resent successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized: User does not have necessary permissions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found: User with given ID not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/{company_id}/users/{user_id}/status": {
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Toggle user status",
+                "description": "Toggle user status\n\nToggles the status (active/inactive) of a user within a specific company.",
+                "operationId": "967bafe14d5267f94abb5530e738769d",
+                "parameters": [
+                    {
+                        "name": "company_id",
+                        "in": "path",
+                        "description": "Company ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthorized: User does not have necessary permissions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found: User with given ID not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    }
+}

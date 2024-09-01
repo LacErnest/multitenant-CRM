@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ .Values.app.name }}
+  name: nginx-vhost
+  namespace: {{ .Values.app.name }}
+data:
+  default.conf: |-
+    upstream app-php {
+        server php-svc.{{ .Values.app.name }}:9000;
+    }
+
+    server {
+        listen 80;
+        server_name _;
+        root /app/api/public;
+
+        set $php_root "/app/public";
+
+        location ~ ^/storage/(.+\.(?:json|html|js|css|svg|png|jpg|jpeg|gif|swf|ico|pdf|mov|fla|zip|rar))$ {
+            alias /app/storage/public/$1;
+        }
+
+        location ^~ /pma {
+          proxy_pass http://pma-svc.{{ .Values.app.name }}:8000/;
+        }
+
+        location / {
+            try_files $uri /index.html$is_args$args;
+        }
+
+        location /api {
+          try_files $uri /index.php$is_args$args;
+        }
+
+        location ~ \.(json|html|js|css|svg|png|jpg|jpeg|gif|swf|ico|pdf|mov|fla|zip|rar) {
+            try_files $uri =404;
+        }
+
+        location ~ \.php$ {
+            include fastcgi_params;
+            fastcgi_pass app-php;
+            fastcgi_split_path_info ^(.+\.php)(/.*)$;
+            fastcgi_param SCRIPT_FILENAME $php_root$fastcgi_script_name;
+            fastcgi_param DOCUMENT_ROOT $php_root;
+        }
+
+       error_log /var/log/nginx/oz-finance.error.log;
+       access_log /var/log/nginx/oz-finance.access.log;
+    }

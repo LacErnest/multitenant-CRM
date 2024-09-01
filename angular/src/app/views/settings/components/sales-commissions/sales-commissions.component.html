@@ -1,0 +1,124 @@
+<div class="flex flex-col bg-white shadow rounded-lg relative">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 mt-2">
+        <h3 class="text-xl leading-6 font-medium text-gray-900">
+          Sales commissions
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div class="px-4 py-5 sm:p-6">
+    <div class="max-w-7xl mx-auto">
+      <div *ngIf="isLoading" class="loading-overlay rounded">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form
+        autocomplete="off"
+        [formGroup]="commissionSettingForm"
+        (submit)="submitForm()">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Settings</h3>
+        </div>
+
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              for="last_name"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Maximum percentage per commission
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div
+                class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs flex items-center">
+                <input
+                  id="max_commission_percentage"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="max_commission_percentage"
+                  placeholder="Maximum percentage per commission"
+                  [value]="
+                    commissionSettingForm.get('max_commission_percentage').value
+                  "
+                  [min]="0"
+                  [max]="100"
+                  [options]="{ suffix: '%', align: 'left' }"
+                  currencyMask />
+              </div>
+              <p
+                *ngIf="
+                  commissionSettingForm.controls.max_commission_percentage
+                    ?.errors?.required &&
+                  commissionSettingForm.controls.max_commission_percentage
+                    ?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              for="last_name"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Salesperson's commission limit per order
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  id="sales_person_commission_limit"
+                  type="number"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="sales_person_commission_limit"
+                  placeholder="Salesperson's commission limit per order" />
+              </div>
+              <p
+                *ngIf="
+                  commissionSettingForm.controls.sales_person_commission_limit
+                    ?.errors?.required &&
+                  commissionSettingForm.controls.sales_person_commission_limit
+                    ?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-8 border-t border-gray-200 pt-5">
+          <div class="flex justify-center lg:justify-between">
+            <span
+              class="ml-3 inline-flex rounded-md shadow-sm w-full md:w-64 lg:w-32">
+              <button
+                type="submit"
+                class="inline-flex leading-5 indigo-button button w-full"
+                [disabled]="
+                  !isLoading && commissionSettingForm.valid ? undefined : true
+                "
+                [class.opacity-50]="isLoading || commissionSettingForm.invalid"
+                [class.cursor-not-allowed]="
+                  isLoading || commissionSettingForm.invalid
+                "
+                [class.hover:bg-indigo-500]="
+                  !isLoading && commissionSettingForm.valid
+                ">
+                {{ commissionSetting ? 'Update' : 'Create' }}
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<div class="overflow-x-hidden shadow rounded-lg">
+  <oz-finance-datatable
+    (addClicked)="addTemplate()"
+    (editClicked)="editTemplate($event)"
+    (selectionDeleted)="onDeleteTemplateClicked($event)"
+    (selectionTemplateClicked)="onSelectedTemplateClicked($event)"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="templateColumns"
+    [count]="templateList?.count"
+    [datatableType]="'templates'"
+    [isIndividualEdit]="true"
+    [isIndividualDeletion]="true"
+    [isLoading]="isLoading"
+    [filters]="preferences?.filters"
+    [page]="page"
+    [reorderable]="false"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="templateList?.data"
+    [selectionType]="'single'"
+    [sortable]="false"
+    [title]="'Template Categories'">
+  </oz-finance-datatable>
+</div>
+
+<oz-finance-template-type-modal
+  #templateTypeModal></oz-finance-template-type-modal>

@@ -1,0 +1,177 @@
+<ng-container
+  *ngIf="
+    userRole !== userRoleEnum.HUMAN_RESOURCES &&
+      userRole !== userRoleEnum.PROJECT_MANAGER_RESTRICTED &&
+      userRole !== userRoleEnum.SALES_PERSON;
+    else emptyDashboard
+  ">
+  <oz-finance-page-header [heading]="'Analytics'"></oz-finance-page-header>
+
+  <main class="relative">
+    <div *ngIf="isLoading" class="loading-overlay">
+      <div class="spinner">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+      </div>
+    </div>
+
+    <div
+      class="mx-4 md:mx-8 lg:mx-16 py-6 sm:px-6 lg:px-8 text-center md:text-left">
+      <div
+        class="flex flex-col-reverse sm:flex-row justify-between items-center">
+        <p class="flex items-center mt-5 sm:mt-0 sm:mr-3">
+          <span class="text-xl font-bold text-indigo-800 mr-2"
+            >Current filter:</span
+          >
+          <span
+            class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium leading-5 bg-indigo-100 text-indigo-800"
+            [ngSwitch]="analyticsFilters.type">
+            <ng-container *ngSwitchCase="'year'">{{
+              analyticsFilters?.year
+            }}</ng-container>
+            <ng-container *ngSwitchCase="'quarter'"
+              >quarter {{ analyticsFilters?.quarter }} of
+              {{ analyticsFilters?.year }}</ng-container
+            >
+            <ng-container *ngSwitchCase="'month'"
+              >{{ chosenMonth }} of {{ analyticsFilters?.year }}</ng-container
+            >
+            <ng-container *ngSwitchCase="'week'"
+              >week {{ analyticsFilters?.week }} of
+              {{ analyticsFilters?.year }}</ng-container
+            >
+            <ng-container *ngSwitchCase="'date'"
+              >{{ analyticsFilters?.day }}/{{ analyticsFilters?.month }}/{{
+                analyticsFilters?.year
+              }}</ng-container
+            >
+          </span>
+        </p>
+
+        <!-- Filter modal trigger -->
+        <span class="inline-flex rounded-md shadow-sm">
+          <button
+            (click)="refresh()"
+            class="button indigo-button items-center inline-flex leading-5 mr-1"
+            type="button">
+            <svg
+              class="w-5 h-5 mr-1"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                clip-rule="evenodd"
+                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                fill-rule="evenodd"></path>
+            </svg>
+            Refresh
+          </button>
+
+          <button
+            (click)="openFilterModal()"
+            class="button indigo-button items-center inline-flex leading-5"
+            type="button">
+            <svg class="h-5 w-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                clip-rule="evenodd"
+                d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                fill-rule="evenodd"></path>
+            </svg>
+            Filters
+          </button>
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 col-gap-16">
+        <div class="chart-item">
+          <h1 class="chart-heading">Quotes</h1>
+
+          <oz-finance-graph-card
+            (chartClicked)="handleChartClicked($event)"
+            (summaryClicked)="handleSummaryClicked($event)"
+            (viewClicked)="handleViewClicked($event)"
+            [analytics]="analytics?.quotes"
+            [chartType]="chartType.STACKED_VERTICAL_BAR"
+            [currentFilterType]="analyticsFilters.type"
+            [entity]="'quotes'"
+            [innerWidth]="innerWidth"
+            [isCompanyChosen]="isCompanyChosen"></oz-finance-graph-card>
+        </div>
+
+        <div class="chart-item">
+          <h1 class="chart-heading">Orders</h1>
+
+          <oz-finance-graph-card
+            (chartClicked)="handleChartClicked($event)"
+            (summaryClicked)="handleSummaryClicked($event)"
+            (viewClicked)="handleViewClicked($event)"
+            [analytics]="analytics?.orders"
+            [chartType]="chartType.STACKED_VERTICAL_BAR"
+            [currentFilterType]="analyticsFilters.type"
+            [entity]="'orders'"
+            [innerWidth]="innerWidth"
+            [isCompanyChosen]="isCompanyChosen"></oz-finance-graph-card>
+        </div>
+
+        <div class="chart-item">
+          <h1 class="chart-heading">Invoices</h1>
+
+          <oz-finance-graph-card
+            (chartClicked)="handleChartClicked($event)"
+            (summaryClicked)="handleSummaryClicked($event)"
+            (viewClicked)="handleViewClicked($event)"
+            [analytics]="analytics?.invoices"
+            [chartType]="chartType.STACKED_VERTICAL_BAR"
+            [currentFilterType]="analyticsFilters.type"
+            [entity]="'invoices'"
+            [innerWidth]="innerWidth"
+            [isCompanyChosen]="isCompanyChosen"></oz-finance-graph-card>
+        </div>
+
+        <div *ngIf="userRole !== userRoleEnum.SALES_PERSON" class="chart-item">
+          <h1 class="chart-heading">Purchase orders</h1>
+
+          <oz-finance-graph-card
+            (chartClicked)="handleChartClicked($event)"
+            (summaryClicked)="handleSummaryClicked($event)"
+            (viewClicked)="handleViewClicked($event)"
+            [analytics]="analytics?.purchase_orders"
+            [chartType]="chartType.TIMELINE"
+            [currentFilterType]="analyticsFilters.type"
+            [entity]="'purchase_orders'"
+            [innerWidth]="innerWidth"
+            [isCompanyChosen]="isCompanyChosen"></oz-finance-graph-card>
+        </div>
+
+        <div *ngIf="showEarnOutsChart()" class="chart-item">
+          <h1 class="chart-heading">Earnouts</h1>
+
+          <oz-finance-graph-card
+            (summaryClicked)="showEarnOutsSummary($event)"
+            [analytics]="analytics?.earnouts"
+            [chartType]="chartType.STACKED_VERTICAL_BAR"
+            [currentFilterType]="analyticsFilters.type"
+            [entity]="'earnouts'"
+            [innerWidth]="innerWidth"
+            [isCompanyChosen]="isCompanyChosen"></oz-finance-graph-card>
+        </div>
+      </div>
+    </div>
+  </main>
+</ng-container>
+
+<ng-template #emptyDashboard>
+  <div class="empty-dashboard flex flex-col justify-center items-center flex-1">
+    <img class="my-8 w-4/5 md:w-3/5" src="/assets/empty_dashboard.svg" />
+    <p
+      class="max-w-2xl text-xl md:text-2xl leading-7 mt-4 text-gray-500 mx-auto">
+      Your dashboard is empty
+    </p>
+  </div>
+</ng-template>
+
+<oz-finance-filter-modal
+  #filterModal
+  [isLoading]="isLoading"
+  [months]="months"
+  (applyFiltersClicked)="applyFilters($event)"></oz-finance-filter-modal>

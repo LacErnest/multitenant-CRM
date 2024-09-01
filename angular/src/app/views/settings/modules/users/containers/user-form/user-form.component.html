@@ -1,0 +1,511 @@
+<div class="flex flex-col bg-white shadow rounded-lg relative">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 mt-2">
+        <h3 class="text-xl leading-6 font-medium text-gray-900">User</h3>
+      </div>
+    </div>
+  </div>
+  <div class="px-4 py-5 sm:p-6">
+    <div class="max-w-7xl mx-auto">
+      <div *ngIf="isUserLoading" class="loading-overlay rounded">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form autocomplete="off" [formGroup]="userForm" (submit)="submitForm()">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            User information
+          </h3>
+          <!--          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">-->
+          <!--            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et-->
+          <!--            dolore magna aliqua.-->
+          <!--          </p>-->
+        </div>
+
+        <div class="mt-6 sm:mt-5">
+          <div
+            class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+            <label
+              for="first_name"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              First name
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  ozFinanceAutoFocus
+                  [autoFocusEnabled]="!user"
+                  id="first_name"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="first_name"
+                  placeholder="first name"
+                  [maxLength]="128" />
+              </div>
+              <p
+                *ngIf="
+                  userForm.controls.first_name?.errors?.required &&
+                  userForm.controls.first_name?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="first-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              for="last_name"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Last name
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  id="last_name"
+                  type="text"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="last_name"
+                  placeholder="last name"
+                  [maxLength]="128" />
+              </div>
+              <p
+                *ngIf="
+                  userForm.controls.last_name?.errors?.required &&
+                  userForm.controls.last_name?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="last-name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              for="email"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Email
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    userForm.controls.email?.errors &&
+                    userForm.controls.email?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    userForm.controls.email?.errors &&
+                    userForm.controls.email?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    userForm.controls.email?.errors &&
+                    userForm.controls.email?.dirty
+                  "
+                  id="email"
+                  type="email"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="email"
+                  placeholder="user@example.com"
+                  [maxLength]="256" />
+              </div>
+              <p
+                *ngIf="
+                  userForm.controls.email?.errors &&
+                  userForm.controls.email?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="email-error">
+                <ng-container
+                  *ngIf="
+                    userForm.controls.email?.errors.required ||
+                    userForm.controls.email?.errors.pattern
+                  ">
+                  Please provide a valid email address
+                </ng-container>
+
+                <ng-container *ngIf="userForm.controls.email?.errors.error">
+                  {{ userForm.controls.email?.errors.error }}
+                </ng-container>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              for="role"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Role
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  class="custom form-select transition duration-150 ease-in-out"
+                  id="role"
+                  formControlName="role"
+                  (change)="userRoleHandler($event)"
+                  [clearable]="false"
+                  [items]="userRoles"
+                  [bindLabel]="'value'"
+                  [bindValue]="'key'"
+                  [required]="true">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          *ngIf="userForm?.controls.role.value === salesPersonRole"
+          class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              for="role"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Commission Model
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  class="custom form-select transition duration-150 ease-in-out"
+                  id="commission_model"
+                  formControlName="commission_model"
+                  (change)="commissionModelHandler($event)"
+                  [clearable]="false"
+                  [items]="commissionModels"
+                  [bindLabel]="'value'"
+                  [bindValue]="'key'"
+                  [required]="true">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          *ngIf="
+            userForm?.controls.role.value === salesPersonRole &&
+            userForm?.controls.commission_model.value !== customModel
+          "
+          class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              for="last_name"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Commission
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    userForm.controls.commission_percentage?.errors &&
+                    userForm.controls.commission_percentage?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    userForm.controls.commission_percentage?.errors &&
+                    userForm.controls.commission_percentage?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    userForm.controls.commission_percentage?.errors &&
+                    userForm.controls.commission_percentage?.dirty
+                  "
+                  [max]="100"
+                  [min]="0"
+                  [options]="{ suffix: '%', align: 'left' }"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  currencyMask
+                  formControlName="commission_percentage"
+                  id="commission_percentage"
+                  type="text" />
+              </div>
+
+              <p
+                *ngIf="
+                  userForm.controls.commission_percentage?.errors &&
+                  userForm.controls.commission_percentage?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="commission_percentage-error">
+                Sales commissions need to be between 0% and 100%
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          *ngIf="
+            userForm?.controls.commission_model.value === leadGenerationModel
+          "
+          class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              for="last_name"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Second Commission
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    userForm.controls.second_sale_commission?.errors &&
+                    userForm.controls.second_sale_commission?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    userForm.controls.second_sale_commission?.errors &&
+                    userForm.controls.second_sale_commission?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    userForm.controls.second_sale_commission?.errors &&
+                    userForm.controls.second_sale_commission?.dirty
+                  "
+                  [max]="100"
+                  [min]="0"
+                  [options]="{ suffix: '%', align: 'left' }"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  currencyMask
+                  formControlName="second_sale_commission"
+                  id="second_sale_commission"
+                  type="text" />
+              </div>
+
+              <p
+                *ngIf="
+                  userForm.controls.second_sale_commission?.errors &&
+                  userForm.controls.second_sale_commission?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="second_sale_commission-error">
+                Sales commissions need to be between 0% and 100%
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 border-t border-gray-200 pt-5">
+          <div class="flex justify-center lg:justify-between">
+            <span
+              class="ml-3 inline-flex rounded-md shadow-sm w-full md:w-64 lg:w-32">
+              <button
+                *ngIf="linkCanBeSend()"
+                type="button"
+                class="inline-flex leading-5 green-button button w-full"
+                (click)="resendActivationLink()">
+                Resend Link
+              </button>
+            </span>
+            <span
+              class="ml-3 inline-flex rounded-md shadow-sm w-full md:w-64 lg:w-32">
+              <button
+                type="submit"
+                class="inline-flex leading-5 indigo-button button w-full"
+                [disabled]="!isUserLoading && userForm.valid ? undefined : true"
+                [class.opacity-50]="isUserLoading || userForm.invalid"
+                [class.cursor-not-allowed]="isUserLoading || userForm.invalid"
+                [class.hover:bg-indigo-500]="!isUserLoading && userForm.valid">
+                {{ user ? 'Update' : 'Create' }}
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div
+  class="flex flex-col bg-white shadow rounded-lg relative mt-6"
+  *ngIf="showMailSettings">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 mt-2">
+        <h3 class="text-xl leading-6 font-medium text-gray-900">
+          Mail notifications
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div class="px-4 py-5 sm:p-6">
+    <div class="max-w-7xl mx-auto">
+      <div *ngIf="isMailLoading" class="loading-overlay rounded">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form
+        autocomplete="off"
+        [formGroup]="mailForm"
+        (submit)="submitMailForm()">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Mail notification settings
+          </h3>
+          <!--          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">-->
+          <!--            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et-->
+          <!--            dolore magna aliqua.-->
+          <!--          </p>-->
+        </div>
+
+        <!-- Customer -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2">
+            Customer
+          </label>
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input class="hidden" formControlName="customers" type="checkbox" />
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="
+                  mailForm
+                    .get('customers')
+                    .patchValue(!mailForm.get('customers').value)
+                "
+                [ngClass]="
+                  mailForm.get('customers').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200'
+                "
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    mailForm.get('customers').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quotes -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2">
+            Quotes
+          </label>
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input class="hidden" formControlName="quotes" type="checkbox" />
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="
+                  mailForm
+                    .get('quotes')
+                    .patchValue(!mailForm.get('quotes').value)
+                "
+                [ngClass]="
+                  mailForm.get('quotes').value ? 'bg-indigo-600' : 'bg-gray-200'
+                "
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    mailForm.get('quotes').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoices -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2">
+            Invoices
+          </label>
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input class="hidden" formControlName="invoices" type="checkbox" />
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="
+                  mailForm
+                    .get('invoices')
+                    .patchValue(!mailForm.get('invoices').value)
+                "
+                [ngClass]="
+                  mailForm.get('invoices').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200'
+                "
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    mailForm.get('invoices').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 border-t border-gray-200 pt-5">
+          <div class="flex justify-end">
+            <span
+              class="ml-3 inline-flex rounded-md shadow-sm w-full md:w-64 lg:w-32">
+              <button
+                type="submit"
+                class="inline-flex leading-5 indigo-button button w-full"
+                [disabled]="!isMailLoading && userForm.valid ? undefined : true"
+                [class.opacity-50]="isMailLoading || userForm.invalid"
+                [class.cursor-not-allowed]="isMailLoading || userForm.invalid"
+                [class.hover:bg-indigo-500]="!isMailLoading && userForm.valid">
+                Save
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

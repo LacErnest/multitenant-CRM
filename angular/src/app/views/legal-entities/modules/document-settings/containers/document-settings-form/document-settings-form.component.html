@@ -1,0 +1,524 @@
+<div class="bg-white overflow-hidden shadow rounded-lg relative">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 mt-2">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Settings</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-4 py-5 sm:p-6">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <oz-finance-loading-overlay
+        *ngIf="isLoading"></oz-finance-loading-overlay>
+
+      <form
+        autocomplete="off"
+        [formGroup]="settingsForm"
+        (submit)="submitForm()">
+        <!-- Quote number -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="quote_number">
+              Quote number
+            </label>
+
+            <div class="relative mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  class="form-input input-base"
+                  formControlName="quote_number"
+                  id="quote_number"
+                  placeholder="quote number"
+                  type="text"
+                  [class.has-error]="
+                    settingsControlHasErrors('quote_number')
+                  " />
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('quote_number')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('quote_number')">
+              </oz-finance-control-required-error>
+
+              <p
+                *ngIf="
+                  settingsForm.controls.quote_number?.errors?.number ||
+                  settingsForm.controls.quote_number.errors?.integer
+                "
+                [@errorMessageAnimation]
+                class="error-msg">
+                Quote number must be an integer
+              </p>
+
+              <p
+                *ngIf="showValidationError('quote_number')"
+                [@errorMessageAnimation]
+                class="error-msg">
+                {{ settingsForm.controls.quote_number?.errors?.validationErr }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quote number format -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="quote_number_format">
+              Quote number format
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  class="form-input input-base"
+                  formControlName="quote_number_format"
+                  id="quote_number_format"
+                  placeholder="quote number format"
+                  type="text"
+                  [class.has-error]="
+                    settingsControlHasErrors('quote_number_format')
+                  " />
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('quote_number_format')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('quote_number_format')">
+              </oz-finance-control-required-error>
+
+              <p
+                *ngIf="showValidationError('quote_number_format')"
+                [@errorMessageAnimation]
+                class="error-msg">
+                {{
+                  settingsForm.controls.quote_number_format?.errors
+                    ?.validationErr
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order number -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              for="order_number"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Order number
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  class="form-input input-base"
+                  formControlName="order_number"
+                  id="order_number"
+                  placeholder="order number"
+                  type="text"
+                  [class.has-error]="
+                    settingsControlHasErrors('order_number')
+                  " />
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('order_number')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('order_number')">
+              </oz-finance-control-required-error>
+
+              <p
+                *ngIf="
+                  settingsForm.controls.order_number?.errors?.number ||
+                  settingsForm.controls.order_number.errors?.integer
+                "
+                [@errorMessageAnimation]
+                class="error-msg">
+                Order number must be an integer
+              </p>
+
+              <p
+                *ngIf="showValidationError('order_number')"
+                [@errorMessageAnimation]
+                class="error-msg">
+                {{ settingsForm.controls.order_number?.errors?.validationErr }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order number format -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="order_number_format">
+              Order number format
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  class="form-input input-base"
+                  formControlName="order_number_format"
+                  id="order_number_format"
+                  placeholder="order number format"
+                  type="text"
+                  [class.has-error]="
+                    settingsControlHasErrors('order_number_format')
+                  " />
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('order_number_format')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('order_number_format')">
+              </oz-finance-control-required-error>
+
+              <p
+                *ngIf="showValidationError('order_number_format')"
+                [@errorMessageAnimation]
+                class="error-msg">
+                {{
+                  settingsForm.controls.order_number_format?.errors
+                    ?.validationErr
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoice number -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="invoice_number">
+              Invoice number
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  class="form-input input-base"
+                  formControlName="invoice_number"
+                  id="invoice_number"
+                  placeholder="invoice number"
+                  type="text"
+                  [class.has-error]="
+                    settingsControlHasErrors('invoice_number')
+                  " />
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('invoice_number')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('invoice_number')">
+              </oz-finance-control-required-error>
+
+              <p
+                *ngIf="
+                  settingsForm.controls.invoice_number?.errors?.number ||
+                  settingsForm.controls.invoice_number.errors?.integer
+                "
+                [@errorMessageAnimation]
+                class="error-msg">
+                Invoice number must be an integer
+              </p>
+
+              <p
+                *ngIf="showValidationError('invoice_number')"
+                [@errorMessageAnimation]
+                class="error-msg">
+                {{
+                  settingsForm.controls.invoice_number?.errors?.validationErr
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoice number format -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="invoice_number_format">
+              Invoice number format
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  id="invoice_number_format"
+                  type="text"
+                  class="form-input input-base"
+                  formControlName="invoice_number_format"
+                  placeholder="invoice number format"
+                  [class.has-error]="
+                    settingsControlHasErrors('invoice_number_format')
+                  " />
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('invoice_number_format')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('invoice_number_format')">
+              </oz-finance-control-required-error>
+
+              <p
+                *ngIf="showValidationError('invoice_number_format')"
+                [@errorMessageAnimation]
+                class="error-msg">
+                {{
+                  settingsForm.controls.invoice_number_format?.errors
+                    ?.validationErr
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Purchase order number -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="purchase_order_number">
+              Purchase order number
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  class="form-input input-base"
+                  formControlName="purchase_order_number"
+                  id="purchase_order_number"
+                  placeholder="purchase order number"
+                  type="text"
+                  [class.has-error]="
+                    settingsControlHasErrors('purchase_order_number')
+                  " />
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('purchase_order_number')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('purchase_order_number')">
+              </oz-finance-control-required-error>
+
+              <p
+                *ngIf="
+                  settingsForm.controls.purchase_order_number?.errors?.number ||
+                  settingsForm.controls.purchase_order_number.errors?.integer
+                "
+                [@errorMessageAnimation]
+                class="error-msg">
+                Purchase order number must be an integer
+              </p>
+
+              <p
+                *ngIf="showValidationError('purchase_order_number')"
+                [@errorMessageAnimation]
+                class="error-msg">
+                {{
+                  settingsForm.controls.purchase_order_number?.errors
+                    ?.validationErr
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Purchase order number format -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="purchase_order_number_format">
+              Purchase order number format
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  class="form-input input-base"
+                  id="purchase_order_number_format"
+                  formControlName="purchase_order_number_format"
+                  placeholder="purchase order number format"
+                  type="text"
+                  [class.has-error]="
+                    settingsControlHasErrors('purchase_order_number_format')
+                  " />
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('purchase_order_number_format')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('purchase_order_number_format')">
+              </oz-finance-control-required-error>
+
+              <p
+                *ngIf="showValidationError('purchase_order_number_format')"
+                [@errorMessageAnimation]
+                class="error-msg">
+                {{
+                  settingsForm.controls.purchase_order_number_format?.errors
+                    ?.validationErr
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resource invoice number -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="resource_invoice_number">
+              Resource invoice number
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  class="form-input input-base"
+                  formControlName="resource_invoice_number"
+                  id="resource_invoice_number"
+                  placeholder="resource invoice number"
+                  type="text"
+                  [class.has-error]="
+                    settingsControlHasErrors('resource_invoice_number')
+                  " />
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('resource_invoice_number')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('resource_invoice_number')">
+              </oz-finance-control-required-error>
+
+              <p
+                *ngIf="
+                  settingsForm.controls.resource_invoice_number?.errors
+                    ?.number ||
+                  settingsForm.controls.resource_invoice_number.errors?.integer
+                "
+                [@errorMessageAnimation]
+                class="error-msg">
+                Resource invoice number must be an integer
+              </p>
+
+              <p
+                *ngIf="showValidationError('resource_invoice_number')"
+                [@errorMessageAnimation]
+                class="error-msg">
+                {{
+                  settingsForm.controls.resource_invoice_number?.errors
+                    ?.validationErr
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resource invoice number format -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="resource_invoice_number_format">
+              Resource invoice number format
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  class="form-input input-base"
+                  id="resource_invoice_number_format"
+                  formControlName="resource_invoice_number_format"
+                  placeholder="resource invoice number format"
+                  type="text"
+                  [class.has-error]="
+                    settingsControlHasErrors('resource_invoice_number_format')
+                  " />
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('resource_invoice_number_format')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('resource_invoice_number_format')">
+              </oz-finance-control-required-error>
+
+              <p
+                *ngIf="showValidationError('resource_invoice_number_format')"
+                [@errorMessageAnimation]
+                class="error-msg">
+                {{
+                  settingsForm.controls.resource_invoice_number_format?.errors
+                    ?.validationErr
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit button -->
+        <div class="mt-8 border-t border-gray-200 pt-5">
+          <div class="flex justify-center lg:justify-end">
+            <span
+              class="ml-3 inline-flex rounded-md shadow-sm w-full md:w-64 lg:w-32">
+              <button
+                class="inline-flex leading-5 indigo-button button w-full"
+                type="submit"
+                [class.opacity-50]="cannotSubmit"
+                [class.cursor-not-allowed]="cannotSubmit"
+                [class.hover:bg-indigo-500]="cannotSubmit"
+                [disabled]="cannotSubmit">
+                Save
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,1856 @@
+<!-- Filters -->
+<div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+  <div class="md:grid md:grid-cols-3 md:gap-6">
+    <div class="md:col-span-1">
+      <h3 class="text-lg font-medium leading-6 text-gray-900">
+        Summary settings
+      </h3>
+      <p class="mt-1 text-sm leading-5 text-gray-500">
+        Summary data can be viewed per quarter or year.
+      </p>
+    </div>
+    <div class="mt-5 md:mt-0 md:col-span-2">
+      <form (ngSubmit)="submit()" [formGroup]="filterForm" id="filterForm">
+        <div class="grid grid-cols-6 gap-6">
+          <ng-container *ngIf="userRole !== ownerRole">
+            <div class="col-span-6 sm:col-span-3">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700"
+                for="filter"
+                >Filter</label
+              >
+              <ng-select
+                [(ngModel)]="filterOption"
+                (ngModelChange)="resetForm()"
+                [bindLabel]="'value'"
+                [bindValue]="'key'"
+                [clearable]="false"
+                [items]="filters"
+                [ngModelOptions]="{ standalone: true }"
+                class="mt-1 block form-select custom w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                id="filter">
+              </ng-select>
+            </div>
+          </ng-container>
+
+          <div [ngClass]="'sm:col-span-3'" class="col-span-6">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700"
+              for="year"
+              >Year</label
+            >
+            <ng-select
+              [clearable]="false"
+              [items]="years"
+              class="mt-1 block form-select custom w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              formControlName="year"
+              id="year">
+            </ng-select>
+          </div>
+
+          <ng-container [ngSwitch]="filterOption">
+            <ng-container *ngSwitchCase="'quarter'">
+              <div [@filterAnimation] class="col-span-6 sm:col-span-3">
+                <label
+                  class="block text-sm font-medium leading-5 text-gray-700"
+                  for="quarter"
+                  >Quarter</label
+                >
+                <ng-select
+                  [clearable]="false"
+                  [items]="quarters"
+                  class="mt-1 block form-select custom w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="quarter"
+                  id="quarter">
+                </ng-select>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="flex justify-between pt-3 text-right">
+    <div class="flex justify-items-start">
+      <span class="w-full md:w-auto flex rounded-md shadow-sm">
+        <button
+          *ngIf="isAdmin()"
+          [class.hover:bg-blue-400]="true"
+          (click)="getPrediction()"
+          class="w-full h-10 md:w-auto inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-blue-600 focus:outline-none focus:border-blue-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out"
+          type="button">
+          Predict
+        </button>
+      </span>
+    </div>
+
+    <div class="flex justify-items-end">
+      <span class="h-10 mr-2 flex w-full md:w-auto rounded-md shadow-sm">
+        <button
+          (click)="resetFilters()"
+          class="w-full h-10 md:w-auto inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-gray-400 hover:bg-gray-500 focus:outline-none focus:border-gray-500 focus:shadow-outline-indigo active:bg-gray-500 transition duration-150 ease-in-out"
+          type="button">
+          Reset filters
+        </button>
+      </span>
+      <span class="w-full md:w-auto flex rounded-md shadow-sm">
+        <button
+          [class.hover:bg-indigo-500]="true"
+          class="w-full h-10 md:w-auto inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out"
+          form="filterForm"
+          type="submit">
+          Save
+        </button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!--Prediction overview-->
+<div
+  *ngIf="showPrediction"
+  class="mt-6 bg-white overflow-hidden shadow rounded-lg">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-12">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 py-2">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Prediction Summary
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+    <div
+      class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+      <table class="min-w-full divide-y divide-gray-200">
+        <tbody>
+          <tr class="text-center">
+            <td></td>
+            <td colspan="2">{{ prediction?.months[0].name }}</td>
+            <td colspan="2">{{ prediction?.months[1].name }}</td>
+            <td colspan="2">{{ prediction?.months[2].name }}</td>
+          </tr>
+          <tr class="text-center">
+            <td></td>
+            <td>Actual values</td>
+            <td>Predicted values</td>
+            <td>Actual values</td>
+            <td>Predicted values</td>
+            <td>Actual values</td>
+            <td>Predicted values</td>
+          </tr>
+          <tr class="text-center border-t-2 border-gray-50">
+            <td class="text-left">Revenue</td>
+            <td>
+              {{
+                prediction?.months[0].revenue
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[0].possible_revenue
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[1].revenue
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[1].possible_revenue
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[2].revenue
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[2].possible_revenue
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center">
+            <td class="text-left">PO costs</td>
+            <td>
+              -
+              {{
+                prediction?.months[0].po_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[0].possible_po_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[1].po_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[1].possible_po_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[2].po_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[2].possible_po_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center">
+            <td class="text-left">External salary costs</td>
+            <td>
+              -
+              {{
+                prediction?.months[0].external_salary_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[0].possible_external_salary_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[1].external_salary_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[1].possible_external_salary_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[2].external_salary_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[2].possible_external_salary_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center">
+            <td class="text-left">Monthly costs</td>
+            <td>
+              -
+              {{
+                prediction?.months[0].monthly_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[0].possible_monthly_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[1].monthly_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[1].possible_monthly_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[2].monthly_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[2].possible_monthly_costs
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center">
+            <td class="text-left">Monthly salaries</td>
+            <td>
+              -
+              {{
+                prediction?.months[0].salaries
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[0].possible_salaries
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[1].salaries
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[1].possible_salaries
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[2].salaries
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              -
+              {{
+                prediction?.months[2].possible_salaries
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center">
+            <td class="text-left">Gross margin</td>
+            <td>
+              {{
+                prediction?.months[0].total_actual
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[0].total_possible
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[1].total_actual
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[1].total_possible
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[2].total_actual
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[2].total_possible
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center">
+            <td class="text-left">Legacy revenue</td>
+            <td>
+              {{
+                prediction?.months[0].legacy_actual
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[0].legacy_possible
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[1].legacy_actual
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[1].legacy_possible
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[2].legacy_actual
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td>
+              {{
+                prediction?.months[2].legacy_possible
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center border-t-2 border-gray-50">
+            <td class="text-left">Total monthly gross margin</td>
+            <td colspan="2">
+              {{
+                prediction?.months[0].monthly_total
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td colspan="2">
+              {{
+                prediction?.months[1].monthly_total
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td colspan="2">
+              {{
+                prediction?.months[2].monthly_total
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center">
+            <td class="text-left">Total monthly legacy revenue</td>
+            <td colspan="2">
+              {{
+                prediction?.months[0].total_legacy
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td colspan="2">
+              {{
+                prediction?.months[1].total_legacy
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+            <td colspan="2">
+              {{
+                prediction?.months[2].total_legacy
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center border-t-2 border-gray-50">
+            <td class="text-left">Total gross margin</td>
+            <td colspan="6">
+              {{
+                prediction?.total_gm
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center">
+            <td class="text-left">Total legacy</td>
+            <td colspan="6">
+              {{
+                prediction?.total_legacy
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center border-t-2 border-gray-50">
+            <td class="text-left">
+              Total gross margin bonus ({{ summary?.gross_margin_percentage }}%)
+            </td>
+            <td colspan="6">
+              {{
+                prediction?.total_gm_bonus
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center">
+            <td class="text-left">
+              Total legacy bonus ({{ summary?.earnout_percentage }}%)
+            </td>
+            <td colspan="6">
+              {{
+                prediction?.total_legacy_bonus
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr class="text-center font-bold border-t-2 border-gray-50">
+            <td class="text-left">Total bonus</td>
+            <td colspan="6">
+              {{
+                prediction?.total_bonus
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+          </tr>
+          <tr
+            *ngIf="prediction?.just_acquired"
+            class="text-center font-bold border-t-2 border-gray-50">
+            <td class="text-left"></td>
+            <td colspan="6">
+              Company acquired in this quarter. Bonus will be transferred to
+              next quarter.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Summary table -->
+<div class="mt-6 bg-white overflow-hidden shadow rounded-lg">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-12">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 py-2">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Summary</h3>
+      </div>
+
+      <div class="flex items-center flex-wrap sm:flex-no-wrap">
+        <span
+          *ngIf="(summary | keyvalue)?.length"
+          class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+          <button (click)="export()" class="action-btn" type="button">
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          </button>
+          <span class="tooltip"> Export summary </span>
+        </span>
+        <ng-container
+          *ngIf="actionButton && (summary | keyvalue)?.length"
+          [ngSwitch]="actionButton">
+          <ng-container *ngSwitchCase="actions.approve">
+            <!-- Set approve -->
+            <span
+              class="ml-4 tooltip-element inline-block rounded-full shadow-sm table-btn">
+              <button
+                (click)="handleSummaryAction()"
+                class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+                type="button">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    clip-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    fill-rule="evenodd"></path>
+                </svg>
+              </button>
+
+              <span class="tooltip whitespace-no-wrap">Approve bonuses</span>
+            </span>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="actions.confirm">
+            <!-- Set confirm -->
+            <span
+              class="ml-4 tooltip-element inline-block rounded-full shadow-sm table-btn">
+              <button
+                (click)="handleSummaryAction()"
+                class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+                type="button">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                  <path
+                    clip-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                    fill-rule="evenodd"></path>
+                </svg>
+              </button>
+
+              <span class="tooltip whitespace-no-wrap">Confirm payment</span>
+            </span>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="actions.received">
+            <!-- Set Received -->
+            <span
+              class="ml-4 tooltip-element inline-block rounded-full shadow-sm table-btn">
+              <button
+                (click)="handleSummaryAction()"
+                class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+                type="button">
+                <svg
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                  <path
+                    clip-rule="evenodd"
+                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    fill-rule="evenodd"></path>
+                </svg>
+              </button>
+
+              <span class="tooltip whitespace-no-wrap">Payment received</span>
+            </span>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="(summary | keyvalue)?.length">
+          <span class="ml-4 py-2 inline-block font-medium">
+            {{ statusText }}
+          </span>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div class="relative px-4 py-5 sm:p-6">
+    <div *ngIf="isLoading" class="loading-overlay">
+      <div class="spinner">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+      </div>
+    </div>
+
+    <div
+      *ngIf="
+        ((summary | keyvalue)?.length && quarterDataCanBeShownToOwner) ||
+          ((summary | keyvalue)?.length && userRole !== ownerRole);
+        else noData
+      "
+      class="flex flex-col">
+      <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div
+          class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+          <table class="min-w-full divide-y divide-gray-200">
+            <!-- Salaries -->
+            <tbody *ngIf="summary?.salaries.items.length > 0">
+              <ng-container>
+                <tr class="border-b-2 border-gray-50">
+                  <td colspan="5">
+                    <div class="pl-3 flex">
+                      <span
+                        (click)="
+                          blocksHandler.salaries = !blocksHandler.salaries
+                        "
+                        class="cursor-pointer">
+                        <ng-container
+                          *ngIf="blocksHandler.salaries; else expand">
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-container>
+                        <ng-template #expand>
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-template>
+                      </span>
+                      <span>Salaries</span>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+
+              <ng-container *ngIf="blocksHandler.salaries">
+                <tr [@collapseAnimation] class="pl-10 font-extrabold">
+                  <td class="item">
+                    <div class="pl-10">Name</div>
+                  </td>
+                  <td>
+                    <div class="pl-3">Start of employment</div>
+                  </td>
+                  <td>
+                    <div class="pl-3">End of employment</div>
+                  </td>
+                  <td>
+                    <div class="pl-3">Salary per month</div>
+                  </td>
+                  <td>
+                    <div class="pl-3">Salary for this {{ quarterOrYear }}</div>
+                  </td>
+                </tr>
+
+                <ng-container
+                  *ngFor="
+                    let salary of summary.salaries.items;
+                    let even = even
+                  ">
+                  <tr [@collapseAnimation] [ngClass]="{ odd: even }">
+                    <td class="item">
+                      <div class="pl-10">
+                        {{ salary.name }}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="pl-3">
+                        {{ salary.start_of_employment | date: dateFormat }}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="pl-3">
+                        {{
+                          isDate(salary.end_of_employment)
+                            ? (salary.end_of_employment | date: dateFormat)
+                            : salary.end_of_employment
+                        }}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="pl-3">
+                        {{
+                          salary.salary_per_month
+                            | currency: (currency | enumValue: 'currencycode')
+                        }}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="pl-3">
+                        {{
+                          salary.salary_for_this_quarter
+                            | currency: (currency | enumValue: 'currencycode')
+                        }}
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+
+                <tr class="font-extrabold">
+                  <td colspan="4">
+                    <div class="pl-10">Total internal salary</div>
+                  </td>
+                  <td colspan="1">
+                    <div class="pl-3">
+                      {{
+                        summary?.salaries.total_internal_salary
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+
+            <!-- Rents -->
+            <tbody *ngIf="summary?.rents.items.length > 0">
+              <ng-container>
+                <tr class="border-b-2 border-gray-50">
+                  <td colspan="5">
+                    <div class="pl-3 flex">
+                      <span
+                        (click)="blocksHandler.rents = !blocksHandler.rents"
+                        class="cursor-pointer">
+                        <ng-container *ngIf="blocksHandler.rents; else expand">
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-container>
+                        <ng-template #expand>
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-template>
+                      </span>
+                      <span>Monthly costs</span>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+
+              <ng-container *ngIf="blocksHandler.rents">
+                <tr [@collapseAnimation] class="font-extrabold">
+                  <td class="item">
+                    <div class="pl-10">Name</div>
+                  </td>
+                  <td>
+                    <div class="pl-3">Start of cost</div>
+                  </td>
+                  <td>
+                    <div class="pl-3">End of cost</div>
+                  </td>
+                  <td>
+                    <div class="pl-3">Cost per month</div>
+                  </td>
+                  <td>
+                    <div class="pl-3">Cost for this {{ quarterOrYear }}</div>
+                  </td>
+                </tr>
+
+                <ng-container
+                  *ngFor="let rent of summary.rents.items; let even = even">
+                  <tr [@collapseAnimation] [ngClass]="{ odd: even }">
+                    <td class="item">
+                      <div class="pl-10">
+                        {{ rent.name }}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="pl-3">
+                        {{ rent.start_of_rent | date: dateFormat }}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="pl-3">
+                        {{
+                          isDate(rent.end_of_rent)
+                            ? (rent.end_of_rent | date: dateFormat)
+                            : rent.end_of_rent
+                        }}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="pl-3 text-red-600">
+                        {{
+                          rent.cost_per_month
+                            | currency: (currency | enumValue: 'currencycode')
+                        }}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="pl-3 text-red-600">
+                        {{
+                          rent.cost_for_this_quarter
+                            | currency: (currency | enumValue: 'currencycode')
+                        }}
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+
+                <tr class="font-extrabold">
+                  <td colspan="4">
+                    <div class="pl-10">Total monthly costs</div>
+                  </td>
+                  <td colspan="1">
+                    <div class="pl-3">
+                      {{
+                        summary?.rents.total_rent_costs
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+
+            <!-- Loans -->
+            <tbody *ngIf="summary?.loans">
+              <ng-container>
+                <tr class="border-b-2 border-gray-50">
+                  <td colspan="5">
+                    <div class="pl-3 flex">
+                      <span
+                        (click)="
+                          blocksHandler.loans.base = !blocksHandler.loans.base
+                        "
+                        class="cursor-pointer">
+                        <ng-container
+                          *ngIf="blocksHandler.loans.base; else expand">
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-container>
+                        <ng-template #expand>
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-template>
+                      </span>
+                      <span>Loans</span>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+
+              <ng-container *ngIf="blocksHandler.loans.base">
+                <ng-container *ngIf="summary.loans.loans?.length > 0">
+                  <tr [@collapseAnimation] class="font-extrabold">
+                    <td class="item" colspan="2">
+                      <div class="pl-10">Description</div>
+                    </td>
+                    <td class="item" colspan="1">
+                      <div class="pl-3">Amount</div>
+                    </td>
+                    <td class="item" colspan="1">
+                      <div class="pl-3">Already Paid</div>
+                    </td>
+                    <td colspan="1">
+                      <div class="pl-3">Issued at</div>
+                    </td>
+                    <td colspan="2">
+                      <div class="pl-3">Paid at</div>
+                    </td>
+                  </tr>
+
+                  <ng-container
+                    *ngFor="let loan of summary.loans.loans; let even = even">
+                    <tr [@collapseAnimation] [ngClass]="{ odd: even }">
+                      <td class="item" colspan="2">
+                        <div class="pl-10">
+                          {{ loan.description }}
+                        </div>
+                      </td>
+                      <td class="item" colspan="1">
+                        <div class="pl-3">
+                          {{
+                            loan.amount
+                              | currency: (currency | enumValue: 'currencycode')
+                          }}
+                        </div>
+                      </td>
+                      <td class="item" colspan="1">
+                        <div class="pl-3">
+                          {{
+                            loan.already_paid
+                              | currency: (currency | enumValue: 'currencycode')
+                          }}
+                        </div>
+                      </td>
+                      <td colspan="1">
+                        <div class="pl-3">
+                          {{ loan.issued_at | date: dateFormat }}
+                        </div>
+                      </td>
+                      <td colspan="2">
+                        <div class="pl-3">
+                          {{
+                            isDate(loan.paid_at)
+                              ? (loan.paid_at | date: dateFormat)
+                              : loan.paid_at
+                          }}
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+
+                <tr class="font-extrabold">
+                  <td colspan="2">
+                    <div class="pl-10">
+                      Open loan amount before {{ quarterOrYear }}
+                    </div>
+                  </td>
+
+                  <td colspan="1">
+                    <div class="pl-3">
+                      Amount of loans this {{ quarterOrYear }}
+                    </div>
+                  </td>
+
+                  <td colspan="1">
+                    <div class="pl-3">Amount paid this {{ quarterOrYear }}</div>
+                  </td>
+
+                  <td colspan="1">
+                    <div class="pl-3">Loan amount still to pay</div>
+                  </td>
+                </tr>
+
+                <tr class="font-normal">
+                  <td colspan="2">
+                    <div class="pl-10">
+                      {{
+                        summary?.loans.open_loan_amount_before_quarter
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+
+                  <td colspan="1">
+                    <div class="pl-3">
+                      {{
+                        summary?.loans.amount_of_loans_this_quarter
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+
+                  <td colspan="1">
+                    <div class="pl-3">
+                      {{
+                        summary?.loans.amount_paid_this_quarter
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+
+                  <td colspan="1">
+                    <div class="pl-3">
+                      {{
+                        summary?.loans.loan_amount_still_to_pay
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+
+            <!-- Orders -->
+            <tbody *ngIf="summary?.orders_per_customer.length > 0">
+              <ng-container>
+                <tr class="border-b-2 border-gray-50">
+                  <td colspan="5">
+                    <div class="pl-3 flex">
+                      <span
+                        (click)="
+                          blocksHandler.orders.base = !blocksHandler.orders.base
+                        "
+                        class="cursor-pointer">
+                        <ng-container
+                          *ngIf="blocksHandler.orders.base; else expand">
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-container>
+                        <ng-template #expand>
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-template>
+                      </span>
+                      <span>Orders per costumer</span>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+
+              <ng-container *ngIf="blocksHandler.orders.base">
+                <ng-container
+                  *ngFor="
+                    let order of summary.orders_per_customer;
+                    let even = even
+                  ">
+                  <tr
+                    [@collapseAnimation]
+                    [ngClass]="{ odd: even }"
+                    class="border-b-2 border-gray-50">
+                    <td colspan="2">
+                      <div class="pl-6 flex">
+                        <span
+                          (click)="order.expanded = !order.expanded"
+                          class="cursor-pointer">
+                          <ng-container *ngIf="order.expanded; else expand">
+                            <svg
+                              class="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </ng-container>
+                          <ng-template #expand>
+                            <svg
+                              class="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </ng-template>
+                        </span>
+                        <span
+                          [ngClass]="{ 'not-delivered': !order.all_delivered }">
+                          {{ order.name }}</span
+                        >
+                      </div>
+                    </td>
+
+                    <td colspan="1">
+                      <div class="pl-3">
+                        <span class="font-extrabold">PO costs</span> <br />
+                        <span
+                          [ngClass]="{ 'not-delivered': !order.all_delivered }">
+                          {{
+                            order.total_costs
+                              | currency: (currency | enumValue: 'currencycode')
+                          }}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td colspan="1">
+                      <div class="pl-3">
+                        <span class="font-extrabold"
+                          >External employee costs</span
+                        >
+                        <br />
+                        <span
+                          [ngClass]="{ 'not-delivered': !order.all_delivered }">
+                          {{
+                            order.total_external_employee_costs
+                              | currency: (currency | enumValue: 'currencycode')
+                          }}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td colspan="1">
+                      <div class="pl-3">
+                        <span class="font-extrabold">Revenue</span> <br />
+                        <span
+                          [ngClass]="{ 'not-delivered': !order.all_delivered }">
+                          {{
+                            order.total_revenue
+                              | currency: (currency | enumValue: 'currencycode')
+                          }}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <ng-container *ngIf="order.expanded">
+                    <ng-container
+                      *ngFor="let item of order.items; let even = odd">
+                      <tr [@collapseAnimation] [ngClass]="{ odd: even }">
+                        <td class="item" colspan="2">
+                          <div class="pl-12">
+                            <a
+                              [routerLink]="[
+                                '/' +
+                                  companyId +
+                                  '/projects/' +
+                                  item.project_id +
+                                  '/orders/' +
+                                  item.id +
+                                  '/edit'
+                              ]"
+                              class="text-indigo-500 hover:text-indigo-400 focus:outline-none">
+                              {{ item.name }}
+                            </a>
+                          </div>
+                        </td>
+                        <td colspan="1">
+                          <div
+                            class="pl-3"
+                            [ngClass]="{ 'not-delivered': !item.delivered }">
+                            {{
+                              item.costs
+                                | currency
+                                  : (currency | enumValue: 'currencycode')
+                            }}
+                          </div>
+                        </td>
+                        <td colspan="1">
+                          <div
+                            class="pl-3"
+                            [ngClass]="{ 'not-delivered': !item.delivered }">
+                            {{
+                              item.external_employee_costs
+                                | currency
+                                  : (currency | enumValue: 'currencycode')
+                            }}
+                          </div>
+                        </td>
+                        <td colspan="1">
+                          <div
+                            class="pl-3"
+                            [ngClass]="{ 'not-delivered': !item.delivered }">
+                            {{
+                              item.revenue
+                                | currency
+                                  : (currency | enumValue: 'currencycode')
+                            }}
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </tbody>
+
+            <tbody *ngIf="summary?.orders_per_legacy_customer.length > 0">
+              <ng-container>
+                <tr class="border-b-2 border-gray-50">
+                  <td colspan="5">
+                    <div class="pl-3 flex">
+                      <span
+                        (click)="
+                          blocksHandler.legacy_customers.base =
+                            !blocksHandler.legacy_customers.base
+                        "
+                        class="cursor-pointer">
+                        <ng-container
+                          *ngIf="
+                            blocksHandler.legacy_customers.base;
+                            else expand
+                          ">
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-container>
+                        <ng-template #expand>
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-template>
+                      </span>
+                      <span>Legacy customers</span>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+
+              <ng-container *ngIf="blocksHandler.legacy_customers.base">
+                <ng-container
+                  *ngFor="
+                    let legacy_customer of summary.orders_per_legacy_customer;
+                    let even = even
+                  ">
+                  <tr
+                    [@collapseAnimation]
+                    [ngClass]="{ odd: even }"
+                    class="border-b-2 border-gray-50">
+                    <td colspan="2">
+                      <div class="pl-8 flex">
+                        <span
+                          *ngIf="legacy_customer.items.length > 0"
+                          (click)="
+                            legacy_customer.expanded = !legacy_customer.expanded
+                          "
+                          class="cursor-pointer">
+                          <ng-container
+                            *ngIf="legacy_customer.expanded; else expand">
+                            <svg
+                              class="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </ng-container>
+                          <ng-template #expand>
+                            <svg
+                              class="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </ng-template>
+                        </span>
+
+                        <span
+                          [ngClass]="{
+                            'not-delivered': !legacy_customer.all_delivered
+                          }">
+                          {{ legacy_customer.name }}</span
+                        >
+                      </div>
+                    </td>
+
+                    <td colspan="1">
+                      <div class="pl-3">
+                        <span class="font-extrabold">Legacy revenue</span>
+                        <br />
+                        <span
+                          [ngClass]="{
+                            'not-delivered': !legacy_customer.all_delivered
+                          }">
+                          {{
+                            (legacy_customer.total_legacy_revenue
+                              ? legacy_customer.total_legacy_revenue
+                              : 0
+                            ) | currency: (currency | enumValue: 'currencycode')
+                          }}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td colspan="1">
+                      <div class="pl-3">
+                        <span class="font-extrabold">Legacy bonus</span> <br />
+                        <span
+                          [ngClass]="{
+                            'not-delivered': !legacy_customer.all_delivered
+                          }">
+                          {{
+                            (legacy_customer.total_legacy_bonus
+                              ? legacy_customer.total_legacy_bonus
+                              : 0
+                            ) | currency: (currency | enumValue: 'currencycode')
+                          }}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td colspan="1"></td>
+                  </tr>
+
+                  <ng-container *ngIf="legacy_customer.expanded">
+                    <ng-container
+                      *ngFor="
+                        let item of legacy_customer.items;
+                        let even = odd
+                      ">
+                      <tr
+                        [@collapseAnimation]
+                        [ngClass]="{ odd: even, active: !item.delivered }">
+                        <td class="item" colspan="2">
+                          <div class="pl-12">
+                            <a
+                              [routerLink]="[
+                                '/' +
+                                  companyId +
+                                  '/projects/' +
+                                  item.project_id +
+                                  '/orders/' +
+                                  item.id +
+                                  '/edit'
+                              ]"
+                              class="text-indigo-500 hover:text-indigo-400 focus:outline-none">
+                              {{ item.name }}
+                            </a>
+                          </div>
+                        </td>
+                        <td colspan="1">
+                          <div
+                            class="pl-3"
+                            [ngClass]="{ 'not-delivered': !item.delivered }">
+                            {{
+                              item.legacy_revenue
+                                | currency
+                                  : (currency | enumValue: 'currencycode')
+                            }}
+                          </div>
+                        </td>
+                        <td colspan="1">
+                          <div
+                            class="pl-3"
+                            [ngClass]="{ 'not-delivered': !item.delivered }">
+                            {{
+                              item.legacy_bonus
+                                | currency
+                                  : (currency | enumValue: 'currencycode')
+                            }}
+                          </div>
+                        </td>
+
+                        <td colspan="1"></td>
+                      </tr>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </tbody>
+
+            <!-- Purchase Orders without order -->
+            <tbody>
+              <ng-container
+                *ngIf="summary?.purchase_orders_without_orders.length > 0">
+                <ng-container>
+                  <tr class="border-b-2 border-gray-50">
+                    <td colspan="5">
+                      <div class="pl-3 flex">
+                        <span
+                          (click)="
+                            blocksHandler.po_without_order.base =
+                              !blocksHandler.po_without_order.base
+                          "
+                          class="cursor-pointer">
+                          <ng-container
+                            *ngIf="
+                              blocksHandler.po_without_order.base;
+                              else expand
+                            ">
+                            <svg
+                              class="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </ng-container>
+                          <ng-template #expand>
+                            <svg
+                              class="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </ng-template>
+                        </span>
+                        <span>General purchase orders</span>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+
+                <ng-container *ngIf="blocksHandler.po_without_order.base">
+                  <ng-container
+                    *ngFor="
+                      let po of summary.purchase_orders_without_orders;
+                      let even = even
+                    ">
+                    <tr
+                      [@collapseAnimation]
+                      [ngClass]="{ odd: even }"
+                      class="border-b-2 border-gray-50">
+                      <td colspan="2">
+                        <div class="pl-6 flex">
+                          <span
+                            (click)="po.expanded = !po.expanded"
+                            class="cursor-pointer">
+                            <ng-container *ngIf="po.expanded; else expand">
+                              <svg
+                                class="w-5 h-5"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                  fill-rule="evenodd"></path>
+                              </svg>
+                            </ng-container>
+                            <ng-template #expand>
+                              <svg
+                                class="w-5 h-5"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                  fill-rule="evenodd"></path>
+                              </svg>
+                            </ng-template>
+                          </span>
+                          <span>
+                            <a
+                              [routerLink]="[
+                                '/' +
+                                  companyId +
+                                  '/resources/' +
+                                  po.resource_id +
+                                  '/edit'
+                              ]"
+                              class="text-indigo-500 hover:text-indigo-400 focus:outline-none">
+                              {{ po.resource }}
+                            </a></span
+                          >
+                        </div>
+                      </td>
+
+                      <td colspan="1">
+                        <div class="pl-3">
+                          <span class="font-extrabold">PO costs</span> <br />
+                          <span>
+                            {{
+                              po.total_amount
+                                | currency
+                                  : (currency | enumValue: 'currencycode')
+                            }}
+                          </span>
+                        </div>
+                      </td>
+                      <td colspan="1">
+                        <div class="pl-3">
+                          <span class="font-extrabold">Authorised at</span>
+                          <br />
+                          <span>
+                            <br />
+                          </span>
+                        </div>
+                      </td>
+                      <td colspan="1">
+                        <div class="pl-3">
+                          <span class="font-extrabold">Paid at</span> <br />
+                          <span>
+                            <br />
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <ng-container *ngIf="po.expanded">
+                      <ng-container
+                        *ngFor="let item of po.items; let even = odd">
+                        <tr [@collapseAnimation] [ngClass]="{ odd: even }">
+                          <td class="item" colspan="2">
+                            <div class="pl-12">
+                              <a
+                                [routerLink]="[
+                                  '/' +
+                                    companyId +
+                                    '/projects/' +
+                                    item.project_id +
+                                    '/purchase_orders/' +
+                                    item.id +
+                                    '/edit'
+                                ]"
+                                class="text-indigo-500 hover:text-indigo-400 focus:outline-none">
+                                {{ item.number }}
+                              </a>
+                            </div>
+                          </td>
+                          <td colspan="1">
+                            <div class="pl-3">
+                              {{
+                                item.amount
+                                  | currency
+                                    : (currency | enumValue: 'currencycode')
+                              }}
+                            </div>
+                          </td>
+                          <td colspan="1">
+                            <div class="pl-3">
+                              {{
+                                isDate(item.authorised_at)
+                                  ? (item.authorised_at | date: dateFormat)
+                                  : item.authorised_at
+                              }}
+                            </div>
+                          </td>
+                          <td colspan="1">
+                            <div class="pl-3">
+                              {{
+                                isDate(item.paid_at)
+                                  ? (item.paid_at | date: dateFormat)
+                                  : item.paid_at
+                              }}
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </tbody>
+
+            <tbody>
+              <ng-container>
+                <tr class="border-b-2 border-gray-50">
+                  <td colspan="5">
+                    <div class="pl-6">
+                      <h3
+                        class="lg:text-base font-medium leading-6 text-gray-900">
+                        Gross Margin Bonus
+                      </h3>
+                      <p class="mt-1 text-xs leading-5 text-gray-500">
+                        Calculation of the gross margin bonus.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="font-normal border-b-2 border-gray-50">
+                  <td colspan="4" class="w-3/4">
+                    <div class="pl-12">Total revenue</div>
+                  </td>
+                  <td colspan="1" class="w-1/4">
+                    <div class="pl-3">
+                      {{
+                        summary?.total_revenue
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="font-normal border-b-2 border-gray-50">
+                  <td colspan="4" class="w-3/4">
+                    <div class="pl-12">Total PO costs</div>
+                  </td>
+                  <td colspan="1" class="w-1/4">
+                    <div class="pl-3 text-red-600">
+                      -{{
+                        summary?.total_costs
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="font-normal border-b-2 border-gray-50">
+                  <td colspan="4" class="w-3/4">
+                    <div class="pl-12">Total external employee costs</div>
+                  </td>
+                  <td colspan="1" class="w-1/4">
+                    <div class="pl-3 text-red-600">
+                      -{{
+                        summary?.total_external_employee_costs
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="font-normal border-b-2 border-gray-50">
+                  <td colspan="4" class="w-3/4">
+                    <div class="pl-12">Total monthly costs</div>
+                  </td>
+                  <td colspan="1" class="w-1/4">
+                    <div class="pl-3 text-red-600">
+                      -{{
+                        summary?.rents.total_rent_costs
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="font-normal border-b-2 border-gray-50">
+                  <td colspan="4" class="w-3/4">
+                    <div class="pl-12">Total salary costs</div>
+                  </td>
+                  <td colspan="1" class="w-1/4">
+                    <div class="pl-3 text-red-600">
+                      -{{
+                        summary?.salaries.total_internal_salary
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="font-bold border-b-2 border-gray-50">
+                  <td colspan="4" class="w-3/4">
+                    <div class="pl-12">Gross margin</div>
+                  </td>
+                  <td colspan="1" class="w-1/4">
+                    <div
+                      class="pl-3"
+                      [ngClass]="
+                        summary?.gross_margin < 0 ? 'text-red-600' : ''
+                      ">
+                      {{
+                        summary?.gross_margin
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                      ({{ summary?.gross_margin_ratio }}%)
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="font-black border-b-2 border-gray-50">
+                  <td colspan="4" class="w-3/4">
+                    <div class="pl-12">
+                      Gross margin bonus ({{
+                        summary?.gross_margin_percentage
+                      }}%)
+                    </div>
+                  </td>
+                  <td colspan="1" class="w-1/4">
+                    <div class="pl-3">
+                      {{
+                        summary?.gross_margin_bonus
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+
+            <tbody>
+              <ng-container>
+                <tr class="border-b-2 border-gray-50">
+                  <td colspan="5">
+                    <div class="pl-6">
+                      <h3
+                        class="lg:text-base font-medium leading-6 text-gray-900">
+                        Legacy Earnout Bonus
+                      </h3>
+                      <p class="mt-1 text-xs leading-5 text-gray-500">
+                        Calculation of the earnout bonus.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="font-bold border-b-2 border-gray-50">
+                  <td colspan="4" class="w-3/4">
+                    <div class="pl-12">Total legacy revenue</div>
+                  </td>
+                  <td colspan="1" class="w-1/4">
+                    <div class="pl-3">
+                      {{
+                        summary?.total_legacy_amount
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="font-black">
+                  <td colspan="4" class="w-3/4">
+                    <div class="pl-12">
+                      Earnout bonus ({{ summary?.earnout_percentage }}%)
+                    </div>
+                  </td>
+                  <td colspan="1" class="w-1/4">
+                    <div class="pl-3">
+                      {{
+                        summary?.earnout_bonus
+                          | currency: (currency | enumValue: 'currencycode')
+                      }}
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+
+            <tbody>
+              <ng-container>
+                <tr class="border-b-2 border-gray-50">
+                  <td colspan="4" class="w-3/4">
+                    <div class="pl-6">
+                      <h3
+                        class="lg:text-base font-medium leading-6 text-gray-900">
+                        Total bonus
+                      </h3>
+                    </div>
+                  </td>
+
+                  <td colspan="1" class="w-1/4">
+                    <div class="pl-3">
+                      <h3
+                        class="lg:text-base font-medium leading-6 text-gray-900">
+                        {{
+                          summary?.total_bonus
+                            | currency: (currency | enumValue: 'currencycode')
+                        }}
+                      </h3>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noData>
+      <ng-container>
+        <div class="pl-6">
+          <span>No data for this quarter!</span>
+        </div>
+      </ng-container>
+    </ng-template>
+  </div>
+</div>
+
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>

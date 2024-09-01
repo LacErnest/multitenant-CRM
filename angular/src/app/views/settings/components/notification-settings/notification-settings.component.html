@@ -1,0 +1,257 @@
+<div class="flex flex-col bg-white shadow rounded-lg relative">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 mt-2">
+        <h3 class="text-xl leading-6 font-medium text-gray-900">
+          Notification settings
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div class="px-4 py-5 sm:p-6">
+    <div class="max-w-7xl mx-auto">
+      <div *ngIf="isLoading" class="loading-overlay rounded">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form
+        autocomplete="off"
+        [formGroup]="notificationSettingForm"
+        (submit)="submitForm()">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Invoices</h3>
+        </div>
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="quote_number_format">
+              Email from which it will be sent
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    notificationSettingForm.controls.from_address?.errors &&
+                    notificationSettingForm.controls.from_address?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    notificationSettingForm.controls.from_address?.errors &&
+                    notificationSettingForm.controls.from_address?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    notificationSettingForm.controls.from_address?.errors &&
+                    notificationSettingForm.controls.from_address?.dirty
+                  "
+                  [maxLength]="256"
+                  [minLength]="5"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="from_address"
+                  id="from_address"
+                  placeholder="user@example.com"
+                  type="email" />
+              </div>
+              <p
+                *ngIf="
+                  notificationSettingForm.controls.from_address?.errors &&
+                  notificationSettingForm.controls.from_address?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="email-error">
+                <ng-container
+                  *ngIf="
+                    notificationSettingForm.controls.from_address?.errors
+                      .required ||
+                    notificationSettingForm.controls.from_address?.errors
+                      .pattern
+                  ">
+                  Please provide a valid email address
+                </ng-container>
+
+                <ng-container
+                  *ngIf="
+                    notificationSettingForm.controls.from_address?.errors.error
+                  ">
+                  {{
+                    notificationSettingForm.controls.from_address?.errors.error
+                  }}
+                </ng-container>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="quote_number_format">
+              Name from which it will be sent
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    notificationSettingForm.controls.from_name?.errors &&
+                    notificationSettingForm.controls.from_name?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    notificationSettingForm.controls.from_name?.errors &&
+                    notificationSettingForm.controls.from_name?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    notificationSettingForm.controls.from_name?.errors &&
+                    notificationSettingForm.controls.from_name?.dirty
+                  "
+                  [maxLength]="256"
+                  [minLength]="5"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="from_name"
+                  id="from_name"
+                  placeholder="Sender name"
+                  type="text" />
+              </div>
+              <p
+                *ngIf="
+                  notificationSettingForm.controls.from_name?.errors &&
+                  notificationSettingForm.controls.from_name?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600"
+                id="email-error">
+                <ng-container
+                  *ngIf="
+                    notificationSettingForm.controls.from_name?.errors.required
+                  ">
+                  Please provide a valid name
+                </ng-container>
+
+                <ng-container
+                  *ngIf="
+                    notificationSettingForm.controls.from_name?.errors.error
+                  ">
+                  {{ notificationSettingForm.controls.from_name?.errors.error }}
+                </ng-container>
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Quote number format -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="quote_number_format">
+              Emails to be notified in CC
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <div class="mt-1 sm:mt-0 sm:col-span-2">
+                  <div
+                    class="relative max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                    <ng-select
+                      [class.border-red-300]="
+                        notificationSettingForm.controls.cc_addresses.errors
+                          ?.required &&
+                        notificationSettingForm.controls.cc_addresses?.dirty
+                      "
+                      [class.focus:border-red-300]="
+                        notificationSettingForm.controls.cc_addresses.errors
+                          ?.required &&
+                        notificationSettingForm.controls.cc_addresses?.dirty
+                      "
+                      [class.focus:shadow-outline-red]="
+                        notificationSettingForm.controls.cc_addresses.errors
+                          ?.required &&
+                        notificationSettingForm.controls.cc_addresses?.dirty
+                      "
+                      [clearable]="true"
+                      [items]="notificationSetting.cc_addresses"
+                      [required]="true"
+                      [multiple]="true"
+                      [addTag]="true"
+                      class="custom select-email form-select transition duration-150 ease-in-out"
+                      formControlName="cc_addresses"
+                      id="cc_addresses">
+                    </ng-select>
+
+                    <div
+                      *ngIf="
+                        notificationSettingForm.controls.cc_addresses.errors
+                          ?.required &&
+                        notificationSettingForm.controls.cc_addresses?.dirty
+                      "
+                      class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <svg
+                        class="h-5 w-5 text-red-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          clip-rule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          fill-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('cc_addresses')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('cc_addresses')">
+              </oz-finance-control-required-error>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order number -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              for="order_number"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Email body
+            </label>
+          </div>
+          <div class="sm:grid sm:grid-cols-1 sm:gap-4 sm:items-start sm:pt-5">
+            <oz-finance-html-editor
+              [control]="
+                notificationSettingForm.get('invoice_submitted_body')
+              "></oz-finance-html-editor>
+          </div>
+        </div>
+        <div class="mt-8 border-t border-gray-200 pt-5">
+          <div class="flex justify-center lg:justify-between">
+            <span
+              class="ml-3 inline-flex rounded-md shadow-sm w-full md:w-64 lg:w-32">
+              <button
+                type="submit"
+                class="inline-flex leading-5 indigo-button button w-full"
+                [disabled]="cannotSubmit"
+                [class.opacity-50]="cannotSubmit"
+                [class.cursor-not-allowed]="
+                  isLoading || notificationSettingForm.invalid
+                "
+                [class.hover:bg-indigo-500]="
+                  !isLoading && notificationSettingForm.valid
+                ">
+                {{ notificationSetting.company_id ? 'Update' : 'Create' }}
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

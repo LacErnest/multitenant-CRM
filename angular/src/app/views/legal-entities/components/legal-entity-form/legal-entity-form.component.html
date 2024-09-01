@@ -1,0 +1,678 @@
+<div class="mx-auto">
+  <div class="pb-6">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+        <div
+          class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+          <div class="ml-4 mt-2">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+              {{ formHeading }}
+              <span *ngIf="legalEntity?.deleted_at" class="text-red-500"
+                >(deleted)</span
+              >
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative px-4 py-5 sm:p-6">
+        <!-- Loader -->
+        <oz-finance-loading-overlay
+          *ngIf="isLoading"></oz-finance-loading-overlay>
+
+        <!-- Form -->
+        <form
+          (ngSubmit)="submit()"
+          [formGroup]="legalEntityForm"
+          autocomplete="off">
+          <!-- Details Heading -->
+          <div>
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Details</h3>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+              Items marked with an asterisk are required fields.
+            </p>
+          </div>
+
+          <!-- Name -->
+          <ng-container
+            [ngTemplateOutlet]="nameControl"
+            [ngTemplateOutletContext]="{
+              formName: legalEntityForm
+            }"></ng-container>
+
+          <!-- VAT -->
+          <div class="mt-6 sm:mt-5">
+            <div
+              class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+              <label class="input-label required" for="vat_number"> VAT </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      showRequiredError(legalEntityForm, 'vat_number')
+                    "
+                    [class.focus:border-red-300]="
+                      showRequiredError(legalEntityForm, 'vat_number')
+                    "
+                    [class.focus:shadow-outline-red]="
+                      showRequiredError(legalEntityForm, 'vat_number')
+                    "
+                    [class.read-only]="legalEntity?.deleted_at"
+                    [maxLength]="128"
+                    class="form-input input-base"
+                    formControlName="vat_number"
+                    id="vat_number"
+                    placeholder="VAT"
+                    type="text" />
+
+                  <oz-finance-control-error-icon
+                    *ngIf="
+                      showRequiredError(legalEntityForm, 'vat_number')
+                    "></oz-finance-control-error-icon>
+                </div>
+
+                <p
+                  *ngIf="showRequiredError(legalEntityForm, 'vat_number')"
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="vat_number-error-required">
+                  This field is required
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legal Entity Address Heading -->
+          <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+              Legal Entity Address
+            </h3>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+              Enter the legal entity address below.
+            </p>
+          </div>
+
+          <!-- Legal Entity form group -->
+          <ng-container
+            [ngTemplateOutlet]="addressGroup"
+            [ngTemplateOutletContext]="{
+              formName: legalEntityForm,
+              addressGroupName: 'legal_entity_address'
+            }"></ng-container>
+
+          <!-- European Bank Heading -->
+          <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+              European Bank
+            </h3>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+              Enter European bank details below.
+            </p>
+          </div>
+
+          <div formGroupName="european_bank">
+            <!-- Name -->
+            <ng-container
+              [ngTemplateOutlet]="nameControl"
+              [ngTemplateOutletContext]="{
+                formName: europeanBankFromGroup
+              }"></ng-container>
+
+            <!-- IBAN -->
+            <ng-container
+              [ngTemplateOutlet]="ibanControl"
+              [ngTemplateOutletContext]="{
+                formName: europeanBankFromGroup
+              }"></ng-container>
+
+            <!-- BIC -->
+            <ng-container
+              [ngTemplateOutlet]="bicControl"
+              [ngTemplateOutletContext]="{
+                formName: europeanBankFromGroup
+              }"></ng-container>
+
+            <!-- European Bank Address Heading -->
+            <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                European Bank Address
+              </h3>
+
+              <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+                Enter the european bank address below.
+              </p>
+            </div>
+
+            <!-- Bank Address form group -->
+            <ng-container
+              [ngTemplateOutlet]="addressGroup"
+              [ngTemplateOutletContext]="{
+                formName: europeanBankFromGroup,
+                addressGroupName: 'bank_address'
+              }"></ng-container>
+          </div>
+
+          <!-- American Bank toggle -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+            <label
+              class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2">
+              American Bank details
+            </label>
+
+            <div class="mt-2 sm:mt-0 sm:col-span-2">
+              <input class="hidden" type="checkbox" />
+
+              <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+              <div
+                class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                <span
+                  [ngClass]="
+                    legalEntityForm?.get('american_bank')
+                      ? 'bg-indigo-600'
+                      : 'bg-gray-200'
+                  "
+                  (click)="toggleAmericanBank()"
+                  aria-checked="false"
+                  class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline"
+                  role="checkbox"
+                  tabindex="0">
+                  <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                  <span
+                    [ngClass]="
+                      legalEntityForm?.get('american_bank')
+                        ? 'translate-x-5'
+                        : 'translate-x-0'
+                    "
+                    aria-hidden="true"
+                    class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <ng-container *ngIf="legalEntityForm?.get('american_bank')">
+            <!-- American Bank Heading -->
+            <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                American Bank
+              </h3>
+
+              <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+                Enter American bank details below.
+              </p>
+            </div>
+
+            <div formGroupName="american_bank">
+              <!-- Name -->
+              <ng-container
+                [ngTemplateOutlet]="nameControl"
+                [ngTemplateOutletContext]="{
+                  formName: americanBankFromGroup
+                }"></ng-container>
+
+              <!-- Account number -->
+              <div class="mt-6 sm:mt-5">
+                <div
+                  class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label class="input-label required" for="account_number">
+                    Account number
+                  </label>
+
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div
+                      class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                      <input
+                        [class.read-only]="legalEntity?.deleted_at"
+                        [maxLength]="128"
+                        class="form-input input-base"
+                        formControlName="account_number"
+                        id="account_number"
+                        placeholder="account number"
+                        type="text" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Routing number -->
+              <div class="mt-6 sm:mt-5">
+                <div
+                  class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label class="input-label required" for="routing_number">
+                    Routing number
+                  </label>
+
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div
+                      class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                      <input
+                        [class.read-only]="legalEntity?.deleted_at"
+                        [maxLength]="128"
+                        class="form-input input-base"
+                        formControlName="routing_number"
+                        id="routing_number"
+                        placeholder="routing number"
+                        type="text" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- USA Accounting number -->
+              <div class="mt-6 sm:mt-5">
+                <div
+                  class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label class="input-label required" for="account_number">
+                    USA Accounting number
+                  </label>
+
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div
+                      class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                      <input
+                        [class.read-only]="legalEntity?.deleted_at"
+                        [maxLength]="128"
+                        class="form-input input-base"
+                        formControlName="usa_account_number"
+                        id="usa_account_number"
+                        placeholder="USA account number"
+                        type="text" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- USA Routing number -->
+              <div class="mt-6 sm:mt-5">
+                <div
+                  class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                  <label class="input-label required" for="routing_number">
+                    USA Routing number
+                  </label>
+
+                  <div class="mt-1 sm:mt-0 sm:col-span-2">
+                    <div
+                      class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                      <input
+                        [class.read-only]="legalEntity?.deleted_at"
+                        [maxLength]="128"
+                        class="form-input input-base"
+                        formControlName="usa_routing_number"
+                        id="usa_routing_number"
+                        placeholder="USA routing number"
+                        type="text" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- American Bank Address Heading -->
+              <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                  American Bank Address
+                </h3>
+
+                <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+                  Enter the American bank address below.
+                </p>
+              </div>
+
+              <!-- Bank Address form group -->
+              <ng-container
+                [ngTemplateOutlet]="addressGroup"
+                [ngTemplateOutletContext]="{
+                  formName: americanBankFromGroup,
+                  addressGroupName: 'bank_address'
+                }"></ng-container>
+            </div>
+          </ng-container>
+
+          <ng-container>
+            <!-- USDC Bank Address Heading -->
+            <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                USDC Wallet address
+              </h3>
+
+              <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+                Enter the USDC wallet address below.
+              </p>
+            </div>
+            <div class="mt-6 sm:mt-5">
+              <div
+                class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                <label class="input-label required" for="vat_number">
+                  USDC wallet address
+                </label>
+
+                <div class="mt-1 sm:mt-0 sm:col-span-2">
+                  <div
+                    class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                    <input
+                      [class.border-red-300]="
+                        showRequiredError(
+                          legalEntityForm,
+                          'usdc_wallet_address'
+                        )
+                      "
+                      [class.focus:border-red-300]="
+                        showRequiredError(
+                          legalEntityForm,
+                          'usdc_wallet_address'
+                        )
+                      "
+                      [class.focus:shadow-outline-red]="
+                        showRequiredError(
+                          legalEntityForm,
+                          'usdc_wallet_address'
+                        )
+                      "
+                      [class.read-only]="legalEntity?.deleted_at"
+                      [maxLength]="128"
+                      class="form-input input-base"
+                      formControlName="usdc_wallet_address"
+                      id="usdc_wallet_address"
+                      placeholder="USDC wallet address"
+                      type="text" />
+
+                    <oz-finance-control-error-icon
+                      *ngIf="
+                        showRequiredError(
+                          legalEntityForm,
+                          'usdc_wallet_address'
+                        )
+                      "></oz-finance-control-error-icon>
+                  </div>
+
+                  <p
+                    *ngIf="
+                      showRequiredError(legalEntityForm, 'usdc_wallet_address')
+                    "
+                    [@errorMessageAnimation]
+                    class="mt-2 text-sm text-red-600"
+                    id="usdc_wallet_address-error-required">
+                    This field is required
+                  </p>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Submit button -->
+          <div class="mt-8 border-t border-gray-200 pt-5">
+            <div class="flex justify-end">
+              <span class="ml-3 inline-flex rounded-md shadow-sm">
+                <button
+                  class="inline-flex leading-5 indigo-button button"
+                  type="submit"
+                  [class.disabled]="disableSubmitBtn()"
+                  [disabled]="disableSubmitBtn()">
+                  Save
+                </button>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #nameControl let-formName="formName">
+  <div class="mt-6 sm:mt-5" [formGroup]="formName">
+    <div
+      class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+      <label class="input-label required" for="name"> Name </label>
+
+      <div class="mt-1 sm:mt-0 sm:col-span-2">
+        <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+          <input
+            [class.border-red-300]="showRequiredError(formName, 'name')"
+            [class.focus:border-red-300]="showRequiredError(formName, 'name')"
+            [class.focus:shadow-outline-red]="
+              showRequiredError(formName, 'name')
+            "
+            [class.read-only]="legalEntity?.deleted_at"
+            [maxLength]="128"
+            class="form-input input-base"
+            formControlName="name"
+            id="name"
+            placeholder="name"
+            type="text" />
+
+          <oz-finance-control-error-icon
+            *ngIf="
+              showRequiredError(formName, 'name')
+            "></oz-finance-control-error-icon>
+        </div>
+
+        <p
+          *ngIf="showRequiredError(formName, 'name')"
+          [@errorMessageAnimation]
+          class="mt-2 text-sm text-red-600"
+          id="name-error-required">
+          This field is required
+        </p>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #bicControl let-formName="formName">
+  <div class="mt-6 sm:mt-5" [formGroup]="formName">
+    <div
+      class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+      <label class="input-label required" for="bic"> BIC </label>
+
+      <div class="mt-1 sm:mt-0 sm:col-span-2">
+        <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+          <input
+            [class.border-red-300]="showRequiredError(formName, 'bic')"
+            [class.focus:border-red-300]="showRequiredError(formName, 'bic')"
+            [class.focus:shadow-outline-red]="
+              showRequiredError(formName, 'bic')
+            "
+            [class.read-only]="legalEntity?.deleted_at"
+            [maxLength]="128"
+            class="form-input input-base"
+            formControlName="bic"
+            id="bic"
+            placeholder="BIC"
+            type="text" />
+
+          <oz-finance-control-error-icon
+            *ngIf="
+              showRequiredError(formName, 'bic')
+            "></oz-finance-control-error-icon>
+        </div>
+
+        <p
+          *ngIf="showRequiredError(formName, 'bic')"
+          [@errorMessageAnimation]
+          class="mt-2 text-sm text-red-600"
+          id="bic-error-required">
+          This field is required
+        </p>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #ibanControl let-formName="formName">
+  <div class="mt-6 sm:mt-5" [formGroup]="formName">
+    <div
+      class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+      <label class="input-label required" for="iban"> IBAN </label>
+
+      <div class="mt-1 sm:mt-0 sm:col-span-2">
+        <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+          <input
+            [class.border-red-300]="showRequiredError(formName, 'iban')"
+            [class.focus:border-red-300]="showRequiredError(formName, 'iban')"
+            [class.focus:shadow-outline-red]="
+              showRequiredError(formName, 'iban')
+            "
+            [class.read-only]="legalEntity?.deleted_at"
+            [maxLength]="128"
+            class="form-input input-base"
+            formControlName="iban"
+            id="iban"
+            placeholder="IBAN"
+            type="text" />
+
+          <oz-finance-control-error-icon
+            *ngIf="
+              showRequiredError(formName, 'iban')
+            "></oz-finance-control-error-icon>
+        </div>
+
+        <p
+          *ngIf="showRequiredError(formName, 'iban')"
+          [@errorMessageAnimation]
+          class="mt-2 text-sm text-red-600"
+          id="swift-error-required">
+          This field is required
+        </p>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template
+  #addressGroup
+  let-formName="formName"
+  let-groupName="addressGroupName">
+  <div [formGroup]="formName">
+    <div [formGroupName]="groupName">
+      <!-- Addressline 1 -->
+      <div class="mt-6 sm:mt-5 sm:border-t sm:border-gray-200">
+        <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label class="input-label required" for="bank_addressline_1">
+            Addressline 1
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+              <input
+                class="form-input input-base"
+                formControlName="addressline_1"
+                id="bank_addressline_1"
+                placeholder="addressline 1"
+                type="text"
+                [class.read-only]="legalEntity?.deleted_at" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Addressline 2 -->
+      <div class="mt-6 sm:mt-5">
+        <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label class="input-label" for="bank_addressline_2">
+            Addressline 2
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+              <input
+                class="form-input input-base"
+                formControlName="addressline_2"
+                id="bank_addressline_2"
+                placeholder="addressline 2"
+                type="text"
+                [class.read-only]="legalEntity?.deleted_at" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- City -->
+      <div class="mt-6 sm:mt-5">
+        <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label class="input-label required" for="bank_city"> City </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+              <input
+                class="form-input input-base"
+                formControlName="city"
+                id="bank_city"
+                placeholder="city"
+                type="text"
+                [class.read-only]="legalEntity?.deleted_at" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Region -->
+      <div class="mt-6 sm:mt-5">
+        <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label class="input-label" for="bank_region"> Region </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+              <input
+                class="form-input input-base"
+                formControlName="region"
+                id="bank_region"
+                placeholder="region"
+                type="text"
+                [class.read-only]="legalEntity?.deleted_at" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Country -->
+      <div class="mt-6 sm:mt-5">
+        <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label class="input-label required" for="bank_country">
+            Country
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                [bindLabel]="'value'"
+                [bindValue]="'key'"
+                [clearable]="false"
+                [items]="'country' | enum: 'array'"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="country"
+                id="bank_country">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Postal code -->
+      <div class="mt-6 sm:mt-5">
+        <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label class="input-label required" for="bank_postal_code">
+            Postal Code
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+              <input
+                class="form-input input-base"
+                formControlName="postal_code"
+                id="bank_postal_code"
+                placeholder="postal code"
+                type="text"
+                [class.read-only]="legalEntity?.deleted_at" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

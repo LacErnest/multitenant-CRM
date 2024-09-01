@@ -1,0 +1,1115 @@
+<div *ngIf="quoteForm" class="mx-auto">
+  <div class="bg-white overflow-hidden shadow rounded-lg">
+    <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+      <div
+        class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+        <div class="ml-4 mt-2">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            {{ quote ? 'Quote: ' + quote?.number : 'New quote' }}
+          </h3>
+
+          <span *ngIf="quote" class="text-xs" [ngClass]="statusColor()">
+            {{ quote?.status | enumValue: 'quotestatus' }}
+          </span>
+          <span
+            *ngIf="showReasonOfRefusal()"
+            class="text-sm leading-5 text-gray-500">
+            - {{ quote?.reason_of_refusal }}</span
+          >
+        </div>
+
+        <div *ngIf="quote" class="ml-4 mt-2 flex-shrink-0 table-btns">
+          <ng-container
+            *ngIf="
+              showActionBtns() && quote?.status !== quoteStatusEnum.CANCELED
+            "
+            [ngSwitch]="quote?.status">
+            <ng-container *ngSwitchCase="quoteStatusEnum.DRAFT">
+              <!-- Send -->
+              <span
+                class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+                <button
+                  (click)="changeStatus(quoteStatusEnum.SENT)"
+                  class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+                  type="button">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                    <path
+                      d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                  </svg>
+                </button>
+
+                <span class="tooltip w-auto">Mark quote as sent</span>
+              </span>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="quoteStatusEnum.SENT">
+              <!-- Order -->
+              <span
+                class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+                <button
+                  (click)="changeStatus(quoteStatusEnum.ORDERED)"
+                  class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+                  type="button">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      fill-rule="evenodd"></path>
+                  </svg>
+                </button>
+                <span class="tooltip w-auto">Mark quote as ordered</span>
+              </span>
+
+              <!-- Decline -->
+              <span
+                class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+                <button
+                  (click)="changeStatus(quoteStatusEnum.DECLINED)"
+                  class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+                  type="button">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                      fill-rule="evenodd"></path>
+                  </svg>
+                </button>
+
+                <span class="tooltip w-auto">Mark quote as declined</span>
+              </span>
+            </ng-container>
+          </ng-container>
+
+          <!-- Download -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              (click)="download()"
+              *ngIf="showDownloadBtn()"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  clip-rule="evenodd"
+                  d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+                  fill-rule="evenodd"></path>
+              </svg>
+            </button>
+            <span class="tooltip w-auto">Download quote </span>
+          </span>
+
+          <!-- Upload -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              *ngIf="showUploadBtn()"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg
+                class="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  clip-rule="evenodd"
+                  d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                  fill-rule="evenodd"></path>
+              </svg>
+              <input
+                #upload_file
+                (change)="uploadFile($event.target.files)"
+                class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                id="upload_file"
+                accept="application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                type="file" />
+            </button>
+            <span class="tooltip w-auto">Upload document</span>
+          </span>
+
+          <!-- Remove upload -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              (click)="removeDoc()"
+              *ngIf="showRemoveBtn()"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h5- w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+            <span class="tooltip w-auto">Delete document</span>
+          </span>
+
+          <!-- Cancel -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              (click)="changeStatus(quoteStatusEnum.CANCELED)"
+              *ngIf="showCancelBtn()"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+            <span class="tooltip w-auto">Cancel quote</span>
+          </span>
+
+          <!-- Set to draft -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              (click)="changeStatus(quoteStatusEnum.DRAFT)"
+              *ngIf="showDraftButton()"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  clip-rule="evenodd"
+                  d="M5 2a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V4a2 2 0 00-2-2H5zm4.707 3.707a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L8.414 9H10a3 3 0 013 3v1a1 1 0 102 0v-1a5 5 0 00-5-5H8.414l1.293-1.293z"
+                  fill-rule="evenodd"></path>
+              </svg>
+            </button>
+            <span class="tooltip w-auto">Mark quote as draft</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative px-4 py-5 sm:p-6">
+      <div *ngIf="isLoading" class="loading-overlay">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form (ngSubmit)="submit()" [formGroup]="quoteForm" autocomplete="off">
+        <!-- Details Heading -->
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Details</h3>
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+            Enter the relevant data below. Items marked with an asterisk are
+            required fields.
+          </p>
+        </div>
+
+        <!-- First Name -->
+        <div class="mt-6 sm:mt-5">
+          <div
+            class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="name">
+              Project Name
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    quoteForm.controls.name?.errors?.required &&
+                    quoteForm.controls.name?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    quoteForm.controls.name?.errors?.required &&
+                    quoteForm.controls.name?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    quoteForm.controls.name?.errors?.required &&
+                    quoteForm.controls.name?.dirty
+                  "
+                  [maxLength]="128"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="name"
+                  [readonly]="readOnly"
+                  [class.read-only]="readOnly"
+                  id="name"
+                  placeholder="project name"
+                  type="text" />
+
+                <div
+                  *ngIf="
+                    quoteForm.controls.name?.errors?.required &&
+                    quoteForm.controls.name?.dirty
+                  "
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      fill-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <p
+              *ngIf="
+                quoteForm.controls.name?.errors?.required &&
+                quoteForm.controls.name?.dirty
+              "
+              [@errorMessageAnimation]
+              class="mt-2 text-sm text-red-600"
+              id="name-error-required">
+              This field is required
+            </p>
+          </div>
+        </div>
+        <!-- Legal entity -->
+        <div class="mt-6 sm:mt-5">
+          <div
+            class="sm:grid sm:grid-cols-3 sm:gap-4 sm:border-t sm:border-gray-200 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="legal_entity_id">
+              Legal Entity
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <oz-finance-legal-entity-select
+                  [noCreatedEntity]="!quote"
+                  [legalEntityFormControlName]="'legal_entity_id'"
+                  [legalEntityParentFormGroup]="quoteForm"
+                  [selectedLegalEntity]="quote?.legal_entity"
+                  (selectedEntityChanged)="onSelectedEntityChanged($event)"
+                  [onlyDefaultEntity]="isLegalEntityDisabled()"
+                  id="legal_entity_id">
+                </oz-finance-legal-entity-select>
+              </div>
+
+              <p
+                *ngIf="
+                  quoteForm.controls.legal_entity_id?.errors &&
+                  quoteForm.controls.legal_entity_id?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="legal_entity_id_error">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Production Center -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="company">
+              Production Center
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [readonly]="true"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="company"
+                  id="company">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="date">
+              Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="relative max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  (dateTimeChange)="updateExpiryDate($event.value)"
+                  [class.border-red-300]="
+                    (quoteForm.errors?.date_expiry_date ||
+                      quoteForm.controls.date.errors?.required) &&
+                    quoteForm.controls.date?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    (quoteForm.errors?.date_expiry_date ||
+                      quoteForm.controls.date.errors?.required) &&
+                    quoteForm.controls.date?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    (quoteForm.errors?.date_expiry_date ||
+                      quoteForm.controls.date.errors?.required) &&
+                    quoteForm.controls.date?.dirty
+                  "
+                  [class.read-only]="readOnly"
+                  [maxLength]="128"
+                  [owlDateTimeTrigger]="datePicker"
+                  [owlDateTime]="datePicker"
+                  [readOnly]="true"
+                  [required]="true"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="date"
+                  id="date"
+                  placeholder="pick a date"
+                  type="text" />
+                <div
+                  *ngIf="
+                    quoteForm.errors?.date_expiry_date &&
+                    quoteForm.controls.date?.dirty
+                  "
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      fill-rule="evenodd" />
+                  </svg>
+                </div>
+
+                <owl-date-time
+                  #datePicker
+                  [disabled]="readOnly"
+                  [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+
+              <p
+                *ngIf="
+                  quoteForm.controls.date?.errors?.required &&
+                  quoteForm.controls.date?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="date-error-date">
+                This field is required
+              </p>
+
+              <p
+                *ngIf="
+                  quoteForm.errors?.date_expiry_date &&
+                  quoteForm.controls.date?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="date-error-required">
+                Quote date cannot be equal or after expiry date
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expiry Date -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="expiry_date">
+              Expiry Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="relative max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    (quoteForm.errors?.date_expiry_date ||
+                      quoteForm.controls.expiry_date.errors?.required) &&
+                    quoteForm.controls.expiry_date?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    (quoteForm.errors?.date_expiry_date ||
+                      quoteForm.controls.expiry_date.errors?.required) &&
+                    quoteForm.controls.expiry_date?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    (quoteForm.errors?.date_expiry_date ||
+                      quoteForm.controls.expiry_date.errors?.required) &&
+                    quoteForm.controls.expiry_date?.dirty
+                  "
+                  [class.read-only]="readOnly"
+                  [maxLength]="128"
+                  [owlDateTimeTrigger]="expiryDatePicker"
+                  [owlDateTime]="expiryDatePicker"
+                  [readOnly]="true"
+                  [required]="true"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="expiry_date"
+                  id="expiry_date"
+                  placeholder="pick a date"
+                  type="text" />
+
+                <div
+                  *ngIf="
+                    quoteForm.errors?.date_expiry_date &&
+                    quoteForm.controls.expiry_date?.dirty
+                  "
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      fill-rule="evenodd" />
+                  </svg>
+                </div>
+
+                <owl-date-time
+                  #expiryDatePicker
+                  [disabled]="readOnly"
+                  [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+
+              <p
+                *ngIf="
+                  quoteForm.controls.expiry_date?.errors?.required &&
+                  quoteForm.controls.expiry_date?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="expiry_date-error-required">
+                This field is required
+              </p>
+
+              <p
+                *ngIf="
+                  quoteForm.errors?.date_expiry_date &&
+                  quoteForm.controls.expiry_date?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="expiry_date-error-date">
+                Expiry date cannot be equal or before quote date
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="customer">
+            Customer
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="relative max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                (ngModelChange)="customerChanged($event)"
+                [(ngModel)]="selectedCustomer"
+                [bindLabel]="'name'"
+                [class.border-red-300]="!selectedCustomer && customerDirty"
+                [class.focus:border-red-300]="
+                  !selectedCustomer && customerDirty
+                "
+                [class.focus:shadow-outline-red]="
+                  !selectedCustomer && customerDirty
+                "
+                [clearable]="false"
+                [items]="customerSelect$ | async"
+                [loading]="isCustomerLoading"
+                [ngModelOptions]="{ standalone: true }"
+                [readonly]="readOnly || customerFixed"
+                [typeahead]="customerInput$"
+                class="custom form-select transition duration-150 ease-in-out"
+                id="customer">
+              </ng-select>
+
+              <div
+                *ngIf="!selectedCustomer && customerDirty"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <svg
+                  class="h-5 w-5 text-red-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path
+                    clip-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                    fill-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <p
+            *ngIf="!selectedCustomer && customerDirty"
+            [@errorMessageAnimation]
+            class="mt-2 text-sm text-red-600"
+            id="customer-error-required">
+            This field is required
+          </p>
+        </div>
+
+        <!-- Contact -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="contact_id">
+            Contact
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="relative max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                [bindLabel]="'value'"
+                [bindValue]="'key'"
+                [class.border-red-300]="
+                  quoteForm.controls.contact_id.errors?.required &&
+                  quoteForm.controls.contact_id?.dirty
+                "
+                [class.focus:border-red-300]="
+                  quoteForm.controls.contact_id.errors?.required &&
+                  quoteForm.controls.contact_id?.dirty
+                "
+                [class.focus:shadow-outline-red]="
+                  quoteForm.controls.contact_id.errors?.required &&
+                  quoteForm.controls.contact_id?.dirty
+                "
+                [clearable]="false"
+                [items]="contactSelect$"
+                [loading]="isCustomerLoading"
+                [readonly]="selectedCustomer && readOnly"
+                [required]="true"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="contact_id"
+                id="contact_id">
+              </ng-select>
+
+              <div
+                *ngIf="
+                  quoteForm.controls.contact_id.errors?.required &&
+                  quoteForm.controls.contact_id?.dirty
+                "
+                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <svg
+                  class="h-5 w-5 text-red-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path
+                    clip-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                    fill-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <p
+            *ngIf="
+              quoteForm.controls.contact_id?.errors?.required &&
+              quoteForm.controls.contact_id?.dirty
+            "
+            [@errorMessageAnimation]
+            class="mt-2 text-sm text-red-600"
+            id="contact_id-error-required">
+            This field is required
+          </p>
+        </div>
+
+        <!-- Lead generation -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="second_sales_person_id">
+            Lead Generation
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="relative max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                [bindLabel]="'name'"
+                [bindValue]="'id'"
+                [items]="secondSalesSelect$ | async"
+                [loading]="isSalesLoading"
+                [readonly]="readOnly"
+                [required]="false"
+                [typeahead]="secondSalesInput$"
+                [multiple]="true"
+                [maxSelectedItems]="10"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="second_sales_person_id"
+                id="second_sales_person_id">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="sales_person_id">
+            Sales Representative
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="relative max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                [bindLabel]="'name'"
+                [bindValue]="'id'"
+                [class.border-red-300]="
+                  quoteForm.controls.sales_person_id.errors?.required &&
+                  quoteForm.controls.sales_person_id?.dirty
+                "
+                [class.focus:border-red-300]="
+                  quoteForm.controls.sales_person_id.errors?.required &&
+                  quoteForm.controls.sales_person_id?.dirty
+                "
+                [class.focus:shadow-outline-red]="
+                  quoteForm.controls.sales_person_id.errors?.required &&
+                  quoteForm.controls.sales_person_id?.dirty
+                "
+                [items]="salesSelect$ | async"
+                [loading]="isSalesLoading"
+                [readonly]="readOnly"
+                [required]="
+                  quoteForm.controls.sales_person_id.enabled &&
+                  quoteForm.controls.sales_person_id.errors?.required
+                "
+                [typeahead]="salesInput$"
+                [multiple]="true"
+                [maxSelectedItems]="10"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="sales_person_id"
+                id="sales_person_id">
+              </ng-select>
+
+              <div
+                *ngIf="
+                  quoteForm.controls.sales_person_id.errors?.required &&
+                  quoteForm.controls.sales_person_id?.dirty
+                "
+                class="mr-6 absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <svg
+                  class="h-5 w-5 text-red-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path
+                    clip-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                    fill-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <p
+            *ngIf="
+              quoteForm.controls.sales_person_id?.errors?.required &&
+              quoteForm.controls.sales_person_id?.dirty
+            "
+            [@errorMessageAnimation]
+            class="mt-2 text-sm text-red-600"
+            id="sales_person_id-error-required">
+            This field is required
+          </p>
+        </div>
+
+        <!-- Reference -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="reference">
+              Reference
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.read-only]="readOnly"
+                  [maxLength]="50"
+                  [readOnly]="readOnly"
+                  class="h-auto form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="reference"
+                  id="reference"
+                  placeholder="reference" />
+              </div>
+              <!--              <p class="mt-2 text-sm text-gray-500">Lorem ipsum dolor sit amet.</p>-->
+            </div>
+          </div>
+        </div>
+
+        <!-- Currency -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="currency_code">
+            Currency
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                (change)="changeCurrency()"
+                [bindLabel]="'value'"
+                [bindValue]="'key'"
+                [class.read-only]="readOnly"
+                [clearable]="false"
+                [items]="'currencycode' | enum: 'array'"
+                [readonly]="readOnly"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="currency_code"
+                id="currency_code">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manual input -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+            for="manual_input">
+            Manual input
+          </label>
+
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input
+              (ngModelChange)="changeCurrency()"
+              class="hidden"
+              formControlName="manual_input"
+              id="manual_input"
+              type="checkbox" />
+
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              [class.opacity-25]="itemsReadOnly"
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="toggleManualInput(false)"
+                [ngClass]="[
+                  quoteForm.get('manual_input').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200',
+                  itemsReadOnly
+                    ? 'cursor-default'
+                    : 'cursor-pointer focus:shadow-outline'
+                ]"
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    quoteForm.get('manual_input').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Master quote -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+            for="master">
+            Shared quote
+          </label>
+
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input
+              class="hidden"
+              formControlName="master"
+              id="master"
+              type="checkbox" />
+
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              [class.opacity-25]="itemsReadOnly"
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="toggleManualInput(true)"
+                [ngClass]="[
+                  quoteForm.get('master').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200',
+                  itemsReadOnly
+                    ? 'cursor-default'
+                    : 'cursor-pointer focus:shadow-outline'
+                ]"
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    quoteForm.get('master').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Down Payment -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="down_payment">
+            Down Payment
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                [bindLabel]="'label'"
+                [bindValue]="'value'"
+                [class.read-only]="readOnly"
+                [items]="downPaymentOptions"
+                [readonly]="readOnly"
+                (change)="downPaymentPercentageChanged($event.value)"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="down_payment"
+                id="down_payment">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Percentage -->
+        <div
+          *ngIf="quoteForm.get('down_payment').value === 0"
+          class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="custom_percentage">
+              Percentage
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    quoteForm.controls.custom_percentage?.errors &&
+                    quoteForm.controls.custom_percentage?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    quoteForm.controls.custom_percentage?.errors &&
+                    quoteForm.controls.custom_percentage?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    quoteForm.controls.custom_percentage?.errors &&
+                    quoteForm.controls.custom_percentage?.dirty
+                  "
+                  [max]="100"
+                  [min]="0"
+                  [options]="{ suffix: '%', align: 'left', min: 0, max: 100 }"
+                  ozFinanceAutoFocus
+                  currencyMask
+                  class="h-auto form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="custom_percentage"
+                  id="custom_percentage"
+                  placeholder="e.g 50%"
+                  type="text" />
+              </div>
+
+              <p
+                *ngIf="
+                  quoteForm.controls.custom_percentage?.errors &&
+                  quoteForm.controls.custom_percentage?.dirty
+                "
+                [@errorMessageAnimation]
+                class="absolute mt-2 text-sm text-red-600 mb-5"
+                id="tax_rate-error">
+                Please enter a number between 0 and 100
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fixed Amount-->
+        <div
+          *ngIf="quoteForm.get('down_payment').value === 1"
+          class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="fixed_amount">
+              Fixed Amount
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    quoteForm.controls.fixed_amount?.errors &&
+                    quoteForm.controls.fixed_amount?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    quoteForm.controls.fixed_amount?.errors &&
+                    quoteForm.controls.fixed_amount?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    quoteForm.controls.fixed_amount?.errors &&
+                    quoteForm.controls.fixed_amount?.dirty
+                  "
+                  [min]="0"
+                  [options]="{ prefix: currencyPrefix, align: 'left' }"
+                  autocomplete="off"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  currencyMask
+                  formControlName="fixed_amount"
+                  id="fixed_amount"
+                  placeholder="Down Payment Amount"
+                  type="text" />
+
+                <div
+                  *ngIf="
+                    quoteForm.controls.fixed_amount?.errors &&
+                    quoteForm.controls.fixed_amount?.dirty
+                  "
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      fill-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- TODO: see if error message animation is okay to keep -->
+              <p
+                *ngIf="
+                  quoteForm.controls.fixed_amount?.errors?.required &&
+                  quoteForm.controls.fixed_amount?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="unit_price-error">
+                This field is required
+              </p>
+
+              <p
+                *ngIf="
+                  quoteForm.controls.fixed_amount?.errors?.pattern &&
+                  quoteForm.controls.fixed_amount?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="unit_price-error-pattern">
+                Please enter a valid amount
+              </p>
+
+              <p
+                *ngIf="
+                  quoteForm.controls.fixed_amount?.errors?.min &&
+                  quoteForm.controls.fixed_amount?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="unit_price-error-min">
+                Value must be positive
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Items Heading -->
+        <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Items</h3>
+
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+            Enter item description, quantity, unit price, and quoted price
+            below.
+          </p>
+        </div>
+
+        <!-- Items component -->
+        <div class="mt-6">
+          <oz-finance-entity-line-editor
+            (itemAdded)="itemAdded($event)"
+            (itemDeleted)="itemDeleted($event)"
+            (itemUpdated)="itemEdited($event)"
+            (itemsOrderChanged)="itemsOrderChanged($event)"
+            (modifierAdded)="modifierAdded($event)"
+            (modifierDeleted)="modifierDeleted($event)"
+            (modifierUpdated)="modifierEdited($event)"
+            (vatStatusChanged)="vatStatusChanged($event)"
+            (vatEdited)="vatEdited($event)"
+            [entity]="entity"
+            [legalEntityCountry]="legalEntityCountry"
+            [countryForComparison]="customerCountry"
+            [currency]="currency"
+            [isManualInput]="quoteForm?.get('manual_input').value"
+            [isMasterInput]="quoteForm?.get('master').value"
+            [items]="items"
+            [modifiers]="modifiers"
+            [readOnly]="itemsReadOnly"
+            [taxRate]="taxRate"
+            [nonVatLiable]="customerIsNonVatLiable"
+            [vatStatus]="quote?.vat_status"
+            [priceModifierService]="priceModifierLogicService">
+          </oz-finance-entity-line-editor>
+        </div>
+
+        <!-- Button -->
+        <div *ngIf="!readOnly" class="mt-8 pt-5">
+          <div class="flex justify-end">
+            <span class="ml-3 inline-flex rounded-md shadow-sm">
+              <button
+                [class.disabled]="!quoteForm?.valid"
+                [disabled]="quoteForm.valid ? undefined : true"
+                class="inline-flex leading-5 indigo-button button"
+                type="submit">
+                Save Quote
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>
+<oz-finance-refusal-modal #refusalModal></oz-finance-refusal-modal>
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>
+<oz-finance-deadline-modal #deadlineModal></oz-finance-deadline-modal>

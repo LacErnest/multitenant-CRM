@@ -1,0 +1,347 @@
+<!-- Filters -->
+<div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+  <div class="md:grid md:grid-cols-3 md:gap-6">
+    <div class="md:col-span-1">
+      <h3 class="text-lg font-medium leading-6 text-gray-900">
+        Summary settings
+      </h3>
+      <p class="mt-1 text-sm leading-5 text-gray-500">
+        Summary data can be viewed per year, quarter, week, month or single
+        dates.
+      </p>
+    </div>
+    <div class="mt-5 md:mt-0 md:col-span-2">
+      <form (ngSubmit)="submit()" [formGroup]="filterForm" id="filterForm">
+        <div class="grid grid-cols-6 gap-6">
+          <div class="col-span-6 sm:col-span-3">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700"
+              for="filter"
+              >Filter</label
+            >
+            <ng-select
+              [(ngModel)]="filterOption"
+              (ngModelChange)="resetForm()"
+              [bindLabel]="'value'"
+              [bindValue]="'key'"
+              [clearable]="false"
+              [items]="filters"
+              [ngModelOptions]="{ standalone: true }"
+              class="mt-1 block form-select custom w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              id="filter">
+            </ng-select>
+          </div>
+
+          <div class="col-span-6 sm:col-span-3 relative">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700"
+              for="periods"
+              >Previous periods</label
+            >
+            <ng-select
+              [items]="periods"
+              formControlName="periods"
+              class="mt-1 block form-select custom w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              id="periods">
+            </ng-select>
+
+            <p
+              *ngIf="
+                filterForm.controls.periods?.errors?.number ||
+                filterForm.controls.periods.errors?.integer
+              "
+              class="absolute mt-1 text-sm text-red-600">
+              Periods must be an integer
+            </p>
+          </div>
+
+          <div
+            [ngClass]="
+              filterOption === 'date' ? 'sm:col-span-2' : 'sm:col-span-3'
+            "
+            class="col-span-6">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700"
+              for="year"
+              >Year</label
+            >
+            <ng-select
+              [clearable]="false"
+              [items]="years"
+              class="mt-1 block form-select custom w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              formControlName="year"
+              id="year">
+            </ng-select>
+          </div>
+
+          <ng-container [ngSwitch]="filterOption">
+            <ng-container *ngSwitchCase="'date'">
+              <div [@filterAnimation] class="col-span-6 sm:col-span-2">
+                <label
+                  class="block text-sm font-medium leading-5 text-gray-700"
+                  for="month"
+                  >Month</label
+                >
+                <ng-select
+                  (change)="monthChanged($event)"
+                  [bindLabel]="'value'"
+                  [bindValue]="'key'"
+                  [clearable]="false"
+                  [items]="months"
+                  class="mt-1 block form-select custom w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="month"
+                  id="month">
+                </ng-select>
+              </div>
+
+              <div [@filterAnimation] class="col-span-6 sm:col-span-2">
+                <label
+                  class="block text-sm font-medium leading-5 text-gray-700"
+                  for="day"
+                  >Day</label
+                >
+                <ng-select
+                  [clearable]="false"
+                  [items]="days"
+                  [readonly]="
+                    filterForm.controls.month.value ? undefined : true
+                  "
+                  class="mt-1 block form-select custom w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="day"
+                  id="day">
+                </ng-select>
+              </div>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'week'">
+              <div [@filterAnimation] class="col-span-6 sm:col-span-3">
+                <label
+                  class="block text-sm font-medium leading-5 text-gray-700"
+                  for="week"
+                  >Week</label
+                >
+                <ng-select
+                  [clearable]="false"
+                  [items]="weeks"
+                  class="mt-1 block form-select custom w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="week"
+                  id="week">
+                </ng-select>
+              </div>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'month'">
+              <div [@filterAnimation] class="col-span-3">
+                <label
+                  class="block text-sm font-medium leading-5 text-gray-700"
+                  for="month-solo"
+                  >Month</label
+                >
+                <ng-select
+                  [bindLabel]="'value'"
+                  [bindValue]="'key'"
+                  [clearable]="false"
+                  [items]="months"
+                  class="mt-1 block form-select custom w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="month"
+                  id="month-solo">
+                </ng-select>
+              </div>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'quarter'">
+              <div [@filterAnimation] class="col-span-6 sm:col-span-3">
+                <label
+                  class="block text-sm font-medium leading-5 text-gray-700"
+                  for="quarter"
+                  >Quarter</label
+                >
+                <ng-select
+                  [clearable]="false"
+                  [items]="quarters"
+                  class="mt-1 block form-select custom w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="quarter"
+                  id="quarter">
+                </ng-select>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="flex justify-end pt-3 text-right">
+    <span class="h-10 mr-2 flex w-full md:w-auto rounded-md shadow-sm">
+      <button
+        (click)="resetFilters()"
+        class="w-full h-10 md:w-auto inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-gray-400 hover:bg-gray-500 focus:outline-none focus:border-gray-500 focus:shadow-outline-indigo active:bg-gray-500 transition duration-150 ease-in-out"
+        type="button">
+        Reset filters
+      </button>
+    </span>
+    <span class="w-full md:w-auto flex rounded-md shadow-sm">
+      <button
+        class="w-full h-10 md:w-auto inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out"
+        form="filterForm"
+        type="submit"
+        [class.opacity-50]="filterForm?.invalid"
+        [class.cursor-not-allowed]="filterForm?.invalid"
+        [class.hover:bg-indigo-500]="filterForm?.valid">
+        Save
+      </button>
+    </span>
+  </div>
+</div>
+
+<!-- Summary table -->
+<div class="mt-6 bg-white overflow-hidden shadow rounded-lg">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 mt-2">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Summary</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="relative px-4 py-5 sm:p-6">
+    <div *ngIf="isLoading" class="loading-overlay">
+      <div class="spinner">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+      </div>
+    </div>
+
+    <div class="flex flex-col">
+      <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div
+          class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+          <table class="min-w-full divide-y divide-gray-200">
+            <!-- Headers -->
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th
+                  *ngFor="let period of summary?.periods"
+                  [ngSwitch]="currentFilter?.type">
+                  <ng-container *ngSwitchCase="'year'">{{
+                    period.name
+                  }}</ng-container>
+                  <ng-container *ngSwitchCase="'quarter'"
+                    >quarter {{ currentFilter?.quarter }} of
+                    {{ period.name }}</ng-container
+                  >
+                  <ng-container *ngSwitchCase="'month'"
+                    >{{ chosenMonth }} of {{ period.name }}</ng-container
+                  >
+                  <ng-container *ngSwitchCase="'week'"
+                    >week {{ currentFilter?.week }} of
+                    {{ period.name }}</ng-container
+                  >
+                  <ng-container *ngSwitchCase="'date'"
+                    >{{ currentFilter?.day }}/{{ currentFilter?.month }}/{{
+                      period.name
+                    }}</ng-container
+                  >
+                </th>
+              </tr>
+            </thead>
+
+            <!-- Companies -->
+            <tbody *ngFor="let company of summary?.data.companies">
+              <tr>
+                <td>{{ company.name }}</td>
+              </tr>
+
+              <!-- Customers -->
+              <ng-container *ngFor="let customer of company.customers">
+                <tr class="border-b-2 border-gray-50">
+                  <td>
+                    <div class="pl-3 flex">
+                      <span
+                        (click)="customer.expanded = !customer.expanded"
+                        class="cursor-pointer">
+                        <ng-container *ngIf="customer.expanded; else expand">
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-container>
+                        <ng-template #expand>
+                          <svg
+                            class="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                        </ng-template>
+                      </span>
+                      <span>{{ customer.name }}</span>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Items -->
+                <ng-container
+                  *ngFor="let item of customer.items; let odd = odd">
+                  <tr
+                    *ngIf="customer.expanded"
+                    [@collapseAnimation]
+                    [ngClass]="{ odd: odd }">
+                    <td class="item">
+                      <div class="pl-6">
+                        {{ item.name }}
+                      </div>
+                    </td>
+                    <ng-container *ngFor="let period of summary?.periods">
+                      <td>{{ item[period.key] | currency: currencyCode }}</td>
+                    </ng-container>
+                  </tr>
+                </ng-container>
+
+                <!-- Customer Total -->
+                <tr class="font-bold border-t-2 border-gray-50">
+                  <td>
+                    <div class="pl-6">Total {{ customer.name }}</div>
+                  </td>
+                  <ng-container *ngFor="let period of summary?.periods">
+                    <td>
+                      {{ customer[period.key] | currency: currencyCode }}
+                    </td>
+                  </ng-container>
+                </tr>
+              </ng-container>
+
+              <!-- Company Total -->
+              <tr class="font-extrabold">
+                <td>Total {{ company.name }}</td>
+                <ng-container *ngFor="let period of summary?.periods">
+                  <td>{{ company[period.key] | currency: currencyCode }}</td>
+                </ng-container>
+              </tr>
+            </tbody>
+
+            <!-- Total -->
+            <tbody *ngIf="summary?.data.companies.length > 1">
+              <tr class="font-extrabold">
+                <td>Total</td>
+                <td *ngFor="let period of summary?.periods">
+                  {{ summary?.data[period.key] | currency: currencyCode }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.app.name }}
+  name: pma
+  namespace: {{ .Values.app.name }}
+  labels:
+    app: pma
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: pma
+  template:
+    metadata:
+      labels:
+        app: pma
+    spec:
+      containers:
+        # PHPMyAdmin Container
+        - name: pma
+          image: "phpmyadmin:latest"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "secret"
+            - name: PMA_HOST
+              value: "mysql-svc.{{ .Values.app.name }}"
+            - name: PMA_PORT
+              value: '3306'
+            - name: PMA_ABSOLUTE_URI
+              value: "https://{{ .Values.app.name }}.dev-k8s.cyrextech.net/pma"
+          ports:
+            - name: apache
+              containerPort: 80
+              protocol: TCP

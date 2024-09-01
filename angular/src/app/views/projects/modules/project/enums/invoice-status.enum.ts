@@ -1,0 +1,11 @@
+export enum InvoiceStatus {
+  DRAFT,
+  APPROVAL,
+  AUTHORISED,
+  SUBMITTED,
+  PAID,
+  UNPAID,
+  CANCELED,
+  REFUSED,
+  PARTIAL_PAID,
+}

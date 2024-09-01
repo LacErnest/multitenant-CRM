@@ -1,0 +1,19 @@
+<oz-finance-page-header [heading]="'Earnouts Summary'"></oz-finance-page-header>
+<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+  <div class="my-6">
+    <oz-finance-earnout-sheet
+      (filtersChanged)="filtersChanged($event)"
+      (summaryAction)="handleAction($event)"
+      (predictionAsked)="predictionAsked()"
+      [errorsMessage]="errorsMessage"
+      [responseMessage]="responseMessage"
+      [isLoading]="isLoading"
+      [summary]="summary"
+      [status]="status"
+      [userRole]="userRole"
+      [currency]="currency"
+      [actions]="actions"
+      [prediction]="prediction">
+    </oz-finance-earnout-sheet>
+  </div>
+</div>

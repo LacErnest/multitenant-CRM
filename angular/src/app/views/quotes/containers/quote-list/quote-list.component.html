@@ -1,0 +1,35 @@
+<oz-finance-page-header [heading]="'Quotes'"></oz-finance-page-header>
+
+<div
+  class="overflow-x-hidden overflow-y-auto max-w-screen-8xl mx-auto sm:px-6 lg:px-8 py-6">
+  <oz-finance-datatable
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [count]="quotes?.count"
+    [datatableType]="'quotes'"
+    [filters]="preferences?.filters"
+    [defaultColumns]="preferences?.default_columns"
+    [defaultFilters]="preferences?.default_filters"
+    [isLoading]="isLoading"
+    [page]="page"
+    [projectEntity]="projectEntity.QUOTES"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="quotes?.data"
+    [selectionType]="'single'"
+    [sorts]="preferences?.sorts"
+    [title]="'Quotes'"
+    (addClicked)="addQuote()"
+    (cloneClicked)="cloneQuote($event)"
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (downloadClicked)="downloadQuote($event)"
+    (editClicked)="editQuote($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (selectionDeleted)="deleteQuote($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (exportClicked)="exportQuotes()"
+    (refreshClicked)="refreshClicked()"></oz-finance-datatable>
+</div>
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>

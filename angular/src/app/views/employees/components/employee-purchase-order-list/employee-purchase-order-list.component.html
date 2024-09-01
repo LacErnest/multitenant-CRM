@@ -1,0 +1,23 @@
+<oz-finance-datatable
+  (downloadClicked)="downloadPurchaseOrder($event)"
+  (downloadDetailClicked)="downloadResourceInvoice($event)"
+  (editClicked)="editPurchaseOrder($event)"
+  (pageUpdated)="pageUpdated($event)"
+  (viewDetailPageClicked)="viewResourceInvoicePage($event)"
+  [datatableType]="'purchase_orders'"
+  [allColumns]="preferences.all_columns"
+  [buttonConfig]="buttonConfig"
+  [rowMenuConfig]="rowMenuConfig"
+  [detailConfig]="detailConfig"
+  [columns]="preferences.columns"
+  [isIndividualDownload]="true"
+  [isLoading]="isLoading"
+  [disablePaging]="true"
+  [rows]="rows.data"
+  [count]="rows.data?.length || 0"
+  [showDetailRow]="true"
+  [sortable]="false"
+  [title]="'Purchase Orders'">
+</oz-finance-datatable>
+
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>

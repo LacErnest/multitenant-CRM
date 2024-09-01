@@ -1,0 +1,15 @@
+<span
+  class="rounded-full shadow-sm"
+  *ngIf="routingService.getTraceLength() > 0">
+  <button
+    (click)="return()"
+    class="items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+    type="button">
+    <svg viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+      <path
+        fill-rule="evenodd"
+        d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+        clip-rule="evenodd"></path>
+    </svg>
+  </button>
+</span>

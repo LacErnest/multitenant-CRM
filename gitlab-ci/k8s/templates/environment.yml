@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ .Values.app.name }}
+  name: php-env
+  namespace: {{ .Values.app.name }}
+data:
+  .env: |-
+    APP_NAME={{ .Values.app.name }}
+    APP_ENV={{ .Values.environment }}
+    APP_KEY=base64:{{ .Values.app_key }}
+    APP_DEBUG=true
+    APP_URL=https://{{ .Values.app.name }}.dev-k8s.cyrextech.net
+    APP_FRONTEND_URL=https://{{ .Values.app.name }}.dev-k8s.cyrextech.net
+
+    LOG_CHANNEL=daily
+
+    DB_CONNECTION=mysql
+    DB_HOST=mysql-svc.{{ .Values.app.name }}
+    DB_PORT=3306
+    DB_DATABASE=oz-finance
+    DB_USERNAME=root
+    DB_PASSWORD=secret
+
+    ELASTIC_HOSTS=elasticsearch-svc.{{ .Values.app.name }}:9200
+    ELASTIC_PREFIX={{ .Values.environment }}_
+
+    BROADCAST_DRIVER=redis
+    CACHE_DRIVER=redis
+    CACHE_DURATION=10
+    QUEUE_CONNECTION=redis
+    SESSION_DRIVER=redis
+    SESSION_LIFETIME=120
+
+    REDIS_HOST=redis-svc.{{ .Values.app.name }}
+    REDIS_PASSWORD=null
+    REDIS_PORT=6379
+    REDIS_PREFIX=
+
+
+    MAIL_MAILER=smtp
+    MAIL_HOST=mail.dev.cyrextech.net
+    MAIL_PORT=587
+    MAIL_USERNAME=noreply@dev.cyrextech.net
+    MAIL_PASSWORD=kzp5SrQ6tAQW7wDxSExV
+    MAIL_ENCRYPTION=tls
+    MAIL_FROM_ADDRESS=noreply@dev.cyrextech.net
+    MAIL_FROM_NAME="${APP_NAME}"
+
+    AWS_ACCESS_KEY_ID=
+    AWS_SECRET_ACCESS_KEY=
+    AWS_DEFAULT_REGION=us-east-1
+    AWS_BUCKET=
+
+    PUSHER_APP_ID=
+    PUSHER_APP_KEY=
+    PUSHER_APP_SECRET=
+    PUSHER_APP_CLUSTER=mt1
+
+    MIX_PUSHER_APP_KEY=
+    MIX_PUSHER_APP_CLUSTER=
+
+    FIXER_ACCESS_KEY={{ .Values.secrets.fixer_key }}
+
+    SENTRY_LARAVEL_DSN=https://2ece1f8f49ef475a95864e8d6f55171b@sentry.cyrextech.net/8
+
+    JWT_SECRET=
+
+    AUTH_2FA={{ .Values.enable_2fa }}
+
+    XERO_CLIENT_ID={{ .Values.secrets.xero_client_id }}
+    XERO_CLIENT_SECRET={{ .Values.secrets.xero_client_secret }}
+    XERO_REDIRECT_URI=xero.auth.callback
+    XERO_REDIRECT_FULL_URL=https://{{ .Values.app.name }}.dev-k8s.cyrextech.net/xero/redirect

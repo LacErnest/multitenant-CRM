@@ -1,0 +1,19 @@
+<div class="overflow-x-hidden shadow rounded-lg">
+  <oz-finance-datatable
+    (addClicked)="addTaxRate()"
+    (editClicked)="editTaxRate($event)"
+    (selectionDeleted)="deleteTaxRate($event)"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [count]="taxRates?.count"
+    [disablePaging]="true"
+    [filters]="preferences?.filters"
+    [isLoading]="isLoading"
+    [minTableHeight]="true"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="taxRates?.data"
+    [sortable]="false"
+    [title]="'VAT Rates'">
+  </oz-finance-datatable>
+</div>

@@ -1,0 +1,1038 @@
+<oz-finance-page-header
+  [heading]="employeeHeading"
+  [showReturn]="true"></oz-finance-page-header>
+
+<div *ngIf="employeeForm" class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+  <div class="py-6">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+        <div
+          class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+          <div class="ml-4 mt-2">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+              Employee
+            </h3>
+          </div>
+
+          <div *ngIf="employee" class="ml-4 mt-2 flex-shrink-0 table-btns">
+            <!-- Export -->
+            <span
+              class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+              <button
+                (click)="download()"
+                class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+                type="button">
+                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    clip-rule="evenodd"
+                    d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+                    fill-rule="evenodd"></path>
+                </svg>
+              </button>
+
+              <span class="tooltip whitespace-no-wrap"> Download </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative px-4 py-5 sm:p-6">
+        <div *ngIf="isLoading" class="loading-overlay">
+          <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+          </div>
+        </div>
+
+        <form (submit)="submit()" [formGroup]="employeeForm" autocomplete="off">
+          <!-- Details Heading -->
+          <div>
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Details</h3>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+              Enter the employee status, type and role below. Items marked with
+              an asterisk are required fields.
+            </p>
+          </div>
+
+          <!-- Legal entity -->
+          <div class="mt-6 sm:mt-5">
+            <div
+              class="sm:grid sm:grid-cols-3 sm:gap-4 sm:border-t sm:border-gray-200 sm:items-start sm:pt-5">
+              <label
+                class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="legal_entity_id">
+                Legal Entity
+              </label>
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <oz-finance-legal-entity-select
+                    [canUpdateLegalEntity]="true"
+                    [legalEntityFormControlName]="'legal_entity_id'"
+                    [legalEntityParentFormGroup]="employeeForm"
+                    [selectedLegalEntity]="employee?.legal_entity"
+                    id="legal_entity_id">
+                  </oz-finance-legal-entity-select>
+                </div>
+
+                <p
+                  *ngIf="
+                    employeeForm.controls.legal_entity_id?.errors &&
+                    employeeForm.controls.legal_entity_id?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="legal_entity_id_error">
+                  This field is required
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Overhead employee -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="type">
+              Overhead Employee
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <input
+                class="hidden"
+                formControlName="overhead_employee"
+                id="overhead_employee"
+                type="checkbox" />
+              <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+              <div
+                class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                <span
+                  (click)="toggleIsOverheadValue()"
+                  [ngClass]="isOverhead ? 'bg-indigo-600' : 'bg-gray-200'"
+                  aria-checked="false"
+                  class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline"
+                  role="checkbox"
+                  tabindex="0">
+                  <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                  <span
+                    [ngClass]="isOverhead ? 'translate-x-5' : 'translate-x-0'"
+                    aria-hidden="true"
+                    class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Employee Type -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="status">
+              Employee Type
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [bindLabel]="'value'"
+                  [bindValue]="'key'"
+                  [clearable]="false"
+                  [items]="employeeType"
+                  (ngModelChange)="typeChanged($event)"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="type"
+                  id="type">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Type -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="type">
+              Project Manager
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <input
+                class="hidden"
+                formControlName="is_pm"
+                id="is_pm"
+                type="checkbox" />
+              <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+              <div
+                class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                <span
+                  (click)="toggleIsPmValue()"
+                  [ngClass]="isPm === 1 ? 'bg-indigo-600' : 'bg-gray-200'"
+                  aria-checked="false"
+                  class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline"
+                  role="checkbox"
+                  tabindex="0">
+                  <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                  <span
+                    [ngClass]="isPm === 1 ? 'translate-x-5' : 'translate-x-0'"
+                    aria-hidden="true"
+                    class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="status">
+              Status
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [bindLabel]="'value'"
+                  [bindValue]="'key'"
+                  [clearable]="false"
+                  [items]="employeeStatuses"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="status"
+                  id="status">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="role">
+              Role
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="relative max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [addTag]="true"
+                  [clearable]="true"
+                  [items]="roleSelect | async"
+                  [loading]="isRoleLoading"
+                  [typeahead]="roleInput"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="role"
+                  id="role">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+
+          <!-- PI Heading -->
+          <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+              Personal Information
+            </h3>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+              Enter the employee personal information below. Items marked with
+              an asterisk are required fields.
+            </p>
+          </div>
+
+          <!-- First Name -->
+          <div class="mt-6 sm:mt-5">
+            <div
+              class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+              <label
+                class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="first_name">
+                First Name
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      employeeForm.controls.first_name?.errors?.required &&
+                      employeeForm.controls.first_name?.dirty
+                    "
+                    [class.focus:border-red-300]="
+                      employeeForm.controls.first_name?.errors?.required &&
+                      employeeForm.controls.first_name?.dirty
+                    "
+                    [class.focus:shadow-outline-red]="
+                      employeeForm.controls.first_name?.errors?.required &&
+                      employeeForm.controls.first_name?.dirty
+                    "
+                    [maxLength]="128"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="first_name"
+                    id="first_name"
+                    placeholder="first name"
+                    type="text" />
+
+                  <div
+                    *ngIf="
+                      employeeForm.controls.first_name?.errors?.required &&
+                      employeeForm.controls.first_name?.dirty
+                    "
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg
+                      class="h-5 w-5 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        fill-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <p
+                *ngIf="
+                  employeeForm.controls.first_name?.errors?.required &&
+                  employeeForm.controls.first_name?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="first_name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+
+          <!-- Last Name -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="last_name">
+                Last Name
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      employeeForm.controls.last_name?.errors?.required &&
+                      employeeForm.controls.last_name?.dirty
+                    "
+                    [class.focus:border-red-300]="
+                      employeeForm.controls.last_name?.errors?.required &&
+                      employeeForm.controls.last_name?.dirty
+                    "
+                    [class.focus:shadow-outline-red]="
+                      employeeForm.controls.last_name?.errors?.required &&
+                      employeeForm.controls.last_name?.dirty
+                    "
+                    [maxLength]="128"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="last_name"
+                    id="last_name"
+                    placeholder="last name"
+                    type="text" />
+
+                  <div
+                    *ngIf="
+                      employeeForm.controls.last_name?.errors?.required &&
+                      employeeForm.controls.last_name?.dirty
+                    "
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg
+                      class="h-5 w-5 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        fill-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <p
+                *ngIf="
+                  employeeForm.controls.last_name?.errors?.required &&
+                  employeeForm.controls.last_name?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="last_name-error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="email">
+              Email Address
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    employeeForm.controls.email?.errors &&
+                    employeeForm.controls.email?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    employeeForm.controls.email?.errors &&
+                    employeeForm.controls.email?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    employeeForm.controls.email?.errors &&
+                    employeeForm.controls.email?.dirty
+                  "
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="email"
+                  id="email"
+                  placeholder="you@example.com"
+                  type="email" />
+              </div>
+
+              <p
+                *ngIf="
+                  employeeForm.controls.email?.errors &&
+                  employeeForm.controls.email?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="email-error">
+                Please provide a valid email address
+              </p>
+            </div>
+          </div>
+
+          <!-- Phone Number -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="phone_number">
+              Phone Number
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="phone_number"
+                  id="phone_number"
+                  placeholder="000112233" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Facebook profile -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="facebook_profile">
+                Facebook profile
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      employeeForm.controls.facebook_profile?.errors
+                    "
+                    [class.focus:border-red-300]="
+                      employeeForm.controls.facebook_profile?.errors
+                    "
+                    [class.focus:shadow-outline-red]="
+                      employeeForm.controls.facebook_profile?.errors
+                    "
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="facebook_profile"
+                    id="facebook_profile"
+                    placeholder="facebook profile"
+                    type="text" />
+                </div>
+
+                <!-- TODO: refactor -->
+                <p
+                  *ngIf="
+                    employeeForm.controls.facebook_profile?.errors &&
+                    (employeeForm.controls.facebook_profile?.errors.pattern ||
+                      employeeForm.controls.facebook_profile?.errors
+                        .validationErr)
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="facebook_profile-error">
+                  Please provide a valid Facebook profile.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- LinkedIn profile -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="linked_in_profile">
+                LinkedIn profile
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      employeeForm.controls.linked_in_profile?.errors
+                    "
+                    [class.focus:border-red-300]="
+                      employeeForm.controls.linked_in_profile?.errors
+                    "
+                    [class.focus:shadow-outline-red]="
+                      employeeForm.controls.linked_in_profile?.errors
+                    "
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="linked_in_profile"
+                    id="linked_in_profile"
+                    placeholder="linkedIn profile"
+                    type="text" />
+                </div>
+
+                <!-- TODO: refactor -->
+                <p
+                  *ngIf="
+                    employeeForm.controls.linked_in_profile?.errors &&
+                    (employeeForm.controls.linked_in_profile?.errors.pattern ||
+                      employeeForm.controls.linked_in_profile?.errors
+                        .validationErr)
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="linked_in_profile-error">
+                  Please provide a valid LinkedIn profile.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Started at -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="started_at">
+                Started at
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [maxLength]="128"
+                    [owlDateTimeTrigger]="datePicker"
+                    [owlDateTime]="datePicker"
+                    [readOnly]="true"
+                    [required]=""
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="started_at"
+                    id="started_at"
+                    placeholder="pick a date"
+                    type="text" />
+
+                  <owl-date-time #datePicker [pickerType]="'calendar'">
+                  </owl-date-time>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address Heading -->
+          <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Address</h3>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+              Enter the employee address below.
+            </p>
+          </div>
+
+          <!-- Addressline 1 -->
+          <div class="mt-6 sm:mt-5 sm:border-t sm:border-gray-200">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="addressline_1">
+                Line 1
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="addressline_1"
+                    id="addressline_1"
+                    placeholder="line 1"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Addressline 2 -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="addressline_2">
+                Line 2
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="addressline_2"
+                    id="addressline_2"
+                    placeholder="line 2"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- City -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="city">
+                City
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="city"
+                    id="city"
+                    placeholder="city"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Region -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="region">
+                Region
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="region"
+                    id="region"
+                    placeholder="region"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Country -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                [ngClass]="{ required: isContractor }"
+                for="country">
+                Country
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                  <ng-select
+                    [bindLabel]="'value'"
+                    [bindValue]="'key'"
+                    [clearable]="false"
+                    [items]="'country' | enum: 'array'"
+                    class="custom form-select transition duration-150 ease-in-out"
+                    formControlName="country"
+                    id="country">
+                  </ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Postal code -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="postal_code">
+                Postal Code
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="postal_code"
+                    id="postal_code"
+                    placeholder="postal code"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Heading -->
+          <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+              Financial
+            </h3>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+              Enter the employee salary and working hours below.
+            </p>
+          </div>
+
+          <!-- Default currency -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="default_currency">
+                Default Currency
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                  <ng-select
+                    (change)="setCurrencyPrefix()"
+                    [bindLabel]="'value'"
+                    [bindValue]="'key'"
+                    [clearable]="false"
+                    [items]="'currencycode' | enum: 'array'"
+                    class="custom form-select transition duration-150 ease-in-out"
+                    formControlName="default_currency"
+                    id="default_currency">
+                  </ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Salary -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                [ngClass]="{ required: isContractor }"
+                for="salary">
+                Salary
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      employeeForm.controls.salary?.errors?.pattern &&
+                      employeeForm.controls.salary?.dirty
+                    "
+                    [class.focus:border-red-300]="
+                      employeeForm.controls.salary?.errors?.pattern &&
+                      employeeForm.controls.salary?.dirty
+                    "
+                    [class.focus:shadow-outline-red]="
+                      employeeForm.controls.salary?.errors?.pattern &&
+                      employeeForm.controls.salary?.dirty
+                    "
+                    [maxLength]="128"
+                    [options]="{ align: 'left', prefix: currencyPrefix }"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    currencyMask
+                    formControlName="salary"
+                    id="salary"
+                    placeholder="employee salary"
+                    type="text" />
+
+                  <div
+                    *ngIf="
+                      employeeForm.controls.salary?.errors?.pattern &&
+                      employeeForm.controls.salary?.dirty
+                    "
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg
+                      class="h-5 w-5 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        fill-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                <p
+                  *ngIf="
+                    employeeForm.controls.salary?.errors?.pattern &&
+                    employeeForm.controls.salary?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="salary-error">
+                  Please enter a numeric value
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Working hours -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                [ngClass]="{ required: isContractor }"
+                for="working_hours">
+                Working hours
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      employeeForm.controls.working_hours?.errors?.pattern &&
+                      employeeForm.controls.working_hours?.dirty
+                    "
+                    [class.focus:border-red-300]="
+                      employeeForm.controls.working_hours?.errors?.pattern &&
+                      employeeForm.controls.working_hours?.dirty
+                    "
+                    [class.focus:shadow-outline-red]="
+                      employeeForm.controls.working_hours?.errors?.pattern &&
+                      employeeForm.controls.working_hours?.dirty
+                    "
+                    [maxLength]="128"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="working_hours"
+                    id="working_hours"
+                    placeholder="employee working hours"
+                    type="text" />
+                  <div
+                    *ngIf="
+                      employeeForm.controls.working_hours?.errors?.pattern &&
+                      employeeForm.controls.working_hours?.dirty
+                    "
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg
+                      class="h-5 w-5 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        fill-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                <p
+                  *ngIf="
+                    employeeForm.controls.working_hours?.errors?.pattern &&
+                    employeeForm.controls.working_hours?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="working_hours-error">
+                  Please enter a numeric value
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hourly Rate -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="hourly_rate">
+                Hourly Rate
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      employeeForm.controls.hourly_rate?.errors?.pattern &&
+                      employeeForm.controls.hourly_rate?.dirty
+                    "
+                    [class.focus:border-red-300]="
+                      employeeForm.controls.hourly_rate?.errors?.pattern &&
+                      employeeForm.controls.hourly_rate?.dirty
+                    "
+                    [class.focus:shadow-outline-red]="
+                      employeeForm.controls.hourly_rate?.errors?.pattern &&
+                      employeeForm.controls.hourly_rate?.dirty
+                    "
+                    [maxLength]="128"
+                    [options]="{ align: 'left', prefix: currencyPrefix }"
+                    [readOnly]="true"
+                    class="form-input read-only block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    currencyMask
+                    formControlName="hourly_rate"
+                    id="hourly_rate"
+                    placeholder="hourly rate"
+                    type="text" />
+
+                  <div
+                    *ngIf="
+                      employeeForm.controls.hourly_rate?.errors?.pattern &&
+                      employeeForm.controls.hourly_rate?.dirty
+                    "
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg
+                      class="h-5 w-5 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        fill-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                <p
+                  *ngIf="
+                    employeeForm.controls.hourly_rate?.errors?.pattern &&
+                    employeeForm.controls.hourly_rate?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="hourly_rate-error">
+                  Please enter a numeric value
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <ng-container *ngIf="employee">
+            <!-- Management Heading -->
+            <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+              <div
+                class="flex items-center justify-between flex-wrap sm:flex-no-wrap">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                  Files
+                </h3>
+                <span
+                  *ngIf="!isOwnerReadOnly()"
+                  class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+                  <button
+                    (click)="addEmployeeFile()"
+                    class="action-btn"
+                    type="button">
+                    <svg
+                      class="h-5 w-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                        fill-rule="evenodd"></path>
+                    </svg>
+                  </button>
+                  <span class="tooltip"> Add file </span>
+                </span>
+              </div>
+
+              <div class="mt-6 sm:mt-5">
+                <p
+                  class="text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+                  Uploaded files
+                </p>
+                <ng-container *ngFor="let file of employee.files">
+                  <oz-finance-file-upload-download
+                    [fileName]="file.file_name"
+                    (fileDownloadClicked)="
+                      downloadEmployeeFile(file.id, file.file_name)
+                    "
+                    (fileDeleteClicked)="deleteEmployeeFile(file.id)"
+                    [readonlyMode]="isOwnerReadOnly()"
+                    [isSavedFile]="true"
+                    [onlyDownload]="true"></oz-finance-file-upload-download>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Save -->
+          <div class="mt-8 border-t border-gray-200 pt-5">
+            <div class="flex justify-end">
+              <span class="ml-3 inline-flex rounded-md shadow-sm">
+                <button
+                  [class.disabled]="cannotSubmit"
+                  [disabled]="cannotSubmit"
+                  class="inline-flex leading-5 indigo-button button"
+                  type="submit">
+                  Save
+                </button>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- History -->
+  <div class="mt-8 mb-6 shadow rounded-lg">
+    <oz-finance-employee-histories-list
+      *ngIf="employee && !isProjectManager()"
+      [employeeCurrency]="employee?.default_currency"
+      [employeeId]="employee?.id"
+      [readonlyMode]="isOwnerReadOnly()"></oz-finance-employee-histories-list>
+  </div>
+
+  <!-- Services -->
+  <div class="mt-8 mb-6 shadow rounded-lg">
+    <oz-finance-services-list
+      *ngIf="employee && isContractor && employeeServicesPreferences"
+      (resourceServiceAdded)="unsavedServicesAdded($event)"
+      (resourceServiceRemoved)="unsavedServicesRemoved($event)"
+      [isGlobalServiceList]="false"
+      [resourceCurrency]="employeeForm.get('default_currency').value"
+      [resourceId]="employee?.id"
+      [employeePreferences]="employeeServicesPreferences"
+      [isEmployeeServiceList]="true"></oz-finance-services-list>
+  </div>
+
+  <!-- Purchase Orders -->
+  <div class="mt-8 mb-6 shadow rounded-lg">
+    <oz-finance-employee-purchase-order-list
+      *ngIf="employee && employeePurchaseOrdersPreferences"
+      [preferences]="employeePurchaseOrdersPreferences"
+      [employee]="employee"></oz-finance-employee-purchase-order-list>
+  </div>
+</div>
+
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>
+<oz-finance-upload-modal #uploadModal></oz-finance-upload-modal>

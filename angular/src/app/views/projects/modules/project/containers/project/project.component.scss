@@ -1,0 +1,9 @@
+@screen lg {
+  .project-nav {
+    width: 250px;
+  }
+
+  .content-wrapper {
+    width: calc(100% - 250px - 25px);
+  }
+}

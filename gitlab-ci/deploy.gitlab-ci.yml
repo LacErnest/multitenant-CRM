@@ -1,0 +1,52 @@
+include:
+  - local: '/gitlab-ci/templates/deploy.gitlab-ci.yml'
+
+deploy-review:
+  extends: .deploy-k8s
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    on_stop: stop-review
+    auto_stop_in: 1 week
+  allow_failure: true
+  rules:
+    - if: $CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "master" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "staging" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "dev"
+      when: manual
+
+deploy-dev:
+  extends: .deploy-k8s
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "legal-decoupling"
+
+deploy_stage:
+  extends: .deploy-k8s
+  rules:
+    - if: $CI_COMMIT_BRANCH == "staging"
+      when: manual
+
+deploy_prod:
+  extends: .deploy-app
+  variables:
+    ENV_NAME: production
+  environment:
+    name: production
+    url: https://mt.emgoz.studio
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: manual
+
+stop-review:
+  stage: cleanup
+  image: $CI_REGISTRY_IMAGE/helm:latest
+  script:
+    - kubectl config get-contexts
+    - kubectl config use-context dev-awesome/oz-finance:dev-k8s
+    - kubectl delete all --all -n "oz-finance-45-$CI_COMMIT_REF_SLUG" --ignore-not-found=true
+    - kubectl delete namespace "oz-finance-45-$CI_COMMIT_REF_SLUG" --ignore-not-found
+  variables:
+    GIT_STRATEGY: none
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    action: stop
+  rules:
+    - if: $CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "master" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "staging" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "dev"
+      when: manual

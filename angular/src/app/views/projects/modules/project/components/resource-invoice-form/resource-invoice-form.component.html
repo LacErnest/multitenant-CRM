@@ -1,0 +1,355 @@
+<div *ngIf="resourceInvoiceForm" class="mx-auto">
+  <div class="bg-white overflow-hidden shadow rounded-lg">
+    <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+      <div
+        class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+        <div class="ml-4 mt-2">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            {{ 'Resource Invoice: ' + resourceInvoice?.number }}
+          </h3>
+
+          <span
+            *ngIf="resourceInvoice"
+            class="text-xs"
+            [ngClass]="statusColor()">
+            {{ resourceInvoice?.status | enumValue: 'invoicestatus' }}
+          </span>
+        </div>
+
+        <oz-finance-invoice-form-action-buttons
+          *ngIf="resourceInvoice.download || !statusChangeDisabled"
+          [invoice]="resourceInvoice"
+          [isResourceInvoice]="true"
+          [downloadEnabled]="resourceInvoice.download"
+          [statusChangeEnabled]="!statusChangeDisabled"
+          [userRole]="userRole"
+          (statusUpdated)="
+            resourceInvoiceStatusUpdated($event)
+          "></oz-finance-invoice-form-action-buttons>
+      </div>
+    </div>
+
+    <div class="relative px-4 py-5 sm:p-6">
+      <div *ngIf="isLoading" class="loading-overlay">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form
+        autocomplete="off"
+        [formGroup]="resourceInvoiceForm"
+        (ngSubmit)="submit()">
+        <!-- Details Heading -->
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Details</h3>
+
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+            View resource invoice details.
+          </p>
+        </div>
+
+        <!-- Legal entity -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="legal_entity_id">
+              Legal Entity
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <oz-finance-legal-entity-select
+                  [noCreatedEntity]="!resourceInvoice"
+                  [legalEntityFormControlName]="'legal_entity_id'"
+                  [legalEntityParentFormGroup]="resourceInvoiceForm"
+                  [selectedLegalEntity]="resourceInvoice?.legal_entity"
+                  [isPurchaseOrder]="true"
+                  (selectedEntityChanged)="onSelectedEntityChanged($event)"
+                  id="legal_entity_id">
+                </oz-finance-legal-entity-select>
+              </div>
+
+              <p
+                *ngIf="
+                  resourceInvoiceForm.controls.legal_entity_id?.errors &&
+                  resourceInvoiceForm.controls.legal_entity_id?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="legal_entity_id_error">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Production Center -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="company">
+              Production Center
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [readonly]="true"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="company"
+                  id="company">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="date">
+              Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [owlDateTimeTrigger]="datePicker"
+                  [owlDateTime]="datePicker"
+                  [readOnly]="true"
+                  [required]="true"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="date"
+                  id="date"
+                  placeholder="pick a date"
+                  type="text" />
+
+                <owl-date-time
+                  #datePicker
+                  [disabled]="true"
+                  [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery Date -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="due_date">
+              Due Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [owlDateTimeTrigger]="deliveryDatePicker"
+                  [owlDateTime]="deliveryDatePicker"
+                  [readOnly]="true"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="due_date"
+                  id="due_date"
+                  placeholder="pick a date"
+                  type="text" />
+
+                <owl-date-time
+                  #deliveryDatePicker
+                  [disabled]="true"
+                  [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paid Date -->
+        <div
+          *ngIf="resourceInvoice?.status === invoiceStatusEnum.PAID"
+          class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Paid Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <span
+                  class="form-input border-none block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  >{{
+                    resourceInvoice?.pay_date | momentDate: 'DD/MM/YYYY'
+                  }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resource -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="resource">
+            Resource
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                [required]="true"
+                [readonly]="true"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="resource"
+                id="resource">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reference -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="reference">
+              Reference
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [maxLength]="50"
+                  [readOnly]="true"
+                  [class.read-only]="true"
+                  class="h-auto form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="reference"
+                  id="reference"
+                  placeholder="reference" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Currency -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="currency_code">
+            Currency
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                [bindLabel]="'value'"
+                [bindValue]="'key'"
+                [clearable]="false"
+                [readonly]="true"
+                [items]="'currencycode' | enum: 'array'"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="currency_code"
+                id="currency_code">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manual input-->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+            for="manual_input">
+            Manual input
+          </label>
+
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input
+              id="manual_input"
+              formControlName="manual_input"
+              class="hidden"
+              type="checkbox" />
+
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              class="form-input border-0 block w-full transition duration-150 opacity-25 cursor-default ease-in-out sm:text-sm sm:leading-5">
+              <span
+                [ngClass]="[
+                  resourceInvoiceForm.get('manual_input').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200'
+                ]"
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    resourceInvoiceForm.get('manual_input').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Items Heading -->
+        <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Items</h3>
+        </div>
+
+        <!-- Items component -->
+        <div class="mt-6">
+          <oz-finance-entity-line-editor
+            [legalEntityCountry]="legalEntityCountry"
+            [countryForComparison]="resourceInvoice?.resource_country"
+            [currency]="currency"
+            [readOnly]="true"
+            [items]="items"
+            [isManualInput]="resourceInvoice?.manual_input"
+            [modifiers]="modifiers"
+            [penalty]="penaltyPercentage()"
+            [penaltyReason]="penaltyReason()"
+            [resourceId]="resourceInvoice?.resource_id"
+            [taxRate]="taxRate"
+            [vatStatus]="resourceInvoice?.vat_status"
+            [nonVatLiable]="resourceIsNonVatLiable"
+            [priceModifierService]="priceModifierLogicService">
+          </oz-finance-entity-line-editor>
+        </div>
+
+        <div *ngIf="!resourceInvoice?.legal_entity_id" class="mt-8 pt-5">
+          <div class="flex justify-end">
+            <span class="ml-3 inline-flex rounded-md shadow-sm">
+              <button
+                [class.disabled]="resourceInvoiceForm?.invalid"
+                [disabled]="
+                  !isLoading && resourceInvoiceForm.valid ? undefined : true
+                "
+                class="inline-flex leading-5 indigo-button button"
+                type="submit">
+                Save Invoice
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

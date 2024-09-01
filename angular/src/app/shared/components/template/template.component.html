@@ -1,0 +1,124 @@
+<div
+  class="bg-white overflow-hidden shadow rounded-lg border border-gray-200 mb-5">
+  <div class="bg-gray-100 px-4 py-4">
+    <div class="flex flex-row gap-2 items-center">
+      <h4 class="p-0 capitalize">{{ templateLabel }}</h4>
+      <span
+        class="tooltip-element ml-3 cursor-pointer inline-block rounded-full shadow-sm table-btn">
+        <svg
+          (click)="showTemplateVariables()"
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+
+        <span
+          class="tooltip whitespace-no-wrap cursor-default"
+          [class.last]="isLastItem">
+          Show template variables
+        </span>
+      </span>
+    </div>
+  </div>
+  <div class="flex items-center flex-row justify-between px-4 py-4 my-4">
+    <h4 class="p-0">
+      <strong>Template</strong>: {{ template.name || 'Empty name' }}
+    </h4>
+    <div class="flex items-center justify-center">
+      <div class="items-center flex gap-1 flex-row">
+        <span
+          class="sm:ml-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+          <button
+            *ngIf="!isOwnerReadOnly()"
+            (click)="triggerInputChange(templateUploadInput)"
+            class="flex flex-row gap-1 button modal-button w-40 white-button text-gray-400 hover:text-gray-800 border-gray-400 sm:text-sm sm:leading-5"
+            type="button"
+            [disabled]="isLoading">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12.5535 2.49392C12.4114 2.33852 12.2106 2.25 12 2.25C11.7894 2.25 11.5886 2.33852 11.4465 2.49392L7.44648 6.86892C7.16698 7.17462 7.18822 7.64902 7.49392 7.92852C7.79963 8.20802 8.27402 8.18678 8.55352 7.88108L11.25 4.9318V16C11.25 16.4142 11.5858 16.75 12 16.75C12.4142 16.75 12.75 16.4142 12.75 16V4.9318L15.4465 7.88108C15.726 8.18678 16.2004 8.20802 16.5061 7.92852C16.8118 7.64902 16.833 7.17462 16.5535 6.86892L12.5535 2.49392Z"
+                fill="currentColor" />
+              <path
+                d="M3.75 15C3.75 14.5858 3.41422 14.25 3 14.25C2.58579 14.25 2.25 14.5858 2.25 15V15.0549C2.24998 16.4225 2.24996 17.5248 2.36652 18.3918C2.48754 19.2919 2.74643 20.0497 3.34835 20.6516C3.95027 21.2536 4.70814 21.5125 5.60825 21.6335C6.47522 21.75 7.57754 21.75 8.94513 21.75H15.0549C16.4225 21.75 17.5248 21.75 18.3918 21.6335C19.2919 21.5125 20.0497 21.2536 20.6517 20.6516C21.2536 20.0497 21.5125 19.2919 21.6335 18.3918C21.75 17.5248 21.75 16.4225 21.75 15.0549V15C21.75 14.5858 21.4142 14.25 21 14.25C20.5858 14.25 20.25 14.5858 20.25 15C20.25 16.4354 20.2484 17.4365 20.1469 18.1919C20.0482 18.9257 19.8678 19.3142 19.591 19.591C19.3142 19.8678 18.9257 20.0482 18.1919 20.1469C17.4365 20.2484 16.4354 20.25 15 20.25H9C7.56459 20.25 6.56347 20.2484 5.80812 20.1469C5.07435 20.0482 4.68577 19.8678 4.40901 19.591C4.13225 19.3142 3.9518 18.9257 3.85315 18.1919C3.75159 17.4365 3.75 16.4354 3.75 15Z"
+                fill="currentColor" />
+            </svg>
+            Upload file
+          </button>
+        </span>
+        <span
+          class="mt-3 sm:ml-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+          <button
+            (click)="onDownloadClicked()"
+            class="flex flex-row gap-1 button modal-button w-40 white-button text-gray-400 hover:text-gray-800 sm:text-sm sm:leading-5 border-gray-400"
+            type="button"
+            [disabled]="isLoading">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12.5535 16.5061C12.4114 16.6615 12.2106 16.75 12 16.75C11.7894 16.75 11.5886 16.6615 11.4465 16.5061L7.44648 12.1311C7.16698 11.8254 7.18822 11.351 7.49392 11.0715C7.79963 10.792 8.27402 10.8132 8.55352 11.1189L11.25 14.0682V3C11.25 2.58579 11.5858 2.25 12 2.25C12.4142 2.25 12.75 2.58579 12.75 3V14.0682L15.4465 11.1189C15.726 10.8132 16.2004 10.792 16.5061 11.0715C16.8118 11.351 16.833 11.8254 16.5535 12.1311L12.5535 16.5061Z"
+                fill="currentColor" />
+              <path
+                d="M3.75 15C3.75 14.5858 3.41422 14.25 3 14.25C2.58579 14.25 2.25 14.5858 2.25 15V15.0549C2.24998 16.4225 2.24996 17.5248 2.36652 18.3918C2.48754 19.2919 2.74643 20.0497 3.34835 20.6516C3.95027 21.2536 4.70814 21.5125 5.60825 21.6335C6.47522 21.75 7.57754 21.75 8.94513 21.75H15.0549C16.4225 21.75 17.5248 21.75 18.3918 21.6335C19.2919 21.5125 20.0497 21.2536 20.6517 20.6516C21.2536 20.0497 21.5125 19.2919 21.6335 18.3918C21.75 17.5248 21.75 16.4225 21.75 15.0549V15C21.75 14.5858 21.4142 14.25 21 14.25C20.5858 14.25 20.25 14.5858 20.25 15C20.25 16.4354 20.2484 17.4365 20.1469 18.1919C20.0482 18.9257 19.8678 19.3142 19.591 19.591C19.3142 19.8678 18.9257 20.0482 18.1919 20.1469C17.4365 20.2484 16.4354 20.25 15 20.25H9C7.56459 20.25 6.56347 20.2484 5.80812 20.1469C5.07435 20.0482 4.68577 19.8678 4.40901 19.591C4.13225 19.3142 3.9518 18.9257 3.85315 18.1919C3.75159 17.4365 3.75 16.4354 3.75 15Z"
+                fill="currentColor" />
+            </svg>
+            Download file
+          </button>
+        </span>
+        <span
+          class="mt-3 sm:ml-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+          <button
+            (click)="onViewClicked()"
+            class="flex flex-row gap-1 items-center button modal-button w-40 white-button text-gray-400 hover:text-gray-800 sm:text-sm sm:leading-5 border-gray-400"
+            type="button"
+            [disabled]="isLoading">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9ZM11 12C11 11.4477 11.4477 11 12 11C12.5523 11 13 11.4477 13 12C13 12.5523 12.5523 13 12 13C11.4477 13 11 12.5523 11 12Z"
+                fill="currentColor" />
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M21.83 11.2807C19.542 7.15186 15.8122 5 12 5C8.18777 5 4.45796 7.15186 2.17003 11.2807C1.94637 11.6844 1.94361 12.1821 2.16029 12.5876C4.41183 16.8013 8.1628 19 12 19C15.8372 19 19.5882 16.8013 21.8397 12.5876C22.0564 12.1821 22.0536 11.6844 21.83 11.2807ZM12 17C9.06097 17 6.04052 15.3724 4.09173 11.9487C6.06862 8.59614 9.07319 7 12 7C14.9268 7 17.9314 8.59614 19.9083 11.9487C17.9595 15.3724 14.939 17 12 17Z"
+                fill="currentColor" />
+            </svg>
+            View
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input
+  #templateUploadInput
+  (change)="uploadFile($event.target.files, templateType)"
+  [id]="templateType"
+  accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword"
+  class="hidden h-full sm:h-6 w-full sm:w-6 absolute top-0 left-0 opacity-0 cursor-pointer"
+  type="file" />

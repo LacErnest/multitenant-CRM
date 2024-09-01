@@ -1,0 +1,26 @@
+<div
+  class="max-h-48 sm:max-h-64 md:max-h-80 cursor-pointer card p-0 border rounded-lg shadow-xl w-full flex flex-col"
+  (mouseenter)="isHovering = true"
+  (mouseleave)="isHovering = false"
+  (click)="selectDesignTemplate()">
+  <div class="flex-grow bg-gray-200 px-4 pt-4 overflow-hidden">
+    <ng-container *ngIf="designTemplate?.preview">
+      <img
+        [src]="designTemplate.preview"
+        alt="Design template preview"
+        class="w-full" />
+    </ng-container>
+    <ng-container *ngIf="!designTemplate.preview">
+      <img src="/assets/no_data.svg" class="w-full" />
+    </ng-container>
+  </div>
+  <div
+    class="rounded-b-lg text-black"
+    [ngClass]="isHovering || isSelected ? 'bg-indigo-500' : 'bg-gray-100'">
+    <h5
+      [ngClass]="isHovering || isSelected ? 'text-white' : 'text-gray-400'"
+      class="text-sm font-bold tracking-tight text-center p-3">
+      {{ designTemplate.title }}
+    </h5>
+  </div>
+</div>

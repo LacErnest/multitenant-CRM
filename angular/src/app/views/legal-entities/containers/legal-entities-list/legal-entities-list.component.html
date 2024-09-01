@@ -1,0 +1,28 @@
+<oz-finance-page-header [heading]="'Legal Entities'"></oz-finance-page-header>
+
+<div
+  class="overflow-x-hidden overflow-y-auto max-w-screen-8xl mx-auto sm:px-6 lg:px-8 py-6">
+  <oz-finance-datatable
+    (addClicked)="addLegalEntity()"
+    (editClicked)="editLegalEntity($event)"
+    (selectionDeleted)="deleteLegalEntity($event)"
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    [allColumns]="preferences?.all_columns"
+    [rowMenuConfig]="rowMenuConfig"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [count]="legalEntities?.count"
+    [filters]="preferences?.filters"
+    [isIndividualEdit]="true"
+    [isIndividualDeletion]="true"
+    [isLoading]="isLoading"
+    [page]="page"
+    [rows]="legalEntities?.data"
+    [selectionType]="'single'"
+    [sorts]="preferences?.sorts"
+    [title]="'Legal Entities'"></oz-finance-datatable>
+</div>

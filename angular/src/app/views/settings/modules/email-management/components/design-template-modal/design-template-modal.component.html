@@ -1,0 +1,81 @@
+<div
+  *ngIf="showDesignTemplateModal"
+  [@modalContainerAnimation]
+  class="oz-modal fixed bottom-0 inset-x-0 px-4 py-4 sm:inset-0 sm:flex sm:items-center sm:justify-center z-50">
+  <div
+    [@modalBackdropAnimation]
+    (click)="closeModal()"
+    class="fixed inset-0 transition-opacity">
+    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+  </div>
+  <div
+    [@modalAnimation]
+    aria-labelledby="modal-headline"
+    aria-modal="true"
+    class="relative bg-white rounded-lg px-4 w-full md:w-3/4 lg:w-1/2 xl:w-2/3 pt-5 pb-4 overflow-y-visible shadow-xl transform transition-all w-500 md:w-full lg:max-w-screen-md sm:max-w-lg sm:w-full sm:p-6"
+    role="dialog">
+    <div class="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+      <button
+        (click)="closeModal()"
+        aria-label="Close"
+        class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
+        type="button">
+        <svg
+          class="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+            d="M6 18L18 6M6 6l12 12"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2" />
+        </svg>
+      </button>
+    </div>
+    <div class="sm:flex sm:items-start">
+      <div class="mt-3 w-full text-center sm:mt-0 sm:text-left">
+        <h3
+          class="text-lg leading-6 font-medium text-gray-900 text-center"
+          id="modal-headline-secret">
+          Select Email Design
+        </h3>
+      </div>
+    </div>
+    <div
+      class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 mt-5 justify-center md:max-h-96 overflow-y-auto">
+      <ng-container
+        *ngFor="let designTemplate of designTemplates; let index = index">
+        <oz-finance-design-template-card
+          [designTemplate]="designTemplate"
+          [isSelected]="isSelected(designTemplate)"
+          (onDesignTemplateUpdated)="
+            handleDesignTemplateUpdate($event)
+          "></oz-finance-design-template-card>
+      </ng-container>
+    </div>
+    <div
+      class="mt-5 sm:mt-4 sm:flex sm:flex-row border-t border-gray-200 justify-end pt-3">
+      <span
+        *ngIf="canCreateDesignTemplate"
+        class="mt-3 sm:ml-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+        <button
+          (click)="createNewDesignTemplate()"
+          class="button modal-button white-button sm:text-sm sm:leading-5 text-indigo-500 border-indigo-500"
+          type="button">
+          Create new Design
+        </button>
+      </span>
+      <span
+        *ngIf="designTemplate"
+        class="mt-3 sm:ml-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+        <button
+          (click)="addDesignTemplateToInvoice()"
+          class="button modal-button indigo-button sm:text-sm sm:leading-5"
+          type="button">
+          Select {{ designTemplate.title }}
+        </button>
+      </span>
+    </div>
+  </div>
+</div>

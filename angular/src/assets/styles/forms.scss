@@ -1,0 +1,8 @@
+.read-only {
+  @apply opacity-50;
+}
+
+.form-textarea:focus {
+  border-color: #d2d6dc;
+  box-shadow: none;
+}

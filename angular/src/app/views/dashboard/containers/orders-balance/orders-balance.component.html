@@ -1,0 +1,10 @@
+<oz-finance-page-header [heading]="'Orders Summary'"></oz-finance-page-header>
+<div class="max-w-screen-8xl mx-auto sm:px-6 lg:px-8">
+  <div class="my-6">
+    <oz-finance-balance-sheet
+      (filtersChanged)="filtersChanged($event)"
+      [isLoading]="isLoading"
+      [summary]="summary">
+    </oz-finance-balance-sheet>
+  </div>
+</div>

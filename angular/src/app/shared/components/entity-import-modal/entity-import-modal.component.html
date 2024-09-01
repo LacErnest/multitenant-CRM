@@ -1,0 +1,128 @@
+<div
+  *ngIf="showEntityImportModal"
+  [@modalContainerAnimation]
+  class="fixed bottom-0 inset-x-0 px-4 py-4 sm:inset-0 sm:flex sm:items-center sm:justify-center z-50">
+  <!--
+    Background overlay, show/hide based on modal state.
+
+    Entering: "ease-out duration-300"
+      From: "opacity-0"
+      To: "opacity-100"
+    Leaving: "ease-in duration-200"
+      From: "opacity-100"
+      To: "opacity-0"
+  -->
+  <div
+    [@modalBackdropAnimation]
+    (click)="dismissModal()"
+    class="fixed inset-0 transition-opacity">
+    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+  </div>
+
+  <!--
+    Modal panel, show/hide based on modal state.
+
+    Entering: "ease-out duration-300"
+      From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+      To: "opacity-100 translate-y-0 sm:scale-100"
+    Leaving: "ease-in duration-200"
+      From: "opacity-100 translate-y-0 sm:scale-100"
+      To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+  -->
+  <div
+    [@modalAnimation]
+    aria-labelledby="modal-headline"
+    aria-modal="true"
+    class="import-modal flex flex-col relative bg-white rounded-lg px-4 pt-5 pb-4 overflow-hidden shadow-xl transform transition-all sm:max-w-6xl sm:w-full sm:p-6"
+    role="dialog">
+    <div class="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+      <button
+        (click)="dismissModal()"
+        aria-label="Close"
+        class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
+        type="button">
+        <svg
+          class="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+            d="M6 18L18 6M6 6l12 12"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2" />
+        </svg>
+      </button>
+    </div>
+    <div class="sm:flex sm:items-start">
+      <div class="w-full text-center sm:text-left">
+        <h3
+          class="text-lg leading-6 font-medium text-gray-900 mb-2"
+          id="modal-headline-secret">
+          {{ title }}
+        </h3>
+
+        <ngx-datatable
+          [columnMode]="'force'"
+          [count]="columns[0]?.examples.length"
+          [externalPaging]="true"
+          [externalSorting]="true"
+          [rowHeight]="'auto'"
+          [rows]="columns"
+          [scrollbarH]="true"
+          [virtualization]="false"
+          class="import-entity">
+          <ngx-datatable-column *ngFor="let col of columns; let i = index">
+            <ng-template let-row="row" ngx-datatable-header-template>
+              <span class="datatable-header-cell border-none">{{
+                col.name
+              }}</span>
+
+              <!--TODO: disable options when chosen-->
+              <ng-select
+                (change)="onChange($event, col.name)"
+                [clearable]="false"
+                [items]="properties"
+                appendTo="body"
+                class="custom import-entity-select form-select transition duration-150 ease-in-out">
+                <!--                <ng-template ng-option-tmp let-item="item">-->
+                <!--                  <span [class.disabled]="">{{item}}</span>-->
+                <!--                </ng-template>-->
+              </ng-select>
+            </ng-template>
+
+            <ng-template
+              let-row="row"
+              let-rowIndex="rowIndex"
+              let-value="value"
+              ngx-datatable-cell-template>
+              {{ col?.examples[rowIndex] }}
+            </ng-template>
+          </ngx-datatable-column>
+        </ngx-datatable>
+      </div>
+    </div>
+
+    <div class="flex sm:justify-center mt-5 sm:mt-auto">
+      <span class="flex w-full sm:w-auto rounded-md shadow-sm">
+        <button
+          (click)="finalizeImport()"
+          class="inline-flex justify-center w-full sm:w-auto py-2 px-4 border border-transparent hover:bg-indigo-500 text-sm leading-5 whitespace-no-wrap font-medium rounded-md text-white bg-indigo-600 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out"
+          [class.opacity-50]="isLoading || !matches.length"
+          [class.cursor-not-allowed]="isLoading"
+          [class.hover:bg-indigo-500]="!isLoading && matches.length"
+          type="submit">
+          Finalize import
+        </button>
+      </span>
+      <span class="h-10 flex w-full sm:hidden ml-2 rounded-md shadow-sm">
+        <button
+          type="button"
+          (click)="closeModal()"
+          class="h-10 inline-flex justify-center w-full sm:w-auto py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-gray-400 hover:bg-gray-500 focus:outline-none focus:border-gray-500 focus:shadow-outline-indigo active:bg-gray-500 transition duration-150 ease-in-out">
+          Close
+        </button>
+      </span>
+    </div>
+  </div>
+</div>

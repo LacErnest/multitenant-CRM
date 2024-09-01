@@ -1,0 +1,36 @@
+<oz-finance-page-header [heading]="'Employees'"></oz-finance-page-header>
+<div
+  class="overflow-x-hidden overflow-y-auto max-w-screen-8xl mx-auto sm:px-6 lg:px-8 py-6">
+  <oz-finance-datatable
+    (addClicked)="addEmployee()"
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (downloadClicked)="downloadEmployee($event)"
+    (editClicked)="editEmployee($event)"
+    (fileSuccessfullyUploaded)="importEmployee($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (exportClicked)="exportEmployees()"
+    [allColumns]="preferences?.all_columns"
+    [defaultColumns]="preferences?.default_columns"
+    [defaultFilters]="preferences?.default_filters"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [count]="rows?.count"
+    [filters]="preferences?.filters"
+    [isLoading]="isLoading"
+    [page]="page"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="rows?.data"
+    [sorts]="preferences?.sorts"
+    [title]="'Employees'"></oz-finance-datatable>
+</div>
+
+<oz-finance-entity-import-modal
+  #importEntityModal
+  (finalizeImportClicked)="finalizeImport($event)"
+  [columns]="importedColumns"
+  [isLoading]="isLoading"
+  [properties]="properties"></oz-finance-entity-import-modal>
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>

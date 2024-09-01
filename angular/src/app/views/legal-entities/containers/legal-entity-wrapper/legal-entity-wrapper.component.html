@@ -1,0 +1,14 @@
+<oz-finance-page-header
+  [heading]="formHeading"
+  [showReturn]="true"></oz-finance-page-header>
+
+<div class="max-w-screen-8xl mx-auto sm:px-6 lg:px-8 overflow-y-visible">
+  <div class="block py-6 lg:flex lg:max-w-screen-8xl">
+    <oz-finance-legal-entity-nav
+      *ngIf="showLegalEntityNav"></oz-finance-legal-entity-nav>
+
+    <div class="legal-content" [class.with-nav]="showLegalEntityNav">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

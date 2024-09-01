@@ -1,0 +1,13 @@
+@screen lg {
+  .settings-nav {
+    width: 250px;
+  }
+
+  .settings-wrapper {
+    @apply w-full;
+
+    &.with-nav {
+      width: calc(100% - 250px);
+    }
+  }
+}

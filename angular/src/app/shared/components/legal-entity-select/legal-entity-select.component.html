@@ -1,0 +1,36 @@
+<div [formGroup]="legalEntityParentFormGroup">
+  <ng-container
+    *ngIf="selectedLegalEntity && !canUpdateLegalEntity; else formControlMode">
+    <input
+      class="form-input input-base read-only"
+      id="legal_entity"
+      [maxLength]="50"
+      [ngModelOptions]="{ standalone: true }"
+      [ngModel]="selectedLegalEntity"
+      [readOnly]="true" />
+  </ng-container>
+
+  <ng-template #formControlMode>
+    <ng-select
+      class="custom"
+      [bindLabel]="'name'"
+      [bindValue]="'legal_entity_id'"
+      [class.border-red-300]="
+        legalEntityParentFormGroup.get(legalEntityFormControlName).errors &&
+        legalEntityParentFormGroup.get(legalEntityFormControlName).dirty
+      "
+      [class.focus:border-red-300]="
+        legalEntityParentFormGroup.get(legalEntityFormControlName).errors &&
+        legalEntityParentFormGroup.get(legalEntityFormControlName).dirty
+      "
+      [class.focus:shadow-outline-red]="
+        legalEntityParentFormGroup.get(legalEntityFormControlName).errors &&
+        legalEntityParentFormGroup.get(legalEntityFormControlName).dirty
+      "
+      [clearable]="false"
+      [formControlName]="legalEntityFormControlName"
+      [items]="legalEntities"
+      (ngModelChange)="legalEntityChosen($event)">
+    </ng-select>
+  </ng-template>
+</div>

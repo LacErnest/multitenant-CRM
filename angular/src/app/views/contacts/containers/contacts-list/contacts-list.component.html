@@ -1,0 +1,26 @@
+<oz-finance-page-header [heading]="'Contacts'"></oz-finance-page-header>
+
+<div
+  class="overflow-x-hidden overflow-y-auto max-w-screen-8xl mx-auto sm:px-6 lg:px-8 py-6">
+  <oz-finance-datatable
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (editClicked)="editContact($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (exportClicked)="exportContacts()"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [count]="contacts?.count"
+    [filters]="preferences?.filters"
+    [isLoading]="isLoading"
+    [page]="page"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="contacts?.data"
+    [selectionType]="'single'"
+    [sorts]="preferences?.sorts"
+    [title]="'Contacts'"
+    [datatableType]="'contacts'"></oz-finance-datatable>
+</div>

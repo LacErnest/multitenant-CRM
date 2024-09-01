@@ -1,0 +1,11 @@
+<oz-finance-datatable
+  [title]="'Purchase Orders'"
+  [buttonConfig]="buttonConfig"
+  [currency]="resource?.default_currency"
+  [disablePaging]="true"
+  [isLoading]="isLoading"
+  [rowMenuConfig]="rowMenuConfig"
+  [rows]="resource?.purchase_orders"
+  [sortable]="false"
+  [showDetailRow]="true">
+</oz-finance-datatable>

@@ -1,0 +1,19 @@
+.empty-dashboard {
+  min-height: calc(100vh - 64px - 85px);
+}
+
+.chart-heading {
+  @apply mt-3 mb-0 text-2xl text-center leading-9 font-extrabold text-indigo-700;
+
+  @screen sm {
+    @apply my-6 text-3xl text-left;
+  }
+}
+
+.chart-item {
+  @apply mt-4;
+
+  @screen sm {
+    @apply mt-0;
+  }
+}

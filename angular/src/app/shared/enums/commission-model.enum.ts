@@ -1,0 +1,7 @@
+export enum CommissionModel {
+  DEFAULT,
+  LEAD_GENERATION,
+  CUSTOM_MODEL_A,
+  SALES_SUPPORT,
+  LEAD_GENERATION_B,
+}

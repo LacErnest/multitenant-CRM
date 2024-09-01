@@ -1,0 +1,147 @@
+version: "3.4"
+# =================================== Templates
+x-default-build-args: &default-build-args
+  GITLAB_COMPOSER_TOKEN: "${GITLAB_COMPOSER_TOKEN}"
+
+x-build-php: &build-php
+  context: ..
+  dockerfile: docker/php.Dockerfile
+  target: api_php
+  cache_from:
+    - alpine:latest
+    - php:7.4-fpm-alpine
+    - oz-finance/php:latest
+  args:
+    <<: *default-build-args
+
+x-php-base: &php-base
+  healthcheck:
+    interval: 10s
+    timeout: 10s
+    retries: 5
+    start_period: 5m
+  env_file:
+    - .docker-compose.env
+  networks:
+    - main
+  stop_grace_period: 1s
+  depends_on:
+    - mysql
+# =================================== Services
+services:
+  # ------------------
+  mysql:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: ozf_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    ports:
+      - ${MYSQL_PORT:-3306}:3306
+    networks:
+      - main
+  # ------------------
+  redis:
+    image: redis:alpine
+    container_name: ozf_redis
+    networks:
+      - main
+  # ------------------
+  elasticsearch:
+    image: elasticsearch:6.8.6
+    container_name: ozf_elasticsearch
+    command:
+      - "bin/elasticsearch"
+      - "-Ediscovery.type=single-node"
+    ports:
+      - "9200:9200"
+    networks:
+      - main
+  # ------------------
+  mysql-phpunit:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: ozf_mysql_phpunit
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    ports:
+      - 3307:3306
+    networks:
+      - main
+  # ------------------
+  redis-phpunit:
+    image: redis:alpine
+    container_name: ozf_redis_phpunit
+    networks:
+      - main
+  # ------------------
+  elasticsearch-php-unit:
+    image: elasticsearch:6.8.6
+    container_name: ozf_elasticsearch_phpunit
+    command:
+      - "bin/elasticsearch"
+      - "-Ediscovery.type=single-node"
+    ports:
+      - "9201:9200"
+    networks:
+      - main
+  # ------------------
+  oz-finance-app:
+    <<: *php-base
+    image: oz-finance/api
+    container_name: ozf_fpm
+    build:
+      <<: *build-php
+    volumes:
+      - ../api:/app:rw
+    extra_hosts:
+      - gitlab.cyrextech.net:10.10.101.61
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 26677
+        hard: 46677
+  # ------------------
+  oz-finance-worker:
+    <<: *php-base
+    image: oz-finance/worker
+    container_name: ozf_cli
+    build:
+      <<: *build-php
+      target: cli_php
+      args:
+        <<: *default-build-args
+    volumes:
+      - ../api:/app:rw
+    extra_hosts:
+      - gitlab.cyrextech.net:10.10.101.61
+  # ------------------
+  api:
+    image: oz-finance/nginx
+    container_name: ozf_nginx
+    build:
+      context: ..
+      dockerfile: docker/nginx.Dockerfile
+    depends_on:
+      - oz-finance-app
+    volumes:
+      - ../api/public:/app/api/public
+      - ../api/storage:/app/api/storage
+    ports:
+      - "8080:80"
+    networks:
+      - main
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 26677
+        hard: 46677
+# ------------------
+# =================================== Networks
+networks:
+  main:
+# =================================== Volumes

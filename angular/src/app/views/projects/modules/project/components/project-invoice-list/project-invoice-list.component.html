@@ -1,0 +1,30 @@
+<oz-finance-datatable
+  [isLoading]="isLoading"
+  [title]="'Invoices'"
+  [rows]="invoices?.data"
+  [count]="invoices?.count"
+  [columns]="preferences.columns"
+  [projectEntity]="projectEntity.INVOICES"
+  [allColumns]="preferences.all_columns"
+  [page]="page"
+  [project]="project"
+  [buttonConfig]="buttonConfig"
+  [rowMenuConfig]="rowMenuConfig"
+  [showDetailRow]="true"
+  [sorts]="preferences?.sorts"
+  [filters]="preferences?.filters"
+  (addClicked)="addInvoice()"
+  (editClicked)="editInvoice($event)"
+  (cloneClicked)="cloneInvoice($event)"
+  (downloadClicked)="downloadInvoice($event)"
+  (selectionDeleted)="deleteInvoices($event)"
+  (cancelClicked)="cancelInvoice($event)"
+  (pageUpdated)="pageUpdated($event)"
+  (columnsUpdated)="columnsUpdated($event)"
+  (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+  (filtersUpdated)="filtersUpdated($event)"
+  (sortsUpdated)="sortsUpdated($event)"
+  (exportClicked)="exportInvoices()">
+</oz-finance-datatable>
+
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>

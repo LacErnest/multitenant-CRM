@@ -1,0 +1,15 @@
+<div>
+  <div class="flex flex-col bg-white rounded-lg relative">
+    <div class="">
+      <div class="overflow-x-hidden shadow rounded-lg">
+        <oz-finance-gridtable
+          [data]="designTemplates.data"
+          [count]="designTemplates.count"
+          [image]="'preview'"
+          (addClicked)="addDesignTemplate()"
+          (editClicked)="editDesignTemplate($event)">
+        </oz-finance-gridtable>
+      </div>
+    </div>
+  </div>
+</div>

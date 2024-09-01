@@ -1,0 +1,17 @@
+{{- if or (eq .Values.environment_slug "dev") (eq .Values.environment_slug "staging") }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: {{ .Values.app.name }}
+  name: mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: local-storage
+  selector:
+    matchLabels:
+      volume: oz-mysql-{{ .Values.environment_slug }}
+{{- end }}

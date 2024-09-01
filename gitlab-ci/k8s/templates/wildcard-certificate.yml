@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: {{ .Values.app.name }}
+  name: wildcard-cert
+  namespace: {{ .Values.app.name }}
+  annotations:
+    replicator.v1.mittwald.de/replicate-from: default/wildcard-cert
+type: kubernetes.io/tls
+data:
+  tls.key: ""
+  tls.crt: ""

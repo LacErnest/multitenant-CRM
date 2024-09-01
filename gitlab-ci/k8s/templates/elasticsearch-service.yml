@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: {{ .Values.app.name }}
+  name: elasticsearch-svc
+  namespace: {{ .Values.app.name }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: 9200
+      targetPort: 9200
+      protocol: TCP
+  selector:
+    app: elasticsearch

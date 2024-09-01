@@ -1,0 +1,35 @@
+<div class="overflow-x-hidden shadow rounded-lg">
+  <oz-finance-datatable
+    (addClicked)="addLegalEntity()"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (markAsDefaultClicked)="markLegalEntityAsDefault($event)"
+    (markAsLocalClicked)="markLegalEntityAsLocal($event)"
+    (selectionDeleted)="onDeleteLegalEntityClicked($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="legalEntityColumns"
+    [count]="companyLegalEntities?.count"
+    [datatableType]="'loans'"
+    [disablePaging]="true"
+    [isIndividualDeletion]="true"
+    [isLoading]="isLoading"
+    [filters]="preferences?.filters"
+    [minTableHeight]="true"
+    [page]="page"
+    [reorderable]="false"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="companyLegalEntities?.data"
+    [selectionType]="'single'"
+    [sortable]="false"
+    [title]="'Legal Entities'"
+    [isCompanyLegal]="true">
+  </oz-finance-datatable>
+</div>
+
+<oz-finance-add-legal-entity-modal
+  #addLegalEntityModal
+  (legalEntityChosen)="
+    onLegalEntityChosen($event)
+  "></oz-finance-add-legal-entity-modal>

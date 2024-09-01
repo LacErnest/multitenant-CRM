@@ -1,0 +1,561 @@
+<div class="flex flex-col bg-white shadow rounded-lg relative">
+  <div class="bg-white px-4 py-5 sm:p-6">
+    <div class="px-4 py-5 flex-wrap sm:flex-no-wrap">
+      <div class="max-w-7xl mx-auto mt-2">
+        <h3 class="text-xl leading-6 font-medium text-gray-900">Settings</h3>
+      </div>
+    </div>
+  </div>
+  <div class="py-2 sm:p-6">
+    <div class="max-w-7xl mx-auto">
+      <div *ngIf="isLoading" class="loading-overlay rounded">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form
+        autocomplete="off"
+        [formGroup]="emailTemplateForm"
+        (submit)="submitForm()">
+        <div>
+          <a
+            [routerLink]="emailTemplateListUrl"
+            class="-ml-1 text-gray-400 text-sm">
+            <svg
+              class="inline-block"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg">
+              <g stroke-width="0"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                stroke-linecap="round"
+                stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M6 12H18M6 12L11 7M6 12L11 17"
+                  stroke="currentColor"
+                  stroke-width="1"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+              </g>
+            </svg>
+            <span class="inline-block">Back</span></a
+          >
+        </div>
+        <div
+          class="flex xs:flex-col flex-row lg:justify-between md:justify-between py-0 gap-4">
+          <div class="relative rounded-md shadow-sm flex-grow pr-3 mt-3">
+            <input
+              [class.border-red-300]="
+                emailTemplateForm.controls.title?.errors?.required &&
+                emailTemplateForm.controls.title?.dirty
+              "
+              [class.focus:border-red-300]="
+                emailTemplateForm.controls.title?.errors?.required &&
+                emailTemplateForm.controls.title?.dirty
+              "
+              [class.focus:shadow-outline-red]="
+                emailTemplateForm.controls.title?.errors?.required &&
+                emailTemplateForm.controls.title?.dirty
+              "
+              [maxLength]="128"
+              class="px-0 focus:shadow-none focus:border-transparent border-0 form-input block w-full transition duration-150 ease-in-out"
+              formControlName="title"
+              [readonly]="readOnly"
+              [class.read-only]="readOnly"
+              id="title"
+              placeholder="Email template title..."
+              type="text" />
+
+            <div
+              *ngIf="
+                emailTemplateForm.controls.title?.errors?.required &&
+                emailTemplateForm.controls.title?.dirty
+              "
+              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <svg
+                class="h-5 w-5 text-red-500"
+                fill="currentColor"
+                viewBox="0 0 20 20">
+                <path
+                  clip-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                  fill-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+          <div class="inline-flex gap-4 items-center">
+            <span
+              (click)="deleteEmailTemplate()"
+              class="cursor-pointer text-red-500 bg-gray-100 inline-block p-2 rounded-full hover:opacity-80">
+              <svg
+                *ngIf="emailTemplate?.id"
+                width="24px"
+                height="24px"
+                viewBox="0 0 1024 1024"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    fill="currentColor"
+                    d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"></path>
+                </g>
+              </svg>
+            </span>
+            <span
+              *ngIf="emailTemplate?.id"
+              class="inline-flex rounded-md shadow-sm w-full md:w-18 lg:w-48 gap-4 align-center">
+              <button
+                type="button"
+                (click)="markAsDefault()"
+                class="inline-flex leading-5 indigo-button button w-full"
+                [class.disabled]="emailTemplate.default"
+                [disabled]="emailTemplate.default">
+                Mark as default
+              </button>
+            </span>
+            <span
+              class="inline-flex rounded-md shadow-sm w-full md:w-64 lg:w-64 gap-4 align-center">
+              <button
+                type="submit"
+                class="inline-flex leading-5 indigo-button button w-full"
+                [class.disabled]="!emailTemplateForm?.valid"
+                [disabled]="
+                  !isLoading && emailTemplateForm.valid ? undefined : true
+                ">
+                {{
+                  emailTemplate?.id
+                    ? 'Update Email template'
+                    : 'Save Email template'
+                }}
+              </button>
+            </span>
+          </div>
+        </div>
+        <div class="border border-gray-200 rounded flex my-5">
+          <div
+            class="w-full text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+            <ul class="flex flex-wrap -mb-px border-b w-full border-gray-200">
+              <li class="me-2">
+                <a
+                  href="javascript:void(0)"
+                  class="inline-block p-4 border-b-2 border-transparent rounded-t-lg text-indigo-500 border-b-2 border-indigo-500"
+                  >Email Settings</a
+                >
+              </li>
+            </ul>
+            <div>
+              <div class="text-left px-4 py-5">
+                <div>
+                  <h3 class="text-xs font-medium text-gray-400 uppercase mt-6">
+                    Email Settings
+                  </h3>
+                </div>
+                <div class="">
+                  <div
+                    class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                    <label
+                      class="text-left required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                      for="sender_id">
+                      Email from which it will be sent
+                    </label>
+
+                    <div class="mt-1 sm:mt-0 sm:col-span-2">
+                      <div
+                        class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                        <div class="mt-1 sm:mt-0 sm:col-span-2">
+                          <div
+                            class="relative max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                            <ng-select
+                              [class.border-red-300]="
+                                emailTemplateForm.controls.sender_id.errors
+                                  ?.required &&
+                                emailTemplateForm.controls.sender_id?.dirty
+                              "
+                              [class.focus:border-red-300]="
+                                emailTemplateForm.controls.sender_id.errors
+                                  ?.required &&
+                                emailTemplateForm.controls.sender_id?.dirty
+                              "
+                              [class.focus:shadow-outline-red]="
+                                emailTemplateForm.controls.sender_id.errors
+                                  ?.required &&
+                                emailTemplateForm.controls.sender_id?.dirty
+                              "
+                              [items]="smtpSettings"
+                              [bindLabel]="'sender_email'"
+                              [bindValue]="'id'"
+                              class="lowercase custom select-email form-select transition duration-150 ease-in-out"
+                              formControlName="sender_id"
+                              id="sender_id">
+                            </ng-select>
+
+                            <div
+                              *ngIf="
+                                emailTemplateForm.controls.sender_id.errors
+                                  ?.required &&
+                                emailTemplateForm.controls.sender_id?.dirty
+                              "
+                              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg
+                                class="h-5 w-5 text-red-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                  fill-rule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Quote number format -->
+                <div class="mt-6 sm:mt-5">
+                  <div
+                    class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+                    <label
+                      class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                      for="quote_number_format">
+                      Emails to be notified in CC
+                    </label>
+
+                    <div class="mt-1 sm:mt-0 sm:col-span-2">
+                      <div
+                        class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                        <div class="mt-1 sm:mt-0 sm:col-span-2">
+                          <div
+                            class="relative max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                            <ng-select
+                              [class.border-red-300]="
+                                emailTemplateForm.controls.cc_addresses.errors
+                                  ?.required &&
+                                emailTemplateForm.controls.cc_addresses?.dirty
+                              "
+                              [class.focus:border-red-300]="
+                                emailTemplateForm.controls.cc_addresses.errors
+                                  ?.required &&
+                                emailTemplateForm.controls.cc_addresses?.dirty
+                              "
+                              [class.focus:shadow-outline-red]="
+                                emailTemplateForm.controls.cc_addresses.errors
+                                  ?.required &&
+                                emailTemplateForm.controls.cc_addresses?.dirty
+                              "
+                              [clearable]="true"
+                              [items]="addresses"
+                              [required]="true"
+                              [multiple]="true"
+                              [addTag]="true"
+                              class="custom select-email form-select transition duration-150 ease-in-out"
+                              formControlName="cc_addresses"
+                              id="cc_addresses">
+                            </ng-select>
+
+                            <div
+                              *ngIf="
+                                emailTemplateForm.controls.cc_addresses.errors
+                                  ?.required &&
+                                emailTemplateForm.controls.cc_addresses?.dirty
+                              "
+                              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg
+                                class="h-5 w-5 text-red-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                  fill-rule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="py-5 mt-5">
+                  <div class="border-t">
+                    <div class="mt-5">
+                      <h3 class="text-xs font-medium text-gray-400 uppercase">
+                        Main [document type] Design
+                      </h3>
+                    </div>
+
+                    <oz-finance-design-template-view
+                      *ngIf="designTemplate"
+                      [designTemplate]="designTemplate"
+                      (onSelect)="selectDesignTemplate($event)"
+                      (onRefresh)="refresh($event)">
+                    </oz-finance-design-template-view>
+                    <div class="flex flex-col" *ngIf="!designTemplate">
+                      <span
+                        class="inline-flex rounded-md shadow-sm w-full md:w-48 lg:w-48 mt-5">
+                        <button
+                          (click)="selectDesignTemplate({ index: undefined })"
+                          type="button"
+                          class="inline-flex leading-5 white-button button w-full text-indigo-500 border-indigo-500"
+                          [disabled]="isLoading">
+                          Select email design
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-5 border-t">
+                  <h3 class="text-xs font-medium text-gray-400 uppercase mt-6">
+                    Set up reminders
+                  </h3>
+                </div>
+                <div
+                  class="bg-gray-100 pt-1 rounded-lg px-2 my-2"
+                  *ngFor="
+                    let reminderTypeCrl of reminderTypes.controls;
+                    let i = index
+                  ">
+                  <div
+                    class="flex flex-row sm:pt-5 w-full justify-between items-center">
+                    <div
+                      class="mt-1 sm:mt-0 sm:col-span-2 flex gap-4 items-center px-3 grid grid-cols-2">
+                      <div class="flex flex-row items-center gap-2">
+                        <label
+                          class="text-left required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                          for="quote_number_format">
+                          Send reminder if invoice is
+                        </label>
+                        <div class="md:w-32 lg:w-32">
+                          <div
+                            class="relative rounded-md shadow-sm md:w-32 lg:w-32">
+                            <div class="mt-1 sm:mt-0 sm:col-span-2">
+                              <div
+                                class="relative rounded-md shadow-sm max-w-lg sm:max-w-xs">
+                                <ng-select
+                                  [class.border-red-300]="
+                                    reminderTypeCrl.errors?.required &&
+                                    reminderTypeCrl?.dirty
+                                  "
+                                  [class.focus:border-red-300]="
+                                    reminderTypeCrl.errors?.required &&
+                                    reminderTypeCrl?.dirty
+                                  "
+                                  [class.focus:shadow-outline-red]="
+                                    reminderTypeCrl.errors?.required &&
+                                    reminderTypeCrl?.dirty
+                                  "
+                                  [clearable]="false"
+                                  [bindLabel]="'label'"
+                                  [bindValue]="'value'"
+                                  [items]="reminderOptions"
+                                  [required]="false"
+                                  [multiple]="false"
+                                  [addTag]="false"
+                                  class="custom select-email form-select transition duration-150 ease-in-out"
+                                  [formControl]="reminderTypeCrl"
+                                  [id]="'reminder_type_' + i">
+                                </ng-select>
+
+                                <div
+                                  *ngIf="
+                                    reminderTypeCrl.errors?.required &&
+                                    reminderTypeCrl?.dirty
+                                  "
+                                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                  <svg
+                                    class="h-5 w-5 text-red-500"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20">
+                                    <path
+                                      clip-rule="evenodd"
+                                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                      fill-rule="evenodd" />
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="md:w-32 lg:w-32 flex flex-row justify-end items-end gap-4">
+                          <div
+                            class="md:w-24 lg:w-24 flex flex-row items-center">
+                            <div
+                              class="relative rounded-md shadow-sm max-w-lg sm:max-w-xs">
+                              <input
+                                [class.border-red-300]="
+                                  reminderValues.controls[i]?.errors &&
+                                  reminderValues.controls[i]?.dirty
+                                "
+                                [class.focus:border-red-300]="
+                                  reminderValues.controls[i]?.errors &&
+                                  reminderValues.controls[i]?.dirty
+                                "
+                                [class.focus:shadow-outline-red]="
+                                  reminderValues.controls[i]?.errors &&
+                                  reminderValues.controls[i]?.dirty
+                                "
+                                [maxLength]="256"
+                                [minLength]="5"
+                                class="form-input block w-full transition duration-150 ease-in-out"
+                                [formControl]="reminderValues.controls[i]"
+                                [id]="'reminder_value_' + i"
+                                placeholder=""
+                                type="email" />
+                            </div>
+                            <p
+                              *ngIf="
+                                reminderValues.controls[i]?.errors &&
+                                reminderValues.controls[i]?.dirty
+                              "
+                              [@errorMessageAnimation]
+                              class="absolute mt-2 text-sm text-red-600"
+                              id="email-error">
+                              <ng-container
+                                *ngIf="
+                                  reminderValues.controls[i]?.errors.required ||
+                                  reminderValues.controls[i]?.errors.pattern
+                                ">
+                                Please provide a valid email address
+                              </ng-container>
+
+                              <ng-container
+                                *ngIf="
+                                  reminderValues.controls[i]?.errors.error
+                                ">
+                                {{ reminderValues.controls[i]?.errors.error }}
+                              </ng-container>
+                            </p>
+                          </div>
+                          <div class="md:w-8 lg:w-8 border-gray-700 block mb-2">
+                            <p>days.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="md:w-32 lg:w-32 flex justify-center">
+                      <span
+                        (click)="removeReminder(i)"
+                        class="cursor-pointer text-red-500 bg-gray-100 inline-block p-2 rounded-full hover:opacity-80">
+                        <svg
+                          width="24px"
+                          height="24px"
+                          viewBox="0 0 1024 1024"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor">
+                          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                          <g
+                            id="SVGRepo_tracerCarrier"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"></g>
+                          <g id="SVGRepo_iconCarrier">
+                            <path
+                              fill="currentColor"
+                              d="M160 256H96a32 32 0 0 1 0-64h256V95.936a32 32 0 0 1 32-32h256a32 32 0 0 1 32 32V192h256a32 32 0 1 1 0 64h-64v672a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V256zm448-64v-64H416v64h192zM224 896h576V256H224v640zm192-128a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32zm192 0a32 32 0 0 1-32-32V416a32 32 0 0 1 64 0v320a32 32 0 0 1-32 32z"></path>
+                          </g>
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="md:w-24 lg:w-24">
+                    <div
+                      class="relative rounded-md shadow-sm max-w-lg sm:max-w-xs">
+                      <input
+                        [class.border-red-300]="
+                          reminderTemplates.controls[i]?.errors &&
+                          reminderTemplates.controls[i]?.dirty
+                        "
+                        [class.focus:border-red-300]="
+                          reminderTemplates.controls[i]?.errors &&
+                          reminderTemplates.controls[i]?.dirty
+                        "
+                        [class.focus:shadow-outline-red]="
+                          reminderTemplates.controls[i]?.errors &&
+                          reminderTemplates.controls[i]?.dirty
+                        "
+                        [maxLength]="256"
+                        [minLength]="5"
+                        class="form-input block w-full transition duration-150 ease-in-out"
+                        [formControl]="reminderTemplates.controls[i]"
+                        [id]="'reminder_templates_' + i"
+                        placeholder=""
+                        type="hidden" />
+                    </div>
+                    <p
+                      *ngIf="
+                        reminderTemplates.controls[i]?.errors &&
+                        reminderTemplates.controls[i]?.dirty
+                      "
+                      [@errorMessageAnimation]
+                      class="absolute mt-2 text-sm text-red-600"
+                      id="email-error">
+                      <ng-container
+                        *ngIf="
+                          reminderTemplates.controls[i]?.errors.required ||
+                          reminderTemplates.controls[i]?.errors.pattern
+                        ">
+                        Please provide a valid email template
+                      </ng-container>
+
+                      <ng-container
+                        *ngIf="reminderTemplates.controls[i]?.errors.error">
+                        {{ reminderTemplates.controls[i]?.errors.error }}
+                      </ng-container>
+                    </p>
+                  </div>
+                  <span
+                    *ngIf="!reminderDesignTemplates[i]"
+                    class="inline-flex rounded-md shadow-sm w-full md:w-48 lg:w-48 mt-5 mb-5">
+                    <button
+                      (click)="selectDesignTemplate({ index: i })"
+                      type="button"
+                      class="inline-flex leading-5 white-button button w-full text-indigo-500 border-indigo-500"
+                      [disabled]="isLoading">
+                      Select email design
+                    </button>
+                  </span>
+                  <oz-finance-design-template-view
+                    *ngIf="reminderDesignTemplates[i]"
+                    [designTemplate]="reminderDesignTemplates[i]"
+                    [index]="i"
+                    (onRefresh)="refresh($event)"
+                    (onSelect)="selectDesignTemplate($event)">
+                  </oz-finance-design-template-view>
+                </div>
+                <div>
+                  <span
+                    class="inline-flex rounded-md shadow-sm w-full md:w-48 lg:w-48 mt-5">
+                    <button
+                      (click)="addReminder()"
+                      type="button"
+                      class="inline-flex leading-5 white-button button w-full text-indigo-500 border-indigo-500"
+                      [disabled]="isLoading">
+                      Add reminder
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>
+<oz-finance-design-template-modal
+  #designTemplateModal></oz-finance-design-template-modal>

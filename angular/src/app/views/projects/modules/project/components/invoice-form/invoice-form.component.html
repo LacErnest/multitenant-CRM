@@ -1,0 +1,733 @@
+<div *ngIf="invoiceForm" class="mx-auto">
+  <div class="bg-white overflow-hidden shadow rounded-lg">
+    <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+      <div
+        class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+        <div class="ml-4 mt-2">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            {{ invoice ? 'Invoice: ' + invoice?.number : 'New invoice' }}
+          </h3>
+
+          <span *ngIf="invoice" class="text-xs" [ngClass]="statusColor()">{{
+            invoice?.status | enumValue: 'invoicestatus'
+          }}</span>
+        </div>
+
+        <oz-finance-invoice-form-action-buttons
+          *ngIf="showInvoiceActionBtns"
+          [downloadEnabled]="!!invoice?.legal_entity_id"
+          [invoice]="invoice"
+          [currency]="currency"
+          [statusChangeEnabled]="!invoiceStatusChangeDisabled"
+          [userRole]="userRole"
+          [onPartialPay]="onPartialPay"
+          (requireEmailTemplate)="onRequireEmailTemplate($event)"
+          (statusUpdated)="
+            invoiceStatusUpdated($event)
+          "></oz-finance-invoice-form-action-buttons>
+      </div>
+    </div>
+
+    <div class="relative px-4 py-5 sm:p-6">
+      <div *ngIf="isLoading" class="loading-overlay">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form (ngSubmit)="submit()" [formGroup]="invoiceForm" autocomplete="off">
+        <!-- Details Heading -->
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Details</h3>
+
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+            View and edit invoice details. Items marked with an asterisk are
+            required fields.
+          </p>
+        </div>
+
+        <!-- Legal entity -->
+        <div class="mt-6 sm:mt-5">
+          <div
+            class="sm:grid sm:grid-cols-3 sm:gap-4 sm:border-t sm:border-gray-200 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="legal_entity_id">
+              Legal Entity
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <oz-finance-legal-entity-select
+                  [noCreatedEntity]="!invoice"
+                  [legalEntityFormControlName]="'legal_entity_id'"
+                  [legalEntityParentFormGroup]="invoiceForm"
+                  [selectedLegalEntity]="invoice?.legal_entity"
+                  [isLegacyCustomer]="checkIfLegacyCustomer()"
+                  (selectedEntityChanged)="onSelectedEntityChanged($event)"
+                  [defaultValue]="invoice?.order_legal_entity"
+                  id="legal_entity_id">
+                </oz-finance-legal-entity-select>
+              </div>
+
+              <p
+                *ngIf="
+                  invoiceForm.controls.legal_entity_id?.errors &&
+                  invoiceForm.controls.legal_entity_id?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="legal_entity_id_error">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Production Center -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="company">
+              Production Center
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [readonly]="true"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="company"
+                  id="company">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="customer">
+              Customer
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [readonly]="true"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="customer"
+                  id="customer">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="date">
+              Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  (dateTimeChange)="updateDueDate($event)"
+                  [class.border-red-300]="
+                    invoiceForm.errors?.date_due_date &&
+                    invoiceForm.controls.date?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    invoiceForm.errors?.date_due_date &&
+                    invoiceForm.controls.date?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    invoiceForm.errors?.date_due_date &&
+                    invoiceForm.controls.date?.dirty
+                  "
+                  [maxLength]="128"
+                  [owlDateTimeTrigger]="datePicker"
+                  [owlDateTime]="datePicker"
+                  [readOnly]="true"
+                  [required]="true"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="date"
+                  id="date"
+                  placeholder="pick a date"
+                  type="text" />
+
+                <div
+                  *ngIf="
+                    invoiceForm.errors?.date_due_date &&
+                    invoiceForm.controls.date?.dirty
+                  "
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      fill-rule="evenodd" />
+                  </svg>
+                </div>
+
+                <owl-date-time
+                  #datePicker
+                  [disabled]="readOnly"
+                  [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+
+              <p
+                *ngIf="
+                  invoiceForm.errors?.date_due_date &&
+                  invoiceForm.controls.date?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="date-error-date">
+                Invoice date cannot after due date
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Due Date -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+            Due Date
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                (ngModelChange)="dateOptionChanged($event)"
+                [(ngModel)]="dateOption"
+                [bindLabel]="'value'"
+                [bindValue]="'key'"
+                [class.read-only]="readOnly"
+                [clearable]="false"
+                [items]="dateOptions"
+                [ngModelOptions]="{ standalone: true }"
+                [readonly]="readOnly"
+                class="custom form-select transition duration-150 ease-in-out">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Due date picker -->
+        <div
+          *ngIf="dateOption === 'custom'"
+          [@displayAnimation]
+          class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="due_date">
+              Custom Due Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    invoiceForm.errors?.date_due_date &&
+                    invoiceForm.controls.due_date?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    invoiceForm.errors?.date_due_date &&
+                    invoiceForm.controls.due_date?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    invoiceForm.errors?.date_due_date &&
+                    invoiceForm.controls.due_date?.dirty
+                  "
+                  [maxLength]="128"
+                  [owlDateTimeTrigger]="dueDatePicker"
+                  [owlDateTime]="dueDatePicker"
+                  [readOnly]="true"
+                  [required]="true"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="due_date"
+                  id="due_date"
+                  placeholder="pick a date"
+                  type="text" />
+
+                <div
+                  *ngIf="
+                    invoiceForm.errors?.date_due_date &&
+                    invoiceForm.controls.due_date?.dirty
+                  "
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      fill-rule="evenodd" />
+                  </svg>
+                </div>
+
+                <owl-date-time
+                  #dueDatePicker
+                  [disabled]="readOnly"
+                  [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+
+              <p
+                *ngIf="
+                  invoiceForm.errors?.date_due_date &&
+                  invoiceForm.controls.due_date?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="due_date-error-date">
+                Due date cannot be before invoice date
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- paid Date -->
+        <div
+          *ngIf="invoice?.status === invoiceStatusEnum.PAID"
+          class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Paid Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <span
+                  class="form-input border-none block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  >{{ invoice?.pay_date | momentDate: 'DD/MM/YYYY' }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reference -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="reference">
+              Reference
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.read-only]="readOnly"
+                  [maxlength]="50"
+                  [readOnly]="readOnly"
+                  class="h-auto form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="reference"
+                  id="reference"
+                  placeholder="reference" />
+              </div>
+              <!--              <p class="mt-2 text-sm text-gray-500">Lorem ipsum dolor sit amet.</p>-->
+            </div>
+          </div>
+        </div>
+
+        <!-- Currency -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="currency_code">
+            Currency
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                (change)="changeCurrency()"
+                [bindLabel]="'value'"
+                [bindValue]="'key'"
+                [class.read-only]="readOnly"
+                [clearable]="false"
+                [items]="'currencycode' | enum: 'array'"
+                [readonly]="readOnly"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="currency_code"
+                id="currency_code">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+            for="manual_input">
+            Manual input
+          </label>
+
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input
+              (ngModelChange)="changeCurrency()"
+              class="hidden"
+              formControlName="manual_input"
+              id="manual_input"
+              type="checkbox" />
+
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              [class.opacity-25]="readOnly"
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="toggleManualInput(false)"
+                [ngClass]="[
+                  invoiceForm.get('manual_input').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200',
+                  readOnly
+                    ? 'cursor-default'
+                    : 'cursor-pointer focus:shadow-outline'
+                ]"
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    invoiceForm.get('manual_input').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manual input -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+            for="master">
+            Shared invoice
+          </label>
+
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input
+              class="hidden"
+              formControlName="master"
+              id="master"
+              type="checkbox" />
+
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              [class.opacity-25]="readOnly"
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="toggleManualInput(true)"
+                [ngClass]="[
+                  invoiceForm.get('master').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200',
+                  readOnly
+                    ? 'cursor-default'
+                    : 'cursor-pointer focus:shadow-outline'
+                ]"
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    invoiceForm.get('master').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- Earn-out -->
+        <div
+          *ngIf="canToggleEarnoutEligibility() && project.order.intra_company"
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+            for="eligible_for_earnout">
+            Mark as eligible for earn-out
+          </label>
+
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input
+              class="hidden"
+              formControlName="eligible_for_earnout"
+              id="eligible_for_earnout"
+              type="checkbox" />
+
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              [class.opacity-25]="readOnly"
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="toggleEligibleForEarnout()"
+                [ngClass]="[
+                  invoiceForm.get('eligible_for_earnout').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200',
+                  readOnly
+                    ? 'cursor-default'
+                    : 'cursor-pointer focus:shadow-outline'
+                ]"
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    invoiceForm.get('eligible_for_earnout').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manual input -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+            for="customer_has_been_notified">
+            Customer has been notified
+          </label>
+
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input
+              class="hidden"
+              formControlName="customer_has_been_notified"
+              id="customer_has_been_notified"
+              type="checkbox" />
+
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              [class.opacity-25]="true"
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                [ngClass]="[
+                  invoiceForm.get('customer_has_been_notified').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200',
+                  'cursor-default'
+                ]"
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    invoiceForm.get('customer_has_been_notified').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- customer notification Date -->
+        <div *ngIf="invoice?.customer_notified_at" class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Customer notification date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md sm:max-w-xs">
+                <span
+                  class="form-input border-none block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  >{{
+                    invoice?.customer_notified_at | momentDate: 'DD/MM/YYYY'
+                  }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Reminders notification -->
+        <div
+          *ngIf="canToggleRemindersDisabled()"
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+            for="send_client_reminders">
+            Send reminders to the client
+          </label>
+
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input
+              class="hidden"
+              formControlName="send_client_reminders"
+              id="send_client_reminders"
+              type="checkbox" />
+
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="toggleSendingClientRemindersStatus()"
+                [ngClass]="[
+                  invoiceForm.get('send_client_reminders').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200'
+                ]"
+                aria-checked="false"
+                class="cursor-pointer focus:shadow-outline bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    invoiceForm.get('send_client_reminders').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="isEmailTemplateVisible">
+          <oz-finance-email-template-section
+            [emailTemplateSelect]="onEmailTemplateSelect.asObservable()"
+            (onEmailTemplateUpdated)="handleEmailTemplateUpdate($event)"
+            [readOnly]="!canSelectEmailTemplate"
+            [emailTemplate]="emailTemplate"></oz-finance-email-template-section>
+        </ng-container>
+
+        <!-- Items Heading -->
+        <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Items</h3>
+
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+            Create and edit item quantity and price.
+          </p>
+        </div>
+
+        <div class="relative">
+          <!-- Items component -->
+          <div class="mt-6 relative z-index-auto">
+            <oz-finance-entity-line-editor
+              (itemAdded)="itemAdded($event)"
+              (itemDeleted)="itemDeleted($event)"
+              (itemUpdated)="itemEdited($event)"
+              (itemsOrderChanged)="itemsOrderChanged($event)"
+              (modifierAdded)="modifierAdded($event)"
+              (modifierDeleted)="modifierDeleted($event)"
+              (modifierUpdated)="modifierEdited($event)"
+              (vatStatusChanged)="vatStatusChanged($event)"
+              (vatEdited)="vatEdited($event)"
+              (downPaymentStatusChanged)="downPaymentStatusChanged($event)"
+              (downPaymentEdited)="downPaymentEdited($event)"
+              [entity]="entity"
+              [legalEntityCountry]="legalEntityCountry"
+              [countryForComparison]="project?.customer?.country"
+              [currency]="currency"
+              [isManualInput]="invoiceForm?.get('manual_input').value"
+              [isMasterInput]="invoiceForm?.get('master').value"
+              [items]="items"
+              [modifiers]="modifiers"
+              [readOnly]="readOnly"
+              [taxRate]="taxRate"
+              [down_payment]="downPayment"
+              [nonVatLiable]="customerIsNonVatLiable"
+              [vatStatus]="invoice?.vat_status"
+              [entity]="entity"
+              [downPaymentStatus]="invoice?.down_payment_status"
+              [priceModifierService]="priceModifierLogicService">
+            </oz-finance-entity-line-editor>
+          </div>
+          <!-- Invoice Payments component -->
+          <div class="mt-6 relative z-index-auto" *ngIf="invoice">
+            <oz-finance-invoice-payment-list
+              [invoice]="invoice"
+              [events]="onPartialPay.asObservable()"
+              [modalToogleEvent]="onPartialPayModalToogle"
+              (invoiceUpdated)="invoiceUpdated($event)"
+              [onRefresh]="invoicePaymentRefreshSubject.asObservable()">
+            </oz-finance-invoice-payment-list>
+          </div>
+        </div>
+
+        <div *ngIf="!readOnly" class="mt-8 pt-5">
+          <div class="flex justify-end">
+            <span class="ml-3 inline-flex rounded-md shadow-sm">
+              <button
+                [class.disabled]="invoiceForm?.invalid"
+                [disabled]="!isLoading && invoiceForm.valid ? undefined : true"
+                class="inline-flex leading-5 indigo-button button"
+                type="submit">
+                Save Invoice
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Invoice Comments -->
+  <div class="my-6 z-index-auto" *ngIf="invoice">
+    <oz-finance-entity-comment-editor
+      [model]="invoice"
+      [entity]="entity"
+      [modalToogleEvent]="onActiveModalToogle"
+      (invoiceUpdated)="invoiceUpdated($event)">
+    </oz-finance-entity-comment-editor>
+  </div>
+  <div class="py-6 z-index-auto">
+    <oz-finance-credit-notes-list
+      *ngIf="invoice?.details?.rows.length"
+      [creditNotes]="invoice?.details"></oz-finance-credit-notes-list>
+  </div>
+</div>
+
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>

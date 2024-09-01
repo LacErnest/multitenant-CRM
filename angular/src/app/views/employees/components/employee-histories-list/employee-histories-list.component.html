@@ -1,0 +1,30 @@
+<div class="overflow-x-hidden shadow rounded-lg">
+  <oz-finance-datatable
+    (addClicked)="addHistory()"
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (editClicked)="editHistory($event)"
+    (selectionDeleted)="deleteHistory($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [count]="histories?.count"
+    [currencyOverride]="employeeCurrency"
+    [datatableType]="'employee_history'"
+    [isLoading]="isLoading"
+    [filters]="preferences?.filters"
+    [minTableHeight]="true"
+    [page]="page"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="histories?.data"
+    [sorts]="preferences?.sorts"
+    [selectionType]="'single'"
+    [title]="'Salary History'">
+  </oz-finance-datatable>
+</div>
+
+<oz-finance-employee-history-modal
+  #employeeHistoryModal></oz-finance-employee-history-modal>

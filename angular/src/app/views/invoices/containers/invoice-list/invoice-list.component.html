@@ -1,0 +1,35 @@
+<oz-finance-page-header [heading]="'Invoices'"></oz-finance-page-header>
+<div class="overflow-hidden max-w-screen-8xl mx-auto sm:px-6 lg:px-8">
+  <div class="py-6 overflow-y-auto sm:overflow-y-visible">
+    <oz-finance-datatable
+      (cloneClicked)="cloneInvoice($event)"
+      (columnsUpdated)="columnsUpdated($event)"
+      (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+      (editClicked)="editInvoice($event)"
+      (filtersUpdated)="filtersUpdated($event)"
+      (pageUpdated)="pageUpdated($event)"
+      (sortsUpdated)="sortsUpdated($event)"
+      (downloadClicked)="downloadInvoice($event)"
+      (exportClicked)="exportInvoices()"
+      [allColumns]="preferences?.all_columns"
+      [defaultColumns]="preferences?.default_columns"
+      [defaultFilters]="preferences?.default_filters"
+      [buttonConfig]="buttonConfig"
+      [columns]="preferences?.columns"
+      [defaultColumns]="preferences?.default_columns"
+      [defaultFilters]="preferences?.default_filters"
+      [count]="invoices?.count"
+      [datatableType]="'invoices'"
+      [filters]="preferences?.filters"
+      [isLoading]="isLoading"
+      [page]="page"
+      [rowMenuConfig]="rowMenuConfig"
+      [rows]="invoices?.data"
+      [selectionType]="'single'"
+      [showDetailRow]="true"
+      [sorts]="preferences?.sorts"
+      [title]="'Invoices'"
+      (refreshClicked)="refreshClicked()"></oz-finance-datatable>
+  </div>
+</div>
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>

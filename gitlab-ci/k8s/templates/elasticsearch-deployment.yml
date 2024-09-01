@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.app.name }}
+  name: elasticsearch
+  namespace: {{ .Values.app.name }}
+  labels:
+    app: elasticsearch
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        # Elasticsearch container
+        - name: elasticsearch
+          image: "elasticsearch:6.8.13"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: elasticsearch
+              containerPort: 9200
+          command: ["bin/elasticsearch"]
+          args: ["-Ediscovery.type=single-node"]
+          securityContext:
+            privileged: true
+            runAsUser: 1000

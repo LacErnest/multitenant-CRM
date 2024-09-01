@@ -1,0 +1,62 @@
+.filters-modal {
+  @apply overflow-y-auto;
+  min-height: 80%;
+  @screen xl {
+    min-height: 60%;
+  }
+  @media (min-width: 1920px) {
+    min-height: 40%;
+  }
+
+  .select-item {
+    @apply mt-5 w-full;
+    @screen md {
+      @apply w-64;
+    }
+    @screen xl {
+      width: 24rem;
+    }
+
+    &:last-of-type {
+      @apply mb-4;
+    }
+
+    input {
+      @apply w-full;
+    }
+
+    .form-select {
+      @apply h-8;
+
+      ::ng-deep {
+        .ng-dropdown-panel {
+          margin-bottom: 20px;
+          z-index: 50;
+        }
+      }
+    }
+  }
+}
+
+::ng-deep {
+  .cdk-overlay-pane {
+    width: 78%;
+    @screen sm {
+      width: auto;
+    }
+    @screen md {
+      @apply w-64;
+    }
+    @screen xl {
+      width: 24rem;
+    }
+
+    .owl-dt-container {
+      @apply w-full;
+    }
+
+    .owl-dt-calendar {
+      @apply h-full;
+    }
+  }
+}

@@ -1,0 +1,36 @@
+<oz-finance-modal
+  #modal
+  [htmlTemplate]="chooseCompanyLegalEntityForm"
+  [isFromDisabled]="isLegalEntityFormDisabled"
+  [modalHeading]="'Choose company legal entity'">
+</oz-finance-modal>
+
+<ng-template #chooseCompanyLegalEntityForm>
+  <form autocomplete="off" id="legalEntityForm" [formGroup]="legalEntityForm">
+    <!-- Legal Entity -->
+    <div class="mt-6 sm:mt-5">
+      <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+        <label
+          class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+          for="legal_entity_id">
+          Legal Entity
+        </label>
+
+        <div class="mt-1 sm:mt-0 sm:col-span-2">
+          <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+            <ng-select
+              class="custom form-select transition duration-150 ease-in-out"
+              formControlName="legal_entity_id"
+              id="legal_entity_id"
+              ozFinanceAutoFocus
+              [bindLabel]="'name'"
+              [bindValue]="'legal_entity_id'"
+              [clearable]="true"
+              [items]="companyLegalEntities">
+            </ng-select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-template>

@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.app.name }}
+  name: app
+  annotations:
+    app.gitlab.com/app: {{ .Values.project_path }}
+    app.gitlab.com/env: {{ .Values.environment_slug }}
+  labels:
+    app: app
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+        app.gitlab.com/app: {{ .Values.project_path }}
+        app.gitlab.com/env: {{ .Values.environment_slug }}
+    spec:
+      volumes:
+        - name: nginx-vhost
+          configMap:
+            name: nginx-vhost
+        - name: php-env
+          configMap:
+            name: php-env
+            items:
+              - key: .env
+                path: .env
+        - name: vendors
+          emptyDir: {}
+        - name: storage
+          emptyDir: {}
+      imagePullSecrets:
+        - name: oz-finance-gitlab-registry
+      initContainers:
+        - name: init-mysql
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup mysql-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+        - name: init-redis
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup redis-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"]
+        - name: init-elasticsearch
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup elasticsearch-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"]
+      containers:
+        # PHP fpm container
+        - name: php
+          image: "{{ .Values.php.image }}-fpm:{{ .Values.environment }}"
+          imagePullPolicy: Always
+          env:
+            - name: APP_ENV
+              value: {{ .Values.environment }}
+          ports:
+            - name: phpfpm
+              containerPort: 9000
+              protocol: TCP
+          volumeMounts:
+            - name: vendors
+              mountPath: /app/vendor
+            - name: php-env
+              mountPath: /app/.env
+              subPath: .env
+            - name: storage
+              mountPath: /app/storage/app/public
+
+        # PHP worker container
+        - name: worker
+          image: "{{ .Values.php.image }}-cli:{{ .Values.environment }}"
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: vendors
+              mountPath: /app/vendor
+            - name: php-env
+              mountPath: /app/.env
+              subPath: .env
+            - name: php-env
+              mountPath: /nodejs/scripts/.env
+              subPath: .env
+
+        # Nginx container
+        - name: nginx
+          image: "{{ .Values.nginx.image }}:{{ .Values.environment }}"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+          volumeMounts:
+            - name: nginx-vhost
+              mountPath: /etc/nginx/conf.d
+            - name: storage
+              mountPath: /app/storage/public/

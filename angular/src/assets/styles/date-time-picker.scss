@@ -1,0 +1,18 @@
+.owl-dt-calendar-cell-selected {
+  @apply bg-indigo-700 !important;
+}
+
+.owl-dt-calendar-cell-in-range {
+  @apply bg-indigo-300 !important;
+}
+
+.owl-dt-container-info-active {
+  @apply text-indigo-700 !important;
+}
+
+.owl-dt-trigger-disabled {
+  &:focus {
+    border-color: #d2d6dc;
+    box-shadow: none;
+  }
+}

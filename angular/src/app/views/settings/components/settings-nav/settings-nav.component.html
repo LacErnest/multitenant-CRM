@@ -1,0 +1,191 @@
+<div class="bg-white overflow-hidden shadow sm:rounded-lg mb-1 sm:mb-4 lg:mb-0">
+  <div class="px-4 py-5 sm:p-6">
+    <nav class="flex overflow-x-auto lg:flex-col">
+      <a
+        *ngIf="showSettingsLink(settingsRoutes.TEMPLATES)"
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'templates'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2" />
+        </svg>
+
+        <span class="truncate"> Templates </span>
+      </a>
+
+      <a
+        *ngIf="showSettingsLink(settingsRoutes.USERS)"
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'users'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24">
+          <path
+            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+
+        <span class="truncate"> Users </span>
+      </a>
+
+      <a
+        *ngIf="showSettingsLink(settingsRoutes.SERVICES)"
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'services'"
+        class="mt-1 group nav-link">
+        <svg class="nav-icon" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+          <path
+            clip-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+            fill-rule="evenodd"></path>
+        </svg>
+
+        <span class="truncate"> Services </span>
+      </a>
+
+      <a
+        *ngIf="showSettingsLink(settingsRoutes.LOANS)"
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'loans'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"></path>
+        </svg>
+
+        <span class="truncate"> Loans </span>
+      </a>
+
+      <a
+        *ngIf="showSettingsLink(settingsRoutes.COMPANY_LEGAL_ENTITIES)"
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'legal_entities'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        </svg>
+
+        <span class="truncate"> Legal Entities </span>
+      </a>
+      <a
+        *ngIf="showSuperAdminSettingsLink()"
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'sales_commissions'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="m7 13 6-6m-5-.5h.01m2.98 7H11m1.007-11.313a2.75 2.75 0 0 0 2.1.87 2.745 2.745 0 0 1 2.837 2.837 2.749 2.749 0 0 0 .87 2.1 2.747 2.747 0 0 1 0 4.014 2.748 2.748 0 0 0-.87 2.1 2.746 2.746 0 0 1-2.837 2.837 2.75 2.75 0 0 0-2.1.87 2.748 2.748 0 0 1-4.014 0 2.75 2.75 0 0 0-2.1-.87 2.744 2.744 0 0 1-2.837-2.837 2.749 2.749 0 0 0-.87-2.1 2.747 2.747 0 0 1 0-4.014 2.75 2.75 0 0 0 .87-2.1 2.745 2.745 0 0 1 2.838-2.837 2.749 2.749 0 0 0 2.1-.87 2.748 2.748 0 0 1 4.013 0Z" />
+        </svg>
+        <span class="truncate"> Sales commissions </span>
+      </a>
+      <a
+        *ngIf="showSuperAdminSettingsLink()"
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'price_modifiers'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 32 32">
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            class="st0"
+            d="M6.5,9.9L7,9.5c0.8-0.6,1.4-1.6,1.5-2.6l0.1-0.4c0.4-2.6,3.2-4.2,5.8-3.2l0,0c1.1,0.4,2.2,0.4,3.3,0l0,0c2.5-1.1,5.4,0.5,5.8,3.2l0.1,0.4c0.1,1,0.7,2,1.5,2.6l0.5,0.4c2.1,1.6,2.1,4.6,0,6.2L25,16.5c-0.8,0.6-1.4,1.6-1.5,2.6l-0.1,0.4c-0.4,2.6-3.2,4.2-5.8,3.2l0,0c-1.1-0.4-2.2-0.4-3.3,0l0,0c-2.5,1.1-5.4-0.5-5.8-3.2l-0.1-0.4c-0.1-1-0.7-2-1.5-2.6l-0.5-0.4C4.5,14.5,4.5,11.5,6.5,9.9z" />
+          <polyline class="st0" points="22,22 22,29 16,26 10,29 10,22 " />
+          <line class="st0" x1="16" y1="9" x2="16" y2="10" />
+          <line class="st0" x1="16" y1="16" x2="16" y2="17" />
+          <path
+            class="st0"
+            d="M17,10h-1.5c-0.8,0-1.5,0.7-1.5,1.5v0c0,0.8,0.7,1.5,1.5,1.5h1c0.8,0,1.5,0.7,1.5,1.5v0c0,0.8-0.7,1.5-1.5,1.5H15" />
+          <rect x="-72" y="-360" class="st3" width="536" height="680" />
+        </svg>
+        <span class="truncate"> Price modifiers </span>
+      </a>
+      <a
+        *ngIf="showSettingsLink(settingsRoutes.RENT_COSTS)"
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'rent_costs'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+
+        <span class="truncate"> Monthly Costs </span>
+      </a>
+      <a
+        *ngIf="showSettingsLink(settingsRoutes.EMAIL_MANAGEMENT)"
+        [routerLinkActive]="'active-nav-link'"
+        [routerLink]="'email_management'"
+        class="mt-1 group nav-link">
+        <svg
+          class="nav-icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="m3.5 5.5 7.9 6c.4.3.8.3 1.2 0l7.9-6M4 19h16c.6 0 1-.4 1-1V6c0-.6-.4-1-1-1H4a1 1 0 0 0-1 1v12c0 .6.4 1 1 1Z" />
+        </svg>
+
+        <span class="truncate"> Email Management </span>
+      </a>
+    </nav>
+  </div>
+</div>

@@ -1,0 +1,797 @@
+<div *ngIf="purchaseOrderForm" class="mx-auto">
+  <div class="bg-white overflow-hidden shadow rounded-lg">
+    <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+      <div
+        class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+        <div class="ml-4 mt-2">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            {{
+              purchaseOrder
+                ? 'Purchase Order: ' + purchaseOrder?.number
+                : 'New purchase order'
+            }}
+          </h3>
+
+          <span *ngIf="purchaseOrder" class="text-xs" [ngClass]="statusColor()">
+            {{ purchaseOrder?.status | enumValue: 'purchaseorderstatus' }}
+          </span>
+        </div>
+
+        <div *ngIf="purchaseOrder" class="ml-4 mt-2 flex-shrink-0 table-btns">
+          <ng-container
+            [ngSwitch]="purchaseOrder?.status"
+            *ngIf="showActionBtns()">
+            <!-- Set submitted -->
+            <ng-container *ngSwitchCase="purchaseOrderStatus.DRAFT">
+              <span
+                *ngIf="canBeSubmitted()"
+                class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+                <button
+                  (click)="setOrderAsSubmitted(purchaseOrderStatus.SUBMITTED)"
+                  class="action-btn"
+                  type="button">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                    <path
+                      d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                  </svg>
+                </button>
+
+                <span class="tooltip w-auto"
+                  >Mark purchase order as submitted</span
+                >
+              </span>
+            </ng-container>
+
+            <!-- Set completed -->
+            <ng-container *ngSwitchCase="purchaseOrderStatus.SUBMITTED">
+              <span
+                class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+                <button
+                  (click)="setOrderAsSubmitted(purchaseOrderStatus.COMPLETED)"
+                  class="action-btn"
+                  type="button">
+                  <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </button>
+
+                <span class="tooltip w-auto"
+                  >Mark purchase order as completed</span
+                >
+              </span>
+            </ng-container>
+
+            <!-- Set authorized/rejected -->
+            <ng-container *ngSwitchCase="purchaseOrderStatus.COMPLETED">
+              <span
+                *ngIf="canBeSubmitted()"
+                class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+                <button
+                  (click)="setOrderAsAuthorized()"
+                  class="action-btn"
+                  type="button">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      fill-rule="evenodd"></path>
+                  </svg>
+                </button>
+
+                <span class="tooltip w-auto"
+                  >Mark purchase order as authorized</span
+                >
+              </span>
+
+              <span
+                *ngIf="canBeSubmitted()"
+                class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+                <button
+                  (click)="setOrderAsRejected()"
+                  class="action-btn"
+                  type="button">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M6 18L18 6M6 6l12 12"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"></path>
+                  </svg>
+                </button>
+
+                <span class="tooltip w-auto"
+                  >Mark purchase order as rejected</span
+                >
+              </span>
+            </ng-container>
+
+            <!-- Set paid -->
+            <!--            <ng-container *ngSwitchCase="purchaseOrderStatus.BILLED">-->
+            <!--              <span class="tooltip-element inline-block rounded-full shadow-sm table-btn">-->
+            <!--                <button (click)="setOrderAsPaid()"-->
+            <!--                        class="action-btn"-->
+            <!--                        type="button">-->
+            <!--                  <svg class="w-5 h-5"-->
+            <!--                       fill="currentColor"-->
+            <!--                       viewBox="0 0 20 20">-->
+            <!--                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>-->
+            <!--                    <path clip-rule="evenodd"-->
+            <!--                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"-->
+            <!--                          fill-rule="evenodd">-->
+            <!--                    </path>-->
+            <!--                  </svg>-->
+            <!--                </button>-->
+
+            <!--                <span class="tooltip w-auto">Mark purchase order as paid</span>-->
+            <!--              </span>-->
+            <!--            </ng-container>-->
+          </ng-container>
+
+          <!-- Upload invoice -->
+          <span
+            *ngIf="showUploadInvoiceBtn()"
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button class="action-btn" type="button">
+              <svg
+                class="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  clip-rule="evenodd"
+                  d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                  fill-rule="evenodd"></path>
+              </svg>
+
+              <input
+                #upload_file
+                (change)="uploadFile($event.target.files)"
+                accept="application/pdf"
+                class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                id="upload_file"
+                type="file" />
+            </button>
+
+            <span class="tooltip w-auto">Upload Invoice</span>
+          </span>
+
+          <!-- Export -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button (click)="download()" class="action-btn" type="button">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  clip-rule="evenodd"
+                  d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+                  fill-rule="evenodd"></path>
+              </svg>
+            </button>
+            <span class="tooltip w-auto">Download purchase order</span>
+          </span>
+
+          <!-- Cancel -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              (click)="setOrderAsCanceled(purchaseOrderStatus.CANCELED)"
+              *ngIf="showCancelBtn()"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+            <span class="tooltip w-auto">Cancel purchase order</span>
+          </span>
+
+          <!-- Set to draft -->
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button
+              (click)="setPurchaseOrderAsDraft(purchaseOrderStatus.DRAFT)"
+              *ngIf="showDraftButton()"
+              class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+              type="button">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  clip-rule="evenodd"
+                  d="M5 2a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V4a2 2 0 00-2-2H5zm4.707 3.707a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L8.414 9H10a3 3 0 013 3v1a1 1 0 102 0v-1a5 5 0 00-5-5H8.414l1.293-1.293z"
+                  fill-rule="evenodd"></path>
+              </svg>
+            </button>
+            <span class="tooltip w-auto">Mark purchase order as draft</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative px-4 py-5 sm:p-6">
+      <div *ngIf="isLoading" class="loading-overlay">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <form
+        (ngSubmit)="submit()"
+        [formGroup]="purchaseOrderForm"
+        autocomplete="off">
+        <!-- Details Heading -->
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Details</h3>
+
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+            View and edit purchase order details. Items marked with an asterisk
+            are required fields.
+          </p>
+        </div>
+
+        <!-- Legal entity -->
+        <div class="mt-6 sm:mt-5">
+          <div
+            class="sm:grid sm:grid-cols-3 sm:gap-4 sm:border-t sm:border-gray-200 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="legal_entity_id">
+              Legal Entity
+            </label>
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <oz-finance-legal-entity-select
+                  [legalEntityFormControlName]="'legal_entity_id'"
+                  [legalEntityParentFormGroup]="purchaseOrderForm"
+                  [noCreatedEntity]="!purchaseOrder"
+                  [isPurchaseOrder]="true"
+                  [selectedLegalEntity]="purchaseOrder?.legal_entity"
+                  (selectedEntityChanged)="onSelectedEntityChanged($event)"
+                  id="legal_entity_id">
+                </oz-finance-legal-entity-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Production Center -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="company">
+              Production Center
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [readonly]="true"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="company"
+                  id="company">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="date">
+              Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  (dateTimeChange)="updateDeliveryDate($event)"
+                  [class.border-red-300]="
+                    purchaseOrderForm.errors?.date_delivery_date &&
+                    purchaseOrderForm.controls.date?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    purchaseOrderForm.errors?.date_delivery_date &&
+                    purchaseOrderForm.controls.date?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    purchaseOrderForm.errors?.date_delivery_date &&
+                    purchaseOrderForm.controls.date?.dirty
+                  "
+                  [maxLength]="128"
+                  [owlDateTimeTrigger]="datePicker"
+                  [owlDateTime]="datePicker"
+                  [readOnly]="true"
+                  [required]="true"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="date"
+                  id="date"
+                  placeholder="pick a date"
+                  type="text" />
+
+                <div
+                  *ngIf="
+                    purchaseOrderForm.errors?.date_delivery_date &&
+                    purchaseOrderForm.controls.date?.dirty
+                  "
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      fill-rule="evenodd" />
+                  </svg>
+                </div>
+
+                <owl-date-time
+                  #datePicker
+                  [disabled]="readOnly"
+                  [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+
+              <p
+                *ngIf="
+                  purchaseOrderForm.errors?.date_delivery_date &&
+                  purchaseOrderForm.controls.date?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="date-error-date">
+                PurchaseOrder date cannot be equal or after delivery date
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery Date -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="delivery_date">
+              Delivery Date
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.border-red-300]="
+                    purchaseOrderForm.errors?.date_delivery_date &&
+                    purchaseOrderForm.controls.delivery_date?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    purchaseOrderForm.errors?.date_delivery_date &&
+                    purchaseOrderForm.controls.delivery_date?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    purchaseOrderForm.errors?.date_delivery_date &&
+                    purchaseOrderForm.controls.delivery_date?.dirty
+                  "
+                  [maxLength]="128"
+                  [owlDateTimeTrigger]="deliveryDatePicker"
+                  [owlDateTime]="deliveryDatePicker"
+                  [readOnly]="true"
+                  [required]="true"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="delivery_date"
+                  id="delivery_date"
+                  placeholder="pick a date"
+                  type="text" />
+
+                <div
+                  *ngIf="
+                    purchaseOrderForm.errors?.date_delivery_date &&
+                    purchaseOrderForm.controls.delivery_date?.dirty
+                  "
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      fill-rule="evenodd" />
+                  </svg>
+                </div>
+
+                <owl-date-time
+                  #deliveryDatePicker
+                  [disabled]="readOnly"
+                  [pickerType]="'calendar'">
+                </owl-date-time>
+              </div>
+
+              <p
+                *ngIf="
+                  purchaseOrderForm.errors?.date_delivery_date &&
+                  purchaseOrderForm.controls.delivery_date?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="delivery_date-error-date">
+                Delivery date cannot be equal or before Purchase order date
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment terms -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="payment_terms">
+              Payment Terms
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.read-only]="readOnly"
+                  [class.border-red-300]="
+                    purchaseOrderForm.controls.payment_terms?.errors &&
+                    purchaseOrderForm.controls.payment_terms?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    purchaseOrderForm.controls.payment_terms?.errors &&
+                    purchaseOrderForm.controls.payment_terms?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    purchaseOrderForm.controls.payment_terms?.errors &&
+                    purchaseOrderForm.controls.payment_terms?.dirty
+                  "
+                  [min]="0"
+                  [max]="255"
+                  [readOnly]="readOnly"
+                  [required]="true"
+                  [options]="{ suffix: ' days', align: 'left', precision: 0 }"
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="payment_terms"
+                  id="payment_terms"
+                  placeholder="Payment Terms"
+                  type="text"
+                  currencyMask />
+
+                <div
+                  *ngIf="
+                    purchaseOrderForm.controls.payment_terms?.errors &&
+                    purchaseOrderForm.controls.payment_terms?.dirty
+                  "
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      clip-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      fill-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+
+              <p
+                *ngIf="
+                  purchaseOrderForm.controls.payment_terms?.errors?.required &&
+                  purchaseOrderForm.controls.payment_terms?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="text_field-error">
+                This field is required
+              </p>
+
+              <p
+                *ngIf="
+                  purchaseOrderForm.controls.payment_terms?.errors?.min &&
+                  purchaseOrderForm.controls.payment_terms?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="text_field-error-min">
+                Value must be more than 0
+              </p>
+
+              <p
+                *ngIf="
+                  purchaseOrderForm.controls.payment_terms?.errors?.max &&
+                  purchaseOrderForm.controls.payment_terms?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="text_field-error-max">
+                Value must be less than 256
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resource -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="resource_id">
+            Resource
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                (ngModelChange)="resourceChanged($event)"
+                [bindLabel]="'name'"
+                [bindValue]="'id'"
+                [clearable]="!purchaseOrder && !project?.purchase_order_project"
+                [items]="resourceSelect$ | async"
+                [loading]="isResourceLoading"
+                [readonly]="readOnly || project?.purchase_order_project"
+                [required]="true"
+                [typeahead]="resourceInput"
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="resource_id"
+                id="resource_id">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reference -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="reference">
+              Reference
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <input
+                  [class.read-only]="readOnly"
+                  [maxLength]="50"
+                  [readOnly]="readOnly"
+                  class="h-auto form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="reference"
+                  id="reference"
+                  placeholder="reference" />
+              </div>
+              <!--              <p class="mt-2 text-sm text-gray-500">Lorem ipsum dolor sit amet.</p>-->
+            </div>
+          </div>
+        </div>
+
+        <!-- Currency -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+          <label
+            class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+            for="currency_code">
+            Currency
+          </label>
+
+          <div class="mt-1 sm:mt-0 sm:col-span-2">
+            <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+              <ng-select
+                (change)="changeCurrency()"
+                [bindLabel]="'value'"
+                [bindValue]="'key'"
+                [clearable]="false"
+                [items]="'currencycode' | enum: 'array'"
+                [readonly]="
+                  readOnly || !purchaseOrderForm.get('manual_input').value
+                "
+                class="custom form-select transition duration-150 ease-in-out"
+                formControlName="currency_code"
+                id="currency_code">
+              </ng-select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Created by -->
+        <div class="mt-6 sm:mt-5" *ngIf="purchaseOrder?.created_by">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="created_by">
+              Created by
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [readonly]="true"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="created_by"
+                  id="created_by">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Authorised by -->
+        <div class="mt-6 sm:mt-5" *ngIf="purchaseOrder?.authorised_by">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="authorised_by">
+              Authorised by
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [readonly]="true"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="authorised_by"
+                  id="authorised_by">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Processed by -->
+        <div class="mt-6 sm:mt-5" *ngIf="purchaseOrder?.processed_by">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="processed_by">
+              Processed by
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [readonly]="true"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="processed_by"
+                  id="processed_by">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manual input -->
+        <div
+          class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+          <label
+            class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+            for="manual_input">
+            Manual input
+          </label>
+
+          <div class="mt-2 sm:mt-0 sm:col-span-2">
+            <input
+              (ngModelChange)="changeCurrency()"
+              class="hidden"
+              formControlName="manual_input"
+              id="manual_input"
+              type="checkbox" />
+
+            <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+            <div
+              [class.opacity-25]="readOnly"
+              class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+              <span
+                (click)="toggleManualInput()"
+                [ngClass]="[
+                  purchaseOrderForm.get('manual_input').value
+                    ? 'bg-indigo-600'
+                    : 'bg-gray-200',
+                  readOnly
+                    ? 'cursor-default'
+                    : 'cursor-pointer focus:shadow-outline'
+                ]"
+                aria-checked="false"
+                class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+                role="checkbox"
+                tabindex="0">
+                <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                <span
+                  [ngClass]="
+                    purchaseOrderForm.get('manual_input').value
+                      ? 'translate-x-5'
+                      : 'translate-x-0'
+                  "
+                  aria-hidden="true"
+                  class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Items Heading -->
+        <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Items</h3>
+
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+            Create and edit item quantity and price.
+          </p>
+        </div>
+
+        <!-- Items component -->
+        <div class="mt-6">
+          <oz-finance-entity-line-editor
+            (itemAdded)="itemAdded($event)"
+            (itemDeleted)="itemDeleted($event)"
+            (itemUpdated)="itemEdited($event)"
+            (itemsOrderChanged)="itemsOrderChanged($event)"
+            (modifierAdded)="modifierAdded($event)"
+            (modifierDeleted)="modifierDeleted($event)"
+            (modifierUpdated)="modifierEdited($event)"
+            (penaltyAdded)="penaltyAdded($event)"
+            (penaltyDeleted)="penaltyDeleted()"
+            (penaltyUpdated)="penaltyEdited($event)"
+            (vatStatusChanged)="vatStatusChanged($event)"
+            (vatEdited)="vatEdited($event)"
+            [entity]="entity"
+            [addDefaultEntityFee]="false"
+            [legalEntityCountry]="legalEntityCountry"
+            [countryForComparison]="
+              selectedResource?.country || purchaseOrder?.resource_country
+            "
+            [currency]="currency"
+            [isManualInput]="purchaseOrderForm?.get('manual_input').value"
+            [items]="items"
+            [modifiers]="modifiers"
+            [penalty]="penaltyPercentage()"
+            [penalty_type]="penaltyType()"
+            [penaltyReason]="penaltyReason()"
+            [readOnly]="itemsReadonly()"
+            [resourceId]="purchaseOrderForm.get('resource_id').value"
+            [showPenalty]="showPenalties"
+            [taxRate]="taxRate"
+            [vatStatus]="purchaseOrder?.vat_status"
+            [nonVatLiable]="resourceIsNonVatLiable"
+            [priceModifierService]="priceModifierLogicService">
+          </oz-finance-entity-line-editor>
+        </div>
+
+        <div *ngIf="!readOnly" class="mt-8 border-t border-gray-200 pt-5">
+          <div class="flex justify-end">
+            <span class="ml-3 inline-flex rounded-md shadow-sm">
+              <button
+                [disabled]="
+                  !isLoading && purchaseOrderForm.valid ? undefined : true
+                "
+                class="inline-flex leading-5 indigo-button button"
+                type="submit">
+                Save
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>
+<oz-finance-rating-modal
+  #ratingModal
+  [currency]="currency"></oz-finance-rating-modal>
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>
+<oz-finance-refusal-modal #refusalModal></oz-finance-refusal-modal>
+<oz-finance-paid-date-modal #paidModal></oz-finance-paid-date-modal>

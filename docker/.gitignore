@@ -1,0 +1,4 @@
+.docker-compose.env
+docker-compose.yml
+composer.phar
+.idea/

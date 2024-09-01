@@ -1,0 +1,11 @@
+.legal-content {
+  @apply w-full;
+
+  &.with-nav {
+    @screen lg {
+      // TODO: fix compilation SASS error and use var
+      //width: calc(100% - #{$nav-wrapper-width});
+      width: calc(100% - 240px);
+    }
+  }
+}

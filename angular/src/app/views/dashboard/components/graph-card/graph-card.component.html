@@ -1,0 +1,829 @@
+<div class="chart flex flex-col">
+  <!-- Chart details -->
+  <div class="mb-5">
+    <div class="chart-details">
+      <div *ngIf="analytics.chosen_period['total_' + entity]" class="card">
+        <div class="card-body-wrapper">
+          <div class="card-body">
+            <div class="icon-wrapper">
+              <svg
+                class="h-6 w-6 text-white"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+            </div>
+
+            <div class="info">
+              <dl>
+                <div class="main-info">
+                  <dt class="label">
+                    Total<span class="sm:hidden md:inline lg:hidden">:</span>
+                  </dt>
+
+                  <dd class="count-wrapper">
+                    <div class="count">
+                      {{ analytics.chosen_period['total_' + entity].count }}
+                    </div>
+                  </dd>
+                </div>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">Monetary value:</span>
+                    {{
+                      analytics.chosen_period['total_' + entity].monetary_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">VAT value:</span>
+                    {{
+                      analytics.chosen_period['total_' + entity].vat_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isCompanyChosen" class="card-footer">
+          <div class="view-link-wrapper">
+            <a class="view-link" (click)="viewData('total')"> View </a>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="analytics.chosen_period.drafts" class="card">
+        <div class="card-body-wrapper">
+          <div class="card-body">
+            <div class="icon-wrapper">
+              <svg
+                class="h-6 w-6 text-white"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </div>
+
+            <div class="info">
+              <dl>
+                <div class="main-info">
+                  <dt class="label">Drafts<span class="sm:hidden">:</span></dt>
+
+                  <dd class="count-wrapper">
+                    <div class="count">
+                      {{ analytics.chosen_period.drafts.count }}
+                    </div>
+                  </dd>
+                </div>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">Monetary value:</span>
+                    {{
+                      analytics.chosen_period.drafts.monetary_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">VAT value:</span>
+                    {{
+                      analytics.chosen_period.drafts.vat_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isCompanyChosen" class="card-footer">
+          <div class="view-link-wrapper">
+            <a class="view-link" (click)="viewData('draft')"> View </a>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="analytics.chosen_period.approved_authorised" class="card">
+        <div class="card-body-wrapper">
+          <div class="card-body">
+            <div class="icon-wrapper">
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="#fff"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+              </svg>
+            </div>
+
+            <div class="info">
+              <dl>
+                <div class="main-info">
+                  <dt class="label">
+                    Approved or authorised<span class="sm:hidden">:</span>
+                  </dt>
+
+                  <dd class="count-wrapper">
+                    <div class="count">
+                      {{ analytics.chosen_period.approved_authorised.count }}
+                    </div>
+                  </dd>
+                </div>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">Monetary value:</span>
+                    {{
+                      analytics.chosen_period.approved_authorised.monetary_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">VAT value:</span>
+                    {{
+                      analytics.chosen_period.approved_authorised.vat_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isCompanyChosen" class="card-footer">
+          <div class="view-link-wrapper">
+            <a class="view-link" (click)="viewData('approved_authorised')">
+              View
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="analytics.chosen_period.declined" class="card">
+        <div class="card-body-wrapper">
+          <div class="card-body">
+            <div class="icon-wrapper">
+              <svg
+                class="h-6 w-6 text-white"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+              </svg>
+            </div>
+
+            <div class="info">
+              <dl>
+                <div class="main-info">
+                  <dt class="label">
+                    Declined<span class="sm:hidden">:</span>
+                  </dt>
+
+                  <dd class="count-wrapper">
+                    <div class="count">
+                      {{ analytics.chosen_period.declined.count }}
+                    </div>
+                  </dd>
+                </div>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">Monetary value:</span>
+                    {{
+                      analytics.chosen_period.declined.monetary_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">VAT value:</span>
+                    {{
+                      analytics.chosen_period.declined.vat_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isCompanyChosen" class="card-footer">
+          <div class="view-link-wrapper">
+            <a class="view-link" (click)="viewData('declined')"> View </a>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="analytics.chosen_period.awaiting_payment" class="card">
+        <div class="card-body-wrapper">
+          <div class="card-body">
+            <div class="icon-wrapper">
+              <svg
+                class="h-6 w-6 text-white"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+
+            <div class="info">
+              <dl>
+                <div class="main-info">
+                  <dt class="label">
+                    Awaiting payment<span class="sm:hidden">:</span>
+                  </dt>
+
+                  <dd class="count-wrapper">
+                    <div class="count">
+                      {{ analytics.chosen_period.awaiting_payment.count }}
+                    </div>
+                  </dd>
+                </div>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">Monetary value:</span>
+                    {{
+                      analytics.chosen_period.awaiting_payment.monetary_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">VAT value:</span>
+                    {{
+                      analytics.chosen_period.awaiting_payment.vat_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isCompanyChosen" class="card-footer">
+          <div class="view-link-wrapper">
+            <a class="view-link" (click)="viewData('awaiting_payment')">
+              View
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="analytics.chosen_period.paid" class="card">
+        <div class="card-body-wrapper">
+          <div class="card-body">
+            <div class="icon-wrapper">
+              <svg
+                class="h-6 w-6 text-white"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+            </div>
+
+            <div class="info">
+              <dl>
+                <div class="main-info">
+                  <dt class="label">Paid<span class="sm:hidden">:</span></dt>
+
+                  <dd class="count-wrapper">
+                    <div class="count">
+                      {{ analytics.chosen_period.paid.count }}
+                    </div>
+                  </dd>
+                </div>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">Monetary value:</span>
+                    {{
+                      analytics.chosen_period.paid.monetary_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">VAT value:</span>
+                    {{
+                      analytics.chosen_period.paid.vat_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isCompanyChosen" class="card-footer">
+          <div class="view-link-wrapper">
+            <a class="view-link" (click)="viewData('paid')"> View </a>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="analytics.chosen_period.active" class="card">
+        <div class="card-body-wrapper">
+          <div class="card-body">
+            <div class="icon-wrapper">
+              <svg
+                class="h-6 w-6 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+
+            <div class="info">
+              <dl>
+                <div class="main-info">
+                  <dt class="label">Active<span class="sm:hidden">:</span></dt>
+
+                  <dd class="count-wrapper">
+                    <div class="count">
+                      {{ analytics.chosen_period.active.count }}
+                    </div>
+                  </dd>
+                </div>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">Monetary value:</span>
+                    {{
+                      analytics.chosen_period.active.monetary_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">VAT value:</span>
+                    {{
+                      analytics.chosen_period.active.vat_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isCompanyChosen" class="card-footer">
+          <div class="view-link-wrapper">
+            <a class="view-link" (click)="viewData('active')"> View </a>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="analytics.chosen_period.delivered" class="card">
+        <div class="card-body-wrapper">
+          <div class="card-body">
+            <div class="icon-wrapper">
+              <svg
+                class="h-6 w-6 text-white"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path
+                  d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76"></path>
+              </svg>
+            </div>
+
+            <div class="info">
+              <dl>
+                <div class="main-info">
+                  <dt class="label">
+                    Delivered / Invoiced<span class="sm:hidden">:</span>
+                  </dt>
+
+                  <dd class="count-wrapper">
+                    <div class="count">
+                      {{ analytics.chosen_period.delivered.count }}
+                    </div>
+                  </dd>
+                </div>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">Monetary value:</span>
+                    {{
+                      analytics.chosen_period.delivered.monetary_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">VAT value:</span>
+                    {{
+                      analytics.chosen_period.delivered.vat_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isCompanyChosen" class="card-footer">
+          <div class="view-link-wrapper">
+            <a class="view-link" (click)="viewData('delivered')"> View </a>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="analytics.chosen_period.awaiting_approval" class="card">
+        <div class="card-body-wrapper">
+          <div class="card-body">
+            <div class="icon-wrapper">
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="#fff"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+
+            <div class="info">
+              <dl>
+                <div class="main-info">
+                  <dt class="label">
+                    Awaiting order<span class="sm:hidden">:</span>
+                  </dt>
+
+                  <dd class="count-wrapper">
+                    <div class="count">
+                      {{ analytics.chosen_period.awaiting_approval.count }}
+                    </div>
+                  </dd>
+                </div>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">Monetary value:</span>
+                    {{
+                      analytics.chosen_period.awaiting_approval.monetary_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">VAT value:</span>
+                    {{
+                      analytics.chosen_period.awaiting_approval.vat_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isCompanyChosen" class="card-footer">
+          <div class="view-link-wrapper">
+            <a class="view-link" (click)="viewData('awaiting_approval')">
+              View
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="analytics.chosen_period.intra_company" class="card">
+        <div class="card-body-wrapper">
+          <div class="card-body">
+            <div class="icon-wrapper">
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="#fff"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+
+            <div class="info">
+              <dl>
+                <div class="main-info">
+                  <dt class="label">
+                    Intra Company<span class="sm:hidden">:</span>
+                  </dt>
+
+                  <dd class="count-wrapper">
+                    <div class="count">
+                      {{ analytics.chosen_period.intra_company.count }}
+                    </div>
+                  </dd>
+                </div>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">Monetary value:</span>
+                    {{
+                      analytics.chosen_period.intra_company.monetary_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">VAT value:</span>
+                    {{
+                      analytics.chosen_period.intra_company.vat_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isCompanyChosen" class="card-footer">
+          <div class="view-link-wrapper">
+            <a class="view-link" (click)="viewData('intra_company')"> View </a>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="analytics.chosen_period.overdue" class="card">
+        <div class="card-body-wrapper">
+          <div class="card-body">
+            <div class="icon-wrapper">
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="#fff"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+
+            <div class="info">
+              <dl>
+                <div class="main-info">
+                  <dt class="label">Overdue<span class="sm:hidden">:</span></dt>
+
+                  <dd class="count-wrapper">
+                    <div class="count">
+                      {{ analytics.chosen_period.overdue.count }}
+                    </div>
+                  </dd>
+                </div>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">Monetary value:</span>
+                    {{
+                      analytics.chosen_period.overdue.monetary_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+
+                <dd class="additional-info-wrapper">
+                  <div class="additional-info">
+                    <span class="text-gray-500">VAT value:</span>
+                    {{
+                      analytics.chosen_period.overdue.vat_value
+                        | currency: (userCurrency | enumValue: 'currencycode')
+                    }}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="isCompanyChosen" class="card-footer">
+          <div class="view-link-wrapper">
+            <a class="view-link" (click)="viewData('overdue')"> View </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <ng-container [ngSwitch]="chartType">
+      <ngx-charts-line-chart
+        *ngSwitchCase="chartTypes.TIMELINE"
+        [view]="view"
+        [scheme]="colorScheme[entity]"
+        [results]="chartData"
+        [legend]="true"
+        [legendPosition]="'below'"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [xAxis]="true"
+        [yAxis]="true"
+        [xAxisLabel]="'Time period'"
+        [yAxisLabel]="'Cost'"
+        [timeline]="true"
+        (select)="onSelect($event)">
+        <ng-template #tooltipTemplate let-model="model">
+          <div class="p-2">
+            <p class="text-base font-bold capitalize">{{ model.series }}</p>
+            <p class="text-base">
+              <span class="font-semibold"
+                >{{ model.name | titlecase }}:&nbsp;</span
+              >
+              {{
+                model.value
+                  | currency: (userCurrency | enumValue: 'currencycode')
+              }}
+            </p>
+          </div>
+        </ng-template>
+      </ngx-charts-line-chart>
+
+      <ngx-charts-bar-vertical-stacked
+        *ngSwitchCase="chartTypes.STACKED_VERTICAL_BAR"
+        [view]="view"
+        [scheme]="colorScheme[entity]"
+        [results]="chartData"
+        [gradient]="false"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="true"
+        [legendPosition]="'below'"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [yAxisLabel]="getYAxisLabel(entity)"
+        [animations]="true"
+        (select)="onSelect($event)">
+        <ng-template #tooltipTemplate let-model="model">
+          <div class="p-2">
+            <p class="text-base font-bold">{{ model.series }}</p>
+            <p class="text-base">
+              <span class="font-semibold"
+                >{{ model.name | titlecase }}:&nbsp;</span
+              >
+              {{
+                model.value
+                  | currency: (userCurrency | enumValue: 'currencycode')
+              }}
+            </p>
+
+            <ng-container *ngIf="showRevenueInTooltip(model)">
+              <p class="text-base">
+                <span class="font-semibold">Revenue:&nbsp;</span>
+                {{
+                  model.revenue
+                    | currency: (userCurrency | enumValue: 'currencycode')
+                }}
+              </p>
+            </ng-container>
+            <ng-container *ngIf="showIntraCompanyRevenueInTooltip(model)">
+              <p class="text-base">
+                <span class="font-semibold">Intra_company_revenue:&nbsp;</span>
+                {{
+                  model.revenue
+                    | currency: (userCurrency | enumValue: 'currencycode')
+                }}
+              </p>
+            </ng-container>
+            <ng-container *ngIf="showRevenueVatInTooltip(model)">
+              <p class="text-base">
+                <span class="font-semibold">Revenue VAT:&nbsp;</span>
+                {{
+                  model.revenue_vat
+                    | currency: (userCurrency | enumValue: 'currencycode')
+                }}
+              </p>
+            </ng-container>
+            <ng-container *ngIf="showGrossMarginInTooltip(model)">
+              <p class="text-base">
+                <span class="font-semibold">Gross_margin:&nbsp;</span>
+                {{ model.gross_margin_percent }} %
+              </p>
+            </ng-container>
+            <ng-container *ngIf="showIntraCompanyGrossMarginInTooltip(model)">
+              <p class="text-base">
+                <span class="font-semibold"
+                  >Intra_company_gross_margin:&nbsp;</span
+                >
+                {{ model.gross_margin_percent }} %
+              </p>
+            </ng-container>
+          </div>
+        </ng-template>
+      </ngx-charts-bar-vertical-stacked>
+    </ng-container>
+  </div>
+
+  <div
+    class="relative flex items-center mt-4 mb-2 justify-center md:justify-between">
+    <div
+      *ngIf="entity !== 'earnouts'"
+      class="absolute hidden md:flex items-center h-5">
+      <input
+        class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
+        type="checkbox"
+        [id]="entity"
+        [(ngModel)]="compareWithPrevYear"
+        (ngModelChange)="onCheckboxChange($event)" />
+    </div>
+
+    <div class="pl-7 text-sm leading-5 hidden md:block">
+      <label
+        *ngIf="entity !== 'earnouts'"
+        class="font-medium text-gray-500"
+        [for]="entity">
+        Compare with the previous {{ currentFilterType }}
+      </label>
+    </div>
+
+    <button
+      type="submit"
+      class="inline-flex justify-center ml-2 py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out"
+      (click)="viewSummary()">
+      Go To Summary
+    </button>
+  </div>
+</div>

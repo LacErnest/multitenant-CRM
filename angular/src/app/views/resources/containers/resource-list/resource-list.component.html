@@ -1,0 +1,40 @@
+<oz-finance-page-header [heading]="'Resources'"></oz-finance-page-header>
+<div
+  class="overflow-x-hidden overflow-y-auto max-w-screen-8xl mx-auto sm:px-6 lg:px-8 py-6">
+  <oz-finance-datatable
+    (addClicked)="addResource()"
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (editClicked)="editResource($event)"
+    (fileSuccessfullyUploaded)="importResource($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (selectionDeleted)="deleteResources($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (downloadClicked)="exportResource($event)"
+    (exportClicked)="exportResources()"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [defaultColumns]="preferences?.default_columns"
+    [defaultFilters]="preferences?.default_filters"
+    [count]="rows?.count"
+    [filters]="preferences?.filters"
+    [isLoading]="isLoading"
+    [page]="page"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="rows?.data"
+    [sorts]="preferences?.sorts"
+    [title]="'Resources'"></oz-finance-datatable>
+</div>
+
+<oz-finance-entity-import-modal
+  #importEntityModal
+  (finalizeImportClicked)="finalizeImport($event)"
+  [columns]="importedColumns"
+  [isLoading]="isLoading"
+  [properties]="properties"></oz-finance-entity-import-modal>
+
+<oz-finance-resource-export-modal
+  #exportResourceModal></oz-finance-resource-export-modal>
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>

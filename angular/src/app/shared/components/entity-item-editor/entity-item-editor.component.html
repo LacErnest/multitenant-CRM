@@ -1,0 +1,1015 @@
+<div class="flex flex-col relative">
+  <div *ngIf="isLoading" class="loading-overlay rounded">
+    <div class="spinner">
+      <div class="double-bounce1"></div>
+      <div class="double-bounce2"></div>
+    </div>
+  </div>
+
+  <div class="bg-white overflow-x-auto shadow rounded-lg">
+    <!-- Items -->
+    <table
+      (cdkDropListDropped)="itemDropped($event)"
+      [cdkDropListDisabled]="readOnly"
+      cdkDropList
+      class="min-w-full">
+      <!-- Item header -->
+      <thead>
+        <tr>
+          <th
+            class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            Description
+          </th>
+
+          <th
+            class="text-center px-6 py-3 border-b border-gray-200 bg-gray-50 text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            Quantity
+          </th>
+
+          <th
+            class="text-center px-6 py-3 border-b border-gray-200 bg-gray-50 text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            Unit Price
+          </th>
+
+          <th
+            class="text-center px-6 py-3 border-b border-gray-200 bg-gray-50 text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            Price
+          </th>
+
+          <th
+            *ngIf="!readOnly && !isShadow"
+            class="px-6 py-3 text-right border-b border-gray-200 bg-gray-50">
+            <div class="flex items-center justify-end">
+              <button
+                (click)="addItem()"
+                class="text-indigo-700 focus:outline-none hover:text-indigo-500"
+                type="button">
+                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    clip-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                    fill-rule="evenodd"></path>
+                </svg>
+              </button>
+            </div>
+          </th>
+        </tr>
+      </thead>
+
+      <!-- Item body -->
+      <ng-container *ngIf="items?.length > 0; else noItems">
+        <tbody
+          *ngFor="let item of items; let even = even; let i = index"
+          [ngClass]="{ 'cursor-move': !readOnly }"
+          cdkDrag
+          cdkDragLockAxis="y">
+          <!-- Item row -->
+          <tr [ngClass]="even ? 'bg-white' : 'bg-gray-50'">
+            <td
+              class="px-6 py-4 whitespace-pre-wrap break-all text-sm leading-5 font-medium text-gray-900">
+              <span>{{ item.service_name }}</span>
+              <span *ngIf="item.description">({{ item.description }})</span>
+            </td>
+
+            <td
+              class="px-6 py-4 text-center whitespace-no-wrap text-sm leading-5 text-gray-500">
+              {{ item.quantity }} {{ item.unit }}
+            </td>
+
+            <td
+              class="px-6 py-4 text-center whitespace-no-wrap text-sm leading-5 text-gray-500">
+              {{
+                item.unit_price
+                  | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+
+            <td
+              class="px-6 py-4 text-center whitespace-no-wrap text-sm leading-5 text-gray-500">
+              {{
+                item.price | currency: (currency | enumValue: 'currencycode')
+              }}
+            </td>
+
+            <!-- Actions column -->
+            <td
+              *ngIf="!readOnly && !isShadow"
+              class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 text-gray-500 font-medium">
+              <div class="relative inline-block text-left">
+                <div>
+                  <button
+                    (click)="item.showActions = !item.showActions"
+                    aria-expanded="true"
+                    aria-haspopup="true"
+                    aria-label="Options"
+                    class="flex items-center focus:outline-none"
+                    id="options-menu"
+                    type="button">
+                    <svg
+                      class="h-5 w-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                    </svg>
+                  </button>
+                </div>
+
+                <!--
+                Dropdown panel, show/hide based on dropdown state.
+
+                Entering: "transition ease-out duration-100"
+                  From: "transform opacity-0 scale-95"
+                  To: "transform opacity-100 scale-100"
+                Leaving: "transition ease-in duration-75"
+                  From: "transform opacity-100 scale-100"
+                  To: "transform opacity-0 scale-95"
+              -->
+                <div
+                  *ngIf="item.showActions"
+                  [@menuAnimation]
+                  [clickOutsideEnabled]="!!item.showActions"
+                  [delayClickOutsideInit]="true"
+                  (clickOutside)="item.showActions = false"
+                  class="origin-top-right absolute right-0 mt-2 rounded-md shadow-lg z-50">
+                  <div class="rounded-md bg-white shadow-xs">
+                    <div
+                      aria-labelledby="options-menu"
+                      aria-orientation="vertical"
+                      class="py-2"
+                      role="menu">
+                      <button
+                        (click)="
+                          addItemModifier(item, i); item.showActions = false
+                        "
+                        class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                        role="menuitem"
+                        type="button">
+                        <svg
+                          class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                          fill="currentColor"
+                          viewBox="0 0 20 20">
+                          <path
+                            d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                          <path
+                            clip-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                            fill-rule="evenodd"></path>
+                        </svg>
+                        Discount/Charge
+                      </button>
+
+                      <button
+                        (click)="editItem(i, item); item.showActions = false"
+                        class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                        role="menuitem"
+                        type="button">
+                        <svg
+                          class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                          fill="currentColor"
+                          viewBox="0 0 20 20">
+                          <path
+                            d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                          <path
+                            clip-rule="evenodd"
+                            d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                            fill-rule="evenodd" />
+                        </svg>
+                        Edit
+                      </button>
+
+                      <button
+                        (click)="deleteItem(i); item.showActions = false"
+                        class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                        role="menuitem"
+                        type="button">
+                        <svg
+                          class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                          fill="currentColor"
+                          viewBox="0 0 20 20">
+                          <path
+                            clip-rule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            fill-rule="evenodd"></path>
+                        </svg>
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Modifier rows -->
+          <ng-container *ngIf="item.price_modifiers">
+            <tr
+              *ngFor="let modifier of item.price_modifiers; let mi = index"
+              [ngClass]="even ? 'bg-white' : 'bg-gray-50'">
+              <td
+                class="px-6 pb-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-500">
+                <span class="sm:ml-4">{{ modifier.description }}</span>
+              </td>
+
+              <td
+                class="px-6 pb-4 text-center whitespace-no-wrap text-sm leading-5 text-gray-500"></td>
+
+              <td
+                class="px-6 pb-4 text-center whitespace-no-wrap text-sm leading-5 text-gray-500"></td>
+
+              <td
+                class="px-6 pb-4 text-center whitespace-no-wrap text-sm leading-5 text-gray-500">
+                {{ modifier.type === 0 ? '-' : '+'
+                }}{{
+                  modifier.quantity_type === 0
+                    ? modifier.quantity + '%'
+                    : (modifier.quantity
+                      | currency: (currency | enumValue: 'currencycode'))
+                }}
+              </td>
+
+              <td
+                *ngIf="!readOnly"
+                class="px-6 pb-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
+                <div class="relative inline-block text-left">
+                  <div>
+                    <button
+                      (click)="modifier.showActions = !modifier.showActions"
+                      aria-expanded="true"
+                      aria-haspopup="true"
+                      aria-label="Options"
+                      class="flex items-center focus:outline-none text-gray-500"
+                      id="options-menu-item-modifier"
+                      type="button">
+                      <svg
+                        class="h-5 w-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!--
+                  Dropdown panel, show/hide based on dropdown state.
+
+                  Entering: "transition ease-out duration-100"
+                    From: "transform opacity-0 scale-95"
+                    To: "transform opacity-100 scale-100"
+                  Leaving: "transition ease-in duration-75"
+                    From: "transform opacity-100 scale-100"
+                    To: "transform opacity-0 scale-95"
+                -->
+                  <div
+                    (clickOutside)="modifier.showActions = false"
+                    *ngIf="modifier.showActions"
+                    [@menuAnimation]
+                    [clickOutsideEnabled]="!!modifier.showActions"
+                    [delayClickOutsideInit]="true"
+                    class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg z-50">
+                    <div class="rounded-md bg-white shadow-xs">
+                      <div
+                        aria-labelledby="options-menu-item-modifier"
+                        aria-orientation="vertical"
+                        class="py-2"
+                        role="menu">
+                        <button
+                          (click)="
+                            editItemModifier(item, i, modifier, mi);
+                            modifier.showActions = false
+                          "
+                          class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                          role="menuitem"
+                          type="button">
+                          <svg
+                            class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                            <path
+                              clip-rule="evenodd"
+                              d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                              fill-rule="evenodd" />
+                          </svg>
+                          Edit
+                        </button>
+
+                        <button
+                          (click)="
+                            deleteItemModifier(item, i, mi);
+                            modifier.showActions = false
+                          "
+                          class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                          role="menuitem"
+                          type="button">
+                          <svg
+                            class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                            fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path
+                              clip-rule="evenodd"
+                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                              fill-rule="evenodd"></path>
+                          </svg>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </ng-container>
+
+      <!-- No items body -->
+      <ng-template #noItems>
+        <tbody>
+          <tr>
+            <td
+              class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
+              No items...
+            </td>
+          </tr>
+        </tbody>
+      </ng-template>
+    </table>
+
+    <!-- Totals -->
+    <table class="min-w-full">
+      <tbody>
+        <!-- Subtotal -->
+        <tr>
+          <td
+            class="px-6 py-4 border-t border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <div class="flex items-center justify-start">SUBTOTAL</div>
+          </td>
+
+          <td
+            class="px-6 py-4 border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500"></td>
+
+          <td
+            class="px-6 py-4 border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500">
+            {{ subtotal | currency: (currency | enumValue: 'currencycode') }}
+          </td>
+        </tr>
+        <tr>
+          <td
+            class="px-6 py-4 border-t border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            <div class="flex items-center justify-start">
+              SUBTOTAL AFFECTED BY PRICE MODIFIERS
+              <button
+                (click)="
+                  vat && downPayment
+                    ? addEntityModifier()
+                    : (modActions = !modActions)
+                "
+                *ngIf="!readOnly && items.length && !isShadow"
+                class="focus:outline-none outline-none hover:text-indigo-700"
+                type="button">
+                <svg
+                  class="ml-1 h-4 w-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path
+                    clip-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                    fill-rule="evenodd"></path>
+                </svg>
+              </button>
+
+              <div
+                (clickOutside)="modActions = false"
+                *ngIf="modActions"
+                [@menuAnimation]
+                [clickOutsideEnabled]="!!modActions"
+                [delayClickOutsideInit]="true"
+                class="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg z-50">
+                <div class="rounded-md bg-white shadow-xs">
+                  <div
+                    aria-labelledby="options-menu-item-modifier"
+                    aria-orientation="vertical"
+                    class="py-2"
+                    role="menu">
+                    <button
+                      (click)="addEntityModifier(); modActions = false"
+                      class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem"
+                      type="button">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                        <path
+                          clip-rule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                          fill-rule="evenodd"></path>
+                      </svg>
+                      Add Modifier
+                    </button>
+
+                    <button
+                      *ngIf="vat == 0"
+                      (click)="addVat(); modActions = false"
+                      class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem"
+                      type="button">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                        <path
+                          clip-rule="evenodd"
+                          d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                          fill-rule="evenodd" />
+                      </svg>
+                      Add Vat
+                    </button>
+                    <button
+                      *ngIf="downPayment == 0 && isInvoice"
+                      (click)="addDownPayment(); modActions = false"
+                      class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem"
+                      type="button">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                        <path
+                          clip-rule="evenodd"
+                          d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                          fill-rule="evenodd" />
+                      </svg>
+                      Add Down Payment
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!--            <button (click)="addPenalty()" *ngIf="showPenalty && !this.penalty"
+                                class="focus:outline-none outline-none hover:text-indigo-700"
+                                type="button">
+                          <svg class="ml-1 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path clip-rule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                  fill-rule="evenodd"></path>
+                          </svg>
+                        </button>-->
+            </div>
+          </td>
+
+          <td
+            class="px-6 py-4 border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500"></td>
+
+          <td
+            class="px-6 py-4 border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500">
+            {{
+              subtotalIncludingPriceModifiers
+                | currency: (currency | enumValue: 'currencycode')
+            }}
+          </td>
+        </tr>
+
+        <!-- Entity modifiers -->
+        <tr *ngFor="let modifier of getPriceModifiers(); let i = index">
+          <td
+            class="px-6 pb-4 border-gray-200 text-left text-sm leading-4 font-medium text-gray-500 tracking-wider">
+            <div class="flex items-center justify-start sm:ml-4">
+              {{ modifier.description }}
+              <div class="relative inline-block text-left">
+                <div>
+                  <button
+                    (click)="modifier.showActions = !modifier.showActions"
+                    *ngIf="!readOnly"
+                    aria-expanded="true"
+                    aria-haspopup="true"
+                    aria-label="Options"
+                    class="flex items-center focus:outline-none"
+                    type="button">
+                    <svg
+                      class="h-4 w-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                    </svg>
+                  </button>
+                </div>
+
+                <!--
+                Dropdown panel, show/hide based on dropdown state.
+
+                Entering: "transition ease-out duration-100"
+                  From: "transform opacity-0 scale-95"
+                  To: "transform opacity-100 scale-100"
+                Leaving: "transition ease-in duration-75"
+                  From: "transform opacity-100 scale-100"
+                  To: "transform opacity-0 scale-95"
+              -->
+                <div
+                  (clickOutside)="modifier.showActions = false"
+                  *ngIf="modifier.showActions"
+                  [@menuAnimation]
+                  [clickOutsideEnabled]="!!modifier.showActions"
+                  [delayClickOutsideInit]="true"
+                  class="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg z-50">
+                  <div class="rounded-md bg-white shadow-xs">
+                    <div
+                      aria-labelledby="options-menu-item-modifier"
+                      aria-orientation="vertical"
+                      class="py-2"
+                      role="menu">
+                      <button
+                        (click)="
+                          editEntityModifier(i, modifier);
+                          modifier.showActions = false
+                        "
+                        class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                        role="menuitem"
+                        type="button">
+                        <svg
+                          class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                          fill="currentColor"
+                          viewBox="0 0 20 20">
+                          <path
+                            d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                          <path
+                            clip-rule="evenodd"
+                            d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                            fill-rule="evenodd" />
+                        </svg>
+                        Edit
+                      </button>
+
+                      <button
+                        (click)="
+                          deleteEntityModifier(i); modifier.showActions = false
+                        "
+                        class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                        role="menuitem"
+                        type="button">
+                        <svg
+                          class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                          fill="currentColor"
+                          viewBox="0 0 20 20">
+                          <path
+                            clip-rule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            fill-rule="evenodd"></path>
+                        </svg>
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td
+            class="px-6 py-4 text-right whitespace-no-wrap text-sm leading-5 text-gray-500"></td>
+
+          <td
+            class="px-6 pb-4 border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500">
+            {{ modifier.type === 0 ? '-' : '+'
+            }}{{
+              modifier.quantity_type === 0
+                ? modifier.quantity + '%'
+                : (modifier.quantity
+                  | currency: (currency | enumValue: 'currencycode'))
+            }}
+          </td>
+        </tr>
+
+        <!--       Penalty-->
+        <tr *ngIf="penalty">
+          <td
+            class="px-6 pb-4 border-gray-200 text-left text-sm leading-4 font-medium text-gray-500 tracking-wider">
+            <div class="flex items-center justify-start sm:ml-4">
+              Penalty: {{ penaltyReason }}
+              <!--<div class="relative inline-block text-left">
+                    <div>
+                      <button (click)="penalty.showActions = !penalty.showActions"
+                              aria-expanded="true"
+                              aria-haspopup="true"
+                              aria-label="Options"
+                              class="flex items-center focus:outline-none"
+                              type="button">
+                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                        </svg>
+                      </button>
+                    </div>
+
+                    &lt;!&ndash;
+                      Dropdown panel, show/hide based on dropdown state.
+
+                      Entering: "transition ease-out duration-100"
+                        From: "transform opacity-0 scale-95"
+                        To: "transform opacity-100 scale-100"
+                      Leaving: "transition ease-in duration-75"
+                        From: "transform opacity-100 scale-100"
+                        To: "transform opacity-0 scale-95"
+                    &ndash;&gt;
+                    <div (clickOutside)="penalty.showActions = false" *ngIf="penalty.showActions" [@menuAnimation]
+                         [clickOutsideEnabled]="!!penalty.showActions" [delayClickOutsideInit]="true"
+                         class="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg z-50">
+                      <div class="rounded-md bg-white shadow-xs">
+                        <div aria-labelledby="options-menu-item-modifier" aria-orientation="vertical" class="py-2"
+                             role="menu">
+                          <button (click)="editPenalty(penalty); penalty.showActions = false"
+                                  class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                                  role="menuitem"
+                                  type="button">
+                            <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                                 fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"/>
+                              <path clip-rule="evenodd"
+                                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                    fill-rule="evenodd"/>
+                            </svg>
+                            Edit
+                          </button>
+                          <button (click)="deletePenalty(); penalty.showActions = false"
+                                  class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                                  role="menuitem"
+                                  type="button">
+                            <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                                 fill="currentColor" viewBox="0 0 20 20">
+                              <path clip-rule="evenodd"
+                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                    fill-rule="evenodd"></path>
+                            </svg>
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>-->
+            </div>
+          </td>
+          <td
+            class="px-6 py-4 text-right whitespace-no-wrap text-sm leading-5 text-gray-500"></td>
+          <td
+            class="px-6 pb-4 border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500">
+            <ng-container *ngIf="!isFixedPenalty(); else fixedPenalty">
+              {{ '-' + penalty + '%' }}
+            </ng-container>
+            <ng-template #fixedPenalty>
+              - {{ penalty | currency: (currency | enumValue: 'currencycode') }}
+            </ng-template>
+          </td>
+        </tr>
+
+        <!-- Subtotal with modifiers -->
+        <tr
+          *ngIf="
+            (hasTransactionFeesModifier() || vat) &&
+            (modifiers?.length > 0 || this.penalty)
+          ">
+          <td
+            class="px-6 py-4 border-t border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            SUBTOTAL
+          </td>
+
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500"></td>
+
+          <td
+            class="px-6 py-4 border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500">
+            {{
+              subtotalModified
+                | currency: (currency | enumValue: 'currencycode')
+            }}
+          </td>
+        </tr>
+
+        <!-- Down Payment -->
+        <tr *ngIf="showDownPayment">
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            Down Payment
+            <div class="relative inline-block text-left">
+              <div>
+                <button
+                  (click)="downPaymentActions = !downPaymentActions"
+                  *ngIf="!readOnly"
+                  aria-expanded="true"
+                  aria-haspopup="true"
+                  aria-label="Options"
+                  class="flex items-center focus:outline-none"
+                  type="button">
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
+                </button>
+              </div>
+
+              <div
+                (clickOutside)="downPaymentActions = false"
+                *ngIf="downPaymentActions"
+                [@menuAnimation]
+                [clickOutsideEnabled]="!!downPaymentActions"
+                [delayClickOutsideInit]="true"
+                class="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg z-50">
+                <div class="rounded-md bg-white shadow-xs">
+                  <div
+                    aria-labelledby="options-menu-item-modifier"
+                    aria-orientation="vertical"
+                    class="py-2"
+                    role="menu">
+                    <button
+                      (click)="editDownPayment(); downPaymentActions = false"
+                      class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem"
+                      type="button">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                        <path
+                          clip-rule="evenodd"
+                          d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                          fill-rule="evenodd" />
+                      </svg>
+                      Edit
+                    </button>
+
+                    <button
+                      (click)="deleteDownPayment(); downPaymentActions = false"
+                      class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem"
+                      type="button">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          clip-rule="evenodd"
+                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                          fill-rule="evenodd"></path>
+                      </svg>
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500">
+            {{ down_payment }}%
+          </td>
+
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500">
+            {{ downPayment | currency: (currency | enumValue: 'currencycode') }}
+          </td>
+        </tr>
+
+        <!-- Transaction Fee -->
+        <tr *ngIf="hasTransactionFeesModifier()">
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            Transaction Fee
+            <div class="relative inline-block text-left">
+              <div>
+                <button
+                  (click)="
+                    transactionFeeModifier.showActions =
+                      !transactionFeeModifier.showActions
+                  "
+                  *ngIf="!readOnly"
+                  aria-expanded="true"
+                  aria-haspopup="true"
+                  aria-label="Options"
+                  class="flex items-center focus:outline-none"
+                  type="button">
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
+                </button>
+              </div>
+
+              <div
+                (clickOutside)="transactionFeeModifier.showActions = false"
+                *ngIf="transactionFeeModifier.showActions"
+                [@menuAnimation]
+                [clickOutsideEnabled]="!!transactionFeeModifier.showActions"
+                [delayClickOutsideInit]="true"
+                class="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg z-50">
+                <div class="rounded-md bg-white shadow-xs">
+                  <div
+                    aria-labelledby="options-menu-item-modifier"
+                    aria-orientation="vertical"
+                    class="py-2"
+                    role="menu">
+                    <button
+                      (click)="
+                        editTransactionFeesModifier();
+                        transactionFeeModifier.showActions = false
+                      "
+                      class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem"
+                      type="button">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                        <path
+                          clip-rule="evenodd"
+                          d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                          fill-rule="evenodd" />
+                      </svg>
+                      Edit
+                    </button>
+
+                    <button
+                      (click)="
+                        deleteTransactionFeesModifier();
+                        transactionFeeModifier.showActions = false
+                      "
+                      class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem"
+                      type="button">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          clip-rule="evenodd"
+                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                          fill-rule="evenodd"></path>
+                      </svg>
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500">
+            {{ transactionFeeModifier.quantity }}%
+          </td>
+
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500">
+            {{
+              transactionFeesAmount
+                | currency: (currency | enumValue: 'currencycode')
+            }}
+          </td>
+        </tr>
+
+        <!-- Vat -->
+        <tr *ngIf="showVAT">
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            VAT
+            <div class="relative inline-block text-left">
+              <div>
+                <button
+                  (click)="vatActions = !vatActions"
+                  *ngIf="!readOnly"
+                  aria-expanded="true"
+                  aria-haspopup="true"
+                  aria-label="Options"
+                  class="flex items-center focus:outline-none"
+                  type="button">
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
+                </button>
+              </div>
+
+              <div
+                (clickOutside)="vatActions = false"
+                *ngIf="vatActions"
+                [@menuAnimation]
+                [clickOutsideEnabled]="!!vatActions"
+                [delayClickOutsideInit]="true"
+                class="origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg z-50">
+                <div class="rounded-md bg-white shadow-xs">
+                  <div
+                    aria-labelledby="options-menu-item-modifier"
+                    aria-orientation="vertical"
+                    class="py-2"
+                    role="menu">
+                    <button
+                      (click)="editVat(); vatActions = false"
+                      class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem"
+                      type="button">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                        <path
+                          clip-rule="evenodd"
+                          d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                          fill-rule="evenodd" />
+                      </svg>
+                      Edit
+                    </button>
+
+                    <button
+                      (click)="deleteVat(); vatActions = false"
+                      class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem"
+                      type="button">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          clip-rule="evenodd"
+                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                          fill-rule="evenodd"></path>
+                      </svg>
+                      Delete
+                    </button>
+
+                    <button
+                      (click)="defaultVat(); vatActions = false"
+                      class="group w-full flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem"
+                      type="button">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path
+                          fill-rule="evenodd"
+                          d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      Default
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500">
+            {{ taxRate }}%
+          </td>
+
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500">
+            {{ vat | currency: (currency | enumValue: 'currencycode') }}
+          </td>
+        </tr>
+
+        <!-- Total -->
+        <tr>
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+            TOTAL
+          </td>
+
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-right whitespace-no-wrap text-sm leading-5 text-gray-500"></td>
+
+          <td
+            class="px-6 py-4 border-b border-t border-gray-200 text-right whitespace-no-wrap text-sm font-bold leading-5 text-gray-500">
+            {{ total | currency: (currency | enumValue: 'currencycode') }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<oz-finance-entity-item-modal #entityItemModal></oz-finance-entity-item-modal>
+<oz-finance-entity-modifier-modal
+  #entityModifierModal></oz-finance-entity-modifier-modal>
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>
+<oz-finance-entity-penalty-modal
+  #penaltyModal></oz-finance-entity-penalty-modal>
+<oz-finance-vat-edit-modal #vatEditModal></oz-finance-vat-edit-modal>
+<oz-finance-down-payment-edit-modal
+  #downPaymentEditModal></oz-finance-down-payment-edit-modal>

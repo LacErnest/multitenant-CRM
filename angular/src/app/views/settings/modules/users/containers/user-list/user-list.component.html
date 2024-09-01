@@ -1,0 +1,23 @@
+<div class="overflow-x-hidden shadow rounded-lg">
+  <oz-finance-datatable
+    (addClicked)="addUser()"
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (editClicked)="editUser($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (selectionDeleted)="deleteUsers($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [count]="users?.count"
+    [filters]="preferences?.filters"
+    [isLoading]="isLoading"
+    [page]="page"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="users?.data"
+    [sorts]="preferences?.sorts"
+    [title]="'Users'"
+    [menuOptions]="menuOptions"></oz-finance-datatable>
+</div>

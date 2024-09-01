@@ -1,0 +1,23 @@
+.nav-link {
+  @apply flex items-center px-3 py-2 text-sm leading-5 font-medium text-gray-600 rounded-md  transition ease-in-out duration-150;
+
+  &:hover {
+    @apply text-gray-900 bg-gray-100;
+  }
+
+  &:focus {
+    @apply outline-none;
+  }
+
+  &.disabled {
+    @apply pointer-events-none opacity-50;
+  }
+}
+
+.active-nav-link {
+  @apply bg-gray-200 text-gray-900 !important;
+
+  svg {
+    @apply text-gray-500 !important;
+  }
+}

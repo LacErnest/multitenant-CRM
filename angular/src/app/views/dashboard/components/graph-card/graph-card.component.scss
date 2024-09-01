@@ -1,0 +1,155 @@
+.chart-details {
+  @apply mt-2 grid grid-cols-2 gap-5;
+
+  @screen sm {
+    @apply mt-5;
+  }
+
+  .card {
+    @apply flex flex-col justify-between bg-white overflow-hidden shadow rounded-lg;
+
+    .card-body-wrapper {
+      @apply px-2 py-2;
+
+      @screen sm {
+        @apply px-4 py-5 p-3 py-1;
+      }
+
+      .card-body {
+        @apply flex items-center flex-col text-center;
+
+        @screen sm {
+          @apply flex-row text-left;
+        }
+
+        @screen md {
+          @apply flex-col text-center;
+        }
+
+        @screen lg {
+          @apply flex-row text-left;
+        }
+
+        .icon-wrapper {
+          @apply self-start flex-shrink-0 bg-indigo-500 rounded-md p-2 mb-2 mx-auto;
+
+          @screen sm {
+            @apply mb-0;
+          }
+        }
+
+        .info {
+          @apply flex-1;
+
+          @screen sm {
+            @apply ml-5;
+          }
+
+          @screen md {
+            @apply ml-0;
+          }
+
+          @screen lg {
+            @apply ml-5;
+          }
+
+          .main-info {
+            @apply flex justify-center items-center;
+
+            @screen sm {
+              @apply justify-start flex-col items-baseline;
+            }
+
+            @screen md {
+              @apply justify-center flex-row items-center;
+            }
+
+            @screen lg {
+              @apply justify-start flex-col items-baseline;
+            }
+
+            .label {
+              @apply text-sm leading-5 font-medium text-gray-500 truncate;
+            }
+
+            .count-wrapper {
+              @apply flex items-baseline justify-center ml-1;
+
+              @screen sm {
+                @apply justify-start ml-0;
+              }
+
+              @screen md {
+                @apply ml-1;
+              }
+
+              @screen lg {
+                @apply ml-0;
+              }
+
+              .count {
+                @apply text-base leading-8 font-semibold text-gray-900;
+
+                @screen sm {
+                  @apply text-lg;
+                }
+              }
+            }
+          }
+
+          .additional-info-wrapper {
+            @apply flex items-baseline justify-center;
+
+            @screen sm {
+              @apply justify-start;
+            }
+
+            @screen md {
+              @apply justify-center;
+            }
+
+            @screen lg {
+              @apply justify-start;
+            }
+
+            .additional-info {
+              @apply text-xs leading-8 leading-relaxed font-semibold text-gray-900;
+            }
+          }
+        }
+      }
+    }
+
+    .card-footer {
+      @apply bg-gray-50 px-2 py-2;
+
+      @screen sm {
+        @apply px-4 px-3;
+      }
+
+      .view-link-wrapper {
+        @apply text-center text-sm leading-5;
+
+        @screen sm {
+          @apply text-left;
+        }
+
+        @screen md {
+          @apply text-center;
+        }
+
+        @screen lg {
+          @apply text-left;
+        }
+
+        .view-link {
+          @apply cursor-pointer font-medium text-indigo-600 transition ease-in-out duration-150;
+
+          &:hover {
+            @apply text-indigo-800;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+.tooltip-element {
+  @apply relative inline-block;
+}
+
+.tooltip {
+  @apply opacity-0 invisible mt-1 p-2 text-center text-sm text-white bg-indigo-700 rounded absolute z-50 transition-opacity duration-300;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  backface-visibility: hidden;
+}
+
+.tooltip-element:hover .tooltip {
+  @apply visible opacity-100 mt-1 p-2 text-center text-sm text-white bg-indigo-700 rounded absolute z-30;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+
+  &.last {
+    bottom: 100%;
+    top: unset;
+  }
+}
+
+.tooltip-element .tooltip {
+  &::after {
+    content: '';
+    @apply absolute border-4 border-indigo-700;
+    left: 50%;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    transform: translateX(-50%);
+  }
+
+  &:not(.last)::after {
+    bottom: 100%;
+    border-top-color: transparent;
+  }
+
+  &.last::after {
+    top: 100%;
+    border-bottom-color: transparent;
+  }
+}

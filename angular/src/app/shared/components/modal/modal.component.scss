@@ -1,0 +1,25 @@
+.modal-wrapper {
+  @apply relative bg-white rounded-lg px-4 pt-5 pb-4 shadow-xl transform transition-all;
+
+  @screen sm {
+    @apply max-w-lg w-full p-6;
+  }
+
+  &.pdf-modal-wrapper {
+    @apply flex flex-col overflow-hidden;
+    height: 90%;
+    max-height: 700px;
+
+    @screen md {
+      height: 95%;
+    }
+
+    .modal-content-wrapper {
+      @apply flex flex-grow mb-3 h-full overflow-hidden;
+
+      .modal-content {
+        @apply h-full w-full mt-3 text-center;
+      }
+    }
+  }
+}

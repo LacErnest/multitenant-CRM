@@ -1,0 +1,196 @@
+<div
+  class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <img
+      class="w-14 mx-auto cursor-pointer outline-none"
+      src="/assets/oz-logo.png"
+      alt="logo"
+      [routerLink]="'/'" />
+    <h2
+      class="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">
+      Choose a new password
+    </h2>
+  </div>
+
+  <div [@displayAnimation] class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white relative py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div *ngIf="isLoading" class="loading-overlay rounded">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+      <form autocomplete="off" (ngSubmit)="set()" [formGroup]="setForm">
+        <div>
+          <label
+            class="block text-sm font-medium leading-5 text-gray-700"
+            for="password">
+            Password
+          </label>
+          <div class="mt-1 relative rounded-md shadow-sm">
+            <input
+              [class.border-red-300]="
+                setForm.controls.password?.errors &&
+                setForm.controls.password?.dirty
+              "
+              [class.focus:border-red-300]="
+                setForm.controls.password?.errors &&
+                setForm.controls.password?.dirty
+              "
+              [class.focus:shadow-outline-red]="
+                setForm.controls.password?.errors &&
+                setForm.controls.password?.dirty
+              "
+              class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              formControlName="password"
+              ozFinanceAutoFocus
+              id="password"
+              required
+              [type]="showPassword ? 'text' : 'password'" />
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <ng-container *ngIf="showPassword; else hidePassword">
+                <svg
+                  (click)="showPassword = !showPassword"
+                  class="h-5 w-5 text-gray-700 cursor-pointer"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path
+                    clip-rule="evenodd"
+                    d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
+                    fill-rule="evenodd"></path>
+                  <path
+                    d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"></path>
+                </svg>
+              </ng-container>
+              <ng-template #hidePassword>
+                <svg
+                  (click)="showPassword = !showPassword"
+                  class="h-5 w-5 text-gray-700 cursor-pointer"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                  <path
+                    clip-rule="evenodd"
+                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                    fill-rule="evenodd"></path>
+                </svg>
+              </ng-template>
+            </div>
+          </div>
+          <p
+            *ngIf="
+              setForm.controls.password?.errors &&
+              setForm.controls.password?.dirty
+            "
+            [@errorMessageAnimation]
+            class="mt-2 text-sm text-red-600">
+            Password must be between 8 and 256 characters
+          </p>
+        </div>
+
+        <div class="mt-6">
+          <label
+            class="block text-sm font-medium leading-5 text-gray-700"
+            for="password_confirmation">
+            Password Confirmation
+          </label>
+          <div class="mt-1 relative rounded-md shadow-sm">
+            <input
+              [class.border-red-300]="
+                setForm.controls.password_confirmation?.errors &&
+                setForm.controls.password_confirmation?.dirty
+              "
+              [class.focus:border-red-300]="
+                setForm.controls.password_confirmation?.errors &&
+                setForm.controls.password_confirmation?.dirty
+              "
+              [class.focus:shadow-outline-red]="
+                setForm.controls.password_confirmation?.errors &&
+                setForm.controls.password_confirmation?.dirty
+              "
+              class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              formControlName="password_confirmation"
+              id="password_confirmation"
+              required
+              [type]="showConfirmPassword ? 'text' : 'password'" />
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <ng-container
+                *ngIf="showConfirmPassword; else hideConfirmPassword">
+                <svg
+                  (click)="showConfirmPassword = !showConfirmPassword"
+                  class="h-5 w-5 text-gray-700 cursor-pointer"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path
+                    clip-rule="evenodd"
+                    d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
+                    fill-rule="evenodd"></path>
+                  <path
+                    d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"></path>
+                </svg>
+              </ng-container>
+              <ng-template #hideConfirmPassword>
+                <svg
+                  (click)="showConfirmPassword = !showConfirmPassword"
+                  class="h-5 w-5 text-gray-700 cursor-pointer"
+                  fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                  <path
+                    clip-rule="evenodd"
+                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                    fill-rule="evenodd"></path>
+                </svg>
+              </ng-template>
+            </div>
+          </div>
+          <p
+            *ngIf="
+              setForm.errors?.password_match &&
+              setForm.controls.password_confirmation?.dirty
+            "
+            [@errorMessageAnimation]
+            class="mt-2 text-sm text-red-600">
+            Passwords must match
+          </p>
+        </div>
+
+        <div class="mt-6">
+          <span class="block w-full rounded-md shadow-sm">
+            <button
+              class="w-full flex indigo-button button"
+              [disabled]="!isLoading && setForm.valid ? undefined : true"
+              type="submit">
+              Set
+            </button>
+          </span>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="relative">
+      <div class="absolute inset-0 flex items-center">
+        <div class="w-full border-t border-gray-300"></div>
+      </div>
+      <div class="relative flex justify-center text-sm leading-5">
+        <a
+          [routerLink]="['/auth/login']"
+          class="px-2 bg-gray-50 text-gray-500 hover:text-indigo-700 cursor-pointer">
+          Back to Login
+        </a>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="showMessage"
+    [@alertAnimation]
+    class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <oz-finance-alert
+      [description]="messageDescription"
+      [title]="messageTitle"
+      [type]="messageType"></oz-finance-alert>
+  </div>
+
+  <p class="developed-by">Developed by Cyrex</p>
+</div>

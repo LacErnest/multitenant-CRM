@@ -1,0 +1,44 @@
+<oz-finance-page-header [heading]="'Customers'"></oz-finance-page-header>
+<div
+  class="overflow-x-hidden overflow-y-auto max-w-screen-8xl mx-auto sm:px-6 lg:px-8 py-6">
+  <oz-finance-datatable
+    (addClicked)="addCustomer()"
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (editClicked)="editCustomer($event)"
+    (fileSuccessfullyUploaded)="importCustomer($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (selectionDeleted)="deleteCustomers($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (downloadClicked)="exportCustomer($event)"
+    (exportClicked)="exportCustomers()"
+    [allColumns]="preferences?.all_columns"
+    [defaultColumns]="preferences?.default_columns"
+    [defaultFilters]="preferences?.default_filters"
+    [rowMenuConfig]="rowMenuConfig"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [count]="customers?.count"
+    [filters]="preferences?.filters"
+    [isLoading]="isLoading"
+    [page]="page"
+    [rows]="customers?.data"
+    [sorts]="preferences?.sorts"
+    [title]="'Customers'"></oz-finance-datatable>
+</div>
+
+<oz-finance-entity-import-modal
+  #importEntityModal
+  (finalizeImportClicked)="finalizeImport($event)"
+  [columns]="importedColumns"
+  [isLoading]="isLoading"
+  [properties]="properties"></oz-finance-entity-import-modal>
+
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>
+
+<oz-finance-choose-legal-entity-modal
+  #chooseLegalEntityModal
+  (companyLegalEntityChosen)="
+    download($event)
+  "></oz-finance-choose-legal-entity-modal>

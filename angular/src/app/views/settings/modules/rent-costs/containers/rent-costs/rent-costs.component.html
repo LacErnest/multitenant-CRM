@@ -1,0 +1,26 @@
+<div class="overflow-x-hidden shadow rounded-lg">
+  <oz-finance-datatable
+    (addClicked)="addRentCost()"
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (editClicked)="editRentCost($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (selectionDeleted)="deleteRentCost($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [count]="rentCosts?.count"
+    [filters]="preferences?.filters"
+    [isLoading]="isLoading"
+    [page]="page"
+    [isIndividualEdit]="true"
+    [isIndividualDeletion]="true"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="rentCosts?.data"
+    [sorts]="preferences?.sorts"
+    [title]="'Monthly Costs'"
+    (refreshClicked)="refreshClicked()">
+  </oz-finance-datatable>
+</div>

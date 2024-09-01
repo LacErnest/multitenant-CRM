@@ -1,0 +1,2081 @@
+<!-- TODO: refactor -->
+<div
+  className="relative bg-white shadow rounded-lg oz-datatable {{
+    className || ''
+  }}"
+  [class.datatable-wrapper]="
+    buttonConfig.columns || buttonConfig.filters || minTableHeight
+  "
+  [class.large-table]="
+    (buttonConfig.columns || buttonConfig.filters) && !minTableHeight
+  ">
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="loading-overlay rounded-lg">
+    <div class="spinner">
+      <div class="double-bounce1"></div>
+      <div class="double-bounce2"></div>
+    </div>
+  </div>
+
+  <!-- Slide Over Filters -->
+  <div
+    *ngIf="showFiltersSlideOver"
+    [@slideOverAnimation]
+    class="absolute inset-0 overflow-hidden z-40">
+    <div class="absolute inset-0 overflow-hidden">
+      <section class="absolute inset-y-0 right-0 sm:pl-10 max-w-full flex">
+        <!--
+          Slide-over panel, show/hide based on slide-over state.
+
+          Entering: "transform transition ease-in-out duration-500 sm:duration-700"
+            From: "translate-x-full"
+            To: "translate-x-0"
+          Leaving: "transform transition ease-in-out duration-500 sm:duration-700"
+            From: "translate-x-0"
+            To: "translate-x-full"
+        -->
+        <div class="w-screen max-w-md">
+          <div
+            class="h-full divide-y divide-gray-200 flex flex-col bg-white shadow-xl">
+            <!-- Filters header + body -->
+            <div class="h-0 flex-1 py-6 space-y-6 overflow-y-scroll">
+              <!-- Filters header -->
+              <header class="px-4 sm:px-6">
+                <div class="flex items-start justify-between space-x-3">
+                  <h2 class="text-lg leading-7 font-medium text-gray-900">
+                    Filters
+                  </h2>
+
+                  <div class="h-7 flex items-center">
+                    <button
+                      (click)="closeFiltersSlider()"
+                      aria-label="Close panel"
+                      class="text-gray-400 hover:text-gray-500 transition ease-in-out duration-150">
+                      <svg
+                        class="h-6 w-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                          d="M6 18L18 6M6 6l12 12"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </header>
+
+              <!-- Filters body -->
+              <div class="relative flex-1 px-4 sm:px-6">
+                <form [formGroup]="filtersForm" autocomplete="off">
+                  <ng-container
+                    *ngFor="let col of _filterable_columns; let first = first">
+                    <div [ngClass]="{ 'mt-4': !first }" [ngSwitch]="col.type">
+                      <!-- String input -->
+                      <ng-container *ngSwitchCase="'string'">
+                        <ng-container
+                          *ngTemplateOutlet="stringFilter"></ng-container>
+                      </ng-container>
+
+                      <!-- UUID -->
+                      <ng-container *ngSwitchCase="'uuid'">
+                        <ng-container
+                          *ngTemplateOutlet="
+                            col.uuid_type === 'suggest'
+                              ? suggestFilter
+                              : stringFilter
+                          "></ng-container>
+                      </ng-container>
+
+                      <!-- String template -->
+                      <ng-template #stringFilter>
+                        <label class="filter-label">
+                          {{ forcingCurrencyUppercase(col.name | titlecase) }}
+                        </label>
+
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                          <div class="relative flex-grow focus-within:z-10">
+                            <ng-select
+                              [clearable]="false"
+                              [addTag]="true"
+                              [items]="[]"
+                              [multiple]="true"
+                              placeholder="{{ col.name | titlecase }}"
+                              class="custom rounded-right form-select transition duration-150 ease-in-out"
+                              formControlName="{{ col.prop }}">
+                            </ng-select>
+                          </div>
+
+                          <button
+                            (click)="clearFilter(col.prop)"
+                            class="clear-filter-btn"
+                            type="button">
+                            <svg
+                              class="h-5 w-5 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </ng-template>
+
+                      <!-- Suggest template -->
+                      <ng-template #suggestFilter>
+                        <label class="filter-label">
+                          {{ col.name | titlecase }}
+                        </label>
+
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                          <div class="relative flex-grow focus-within:z-10">
+                            <ng-select
+                              [bindLabel]="'name'"
+                              [bindValue]="'id'"
+                              [clearable]="false"
+                              [items]="typeAheads.get(col.name).select | async"
+                              [loading]="typeAheads.get(col.name).loading"
+                              [typeahead]="typeAheads.get(col.name).input"
+                              [multiple]="true"
+                              class="custom rounded-right form-select transition duration-150 ease-in-out"
+                              formControlName="{{ col.prop }}">
+                            </ng-select>
+                          </div>
+
+                          <button
+                            (click)="clearFilter(col.prop)"
+                            class="clear-filter-btn"
+                            type="button">
+                            <svg
+                              class="h-5 w-5 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </ng-template>
+
+                      <!-- Enum select -->
+                      <ng-container *ngSwitchCase="'enum'">
+                        <label class="filter-label">
+                          {{ col.name | titlecase }}
+                        </label>
+
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                          <div class="relative flex-grow focus-within:z-10">
+                            <ng-select
+                              [bindLabel]="'value'"
+                              [bindValue]="'key'"
+                              [clearable]="false"
+                              [items]="col.enum | enum: 'array'"
+                              [multiple]="true"
+                              class="custom rounded-right form-select transition duration-150 ease-in-out"
+                              formControlName="{{ col.prop }}">
+                            </ng-select>
+                          </div>
+
+                          <button
+                            (click)="clearFilter(col.prop)"
+                            class="clear-filter-btn"
+                            type="button">
+                            <svg
+                              class="h-5 w-5 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </ng-container>
+
+                      <!-- Date picker -->
+                      <ng-container *ngSwitchCase="'date'">
+                        <label class="filter-label">
+                          {{ forcingCurrencyUppercase(col.name | titlecase) }}
+                        </label>
+
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                          <div class="relative flex-grow focus-within:z-10">
+                            <input
+                              (ngModelChange)="onDateChange($event, col.prop)"
+                              [maxLength]="128"
+                              [ngModelOptions]="{ standalone: true }"
+                              [ngModel]="dateModels.get(col.prop)"
+                              [owlDateTimeTrigger]="startDatePicker"
+                              [owlDateTime]="startDatePicker"
+                              [readOnly]="true"
+                              [selectMode]="'rangeFrom'"
+                              class="form-input block w-full rounded-none rounded-l-md transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                              placeholder="From"
+                              type="text" />
+                          </div>
+
+                          <button
+                            (click)="dateModels.set(col.prop, null)"
+                            class="clear-filter-btn"
+                            type="button">
+                            <svg
+                              class="h-5 w-5 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </button>
+
+                          <owl-date-time
+                            #startDatePicker
+                            [pickerType]="'calendar'">
+                          </owl-date-time>
+                        </div>
+
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                          <div class="relative flex-grow focus-within:z-10">
+                            <input
+                              (ngModelChange)="dateModels.set(col.prop, $event)"
+                              [maxLength]="128"
+                              [ngModelOptions]="{ standalone: true }"
+                              [ngModel]="dateModels.get(col.prop)"
+                              [owlDateTimeTrigger]="endDatePicker"
+                              [owlDateTime]="endDatePicker"
+                              [readOnly]="true"
+                              [selectMode]="'rangeTo'"
+                              class="form-input block w-full rounded-none rounded-l-md transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                              placeholder="To"
+                              type="text" />
+                          </div>
+
+                          <button
+                            (click)="dateModels.set(col.prop, null)"
+                            class="clear-filter-btn"
+                            type="button">
+                            <svg
+                              class="h-5 w-5 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </button>
+
+                          <owl-date-time
+                            #endDatePicker
+                            [pickerType]="'calendar'">
+                          </owl-date-time>
+                        </div>
+                      </ng-container>
+
+                      <!-- Currency range -->
+                      <ng-container
+                        *ngSwitchCase="'decimal'"
+                        formGroupName="{{ col.prop }}">
+                        <label class="filter-label">
+                          {{ forcingCurrencyUppercase(col.name | titlecase) }}
+                        </label>
+
+                        <!-- Min -->
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                          <div class="relative flex-grow focus-within:z-10">
+                            <ng-container
+                              *ngIf="
+                                col.format != 'number';
+                                else noMinCurrencyMask
+                              ">
+                              <input
+                                [class.border-red-300]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                [class.focus:border-red-300]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                [class.focus:shadow-outline-red]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                [options]="{
+                                  align: 'left',
+                                  prefix:
+                                    col.format != 'number' ? currencyPrefix : ''
+                                }"
+                                class="form-input block w-full rounded-none rounded-l-md transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                                currencyMask
+                                formControlName="min"
+                                placeholder="Min"
+                                type="text" />
+                            </ng-container>
+                            <ng-template #noMinCurrencyMask>
+                              <input
+                                [class.border-red-300]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                [class.focus:border-red-300]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                [class.focus:shadow-outline-red]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                class="form-input block w-full rounded-none rounded-l-md transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                                formControlName="min"
+                                placeholder="Min"
+                                type="number" />
+                            </ng-template>
+                            <div
+                              *ngIf="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg
+                                class="h-5 w-5 text-red-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                  fill-rule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+
+                          <button
+                            (click)="clearFilter(col.prop, col.type, 'min')"
+                            class="clear-filter-btn"
+                            type="button">
+                            <svg
+                              class="h-5 w-5 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </button>
+                        </div>
+
+                        <!-- Max -->
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                          <div class="relative flex-grow focus-within:z-10">
+                            <ng-container
+                              *ngIf="
+                                col.format != 'number';
+                                else noMaxCurrencyMask
+                              ">
+                              <input
+                                [class.border-red-300]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                [class.focus:border-red-300]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                [class.focus:shadow-outline-red]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                [options]="{
+                                  align: 'left',
+                                  prefix: currencyPrefix
+                                }"
+                                class="form-input block w-full rounded-none rounded-l-md transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                                currencyMask
+                                formControlName="max"
+                                placeholder="Max"
+                                type="text" />
+                            </ng-container>
+                            <ng-template #noMaxCurrencyMask>
+                              <input
+                                [class.border-red-300]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                [class.focus:border-red-300]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                [class.focus:shadow-outline-red]="
+                                  filtersForm.get(col.prop).errors
+                                    ?.greater_than &&
+                                  filtersForm.get(col.prop).dirty
+                                "
+                                class="form-input block w-full rounded-none rounded-l-md transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                                formControlName="max"
+                                placeholder="Max"
+                                type="number" />
+                            </ng-template>
+
+                            <div
+                              *ngIf="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than && filtersForm.dirty
+                              "
+                              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg
+                                class="h-5 w-5 text-red-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                  fill-rule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+
+                          <button
+                            (click)="clearFilter(col.prop, col.type, 'max')"
+                            class="clear-filter-btn"
+                            type="button">
+                            <svg
+                              class="h-5 w-5 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </button>
+                        </div>
+
+                        <p
+                          *ngIf="
+                            filtersForm.get(col.prop).errors?.greater_than &&
+                            filtersForm.dirty
+                          "
+                          [@errorMessageAnimation]
+                          class="absolute text-sm text-red-600">
+                          Min must be equal or smaller than Max
+                        </p>
+                      </ng-container>
+
+                      <!-- Number range -->
+                      <ng-container
+                        *ngSwitchCase="'integer'"
+                        formGroupName="{{ col.prop }}">
+                        <label class="filter-label">
+                          {{ forcingCurrencyUppercase(col.name | titlecase) }}
+                        </label>
+
+                        <!-- From -->
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                          <div class="relative flex-grow focus-within:z-10">
+                            <input
+                              [class.border-red-300]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              [class.focus:border-red-300]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              [class.focus:shadow-outline-red]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              class="form-input block w-full rounded-none rounded-l-md transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                              formControlName="from"
+                              placeholder="From"
+                              type="number" />
+                            <div
+                              *ngIf="
+                                filtersForm.get(col.prop).errors &&
+                                filtersForm.get(col.prop)?.dirty
+                              "
+                              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg
+                                class="h-5 w-5 text-red-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                  fill-rule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+
+                          <button
+                            (click)="clearFilter(col.prop, col.type, 'from')"
+                            class="clear-filter-btn"
+                            type="button">
+                            <svg
+                              class="h-5 w-5 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </button>
+                        </div>
+
+                        <!-- To -->
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                          <div class="relative flex-grow focus-within:z-10">
+                            <input
+                              [class.border-red-300]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              [class.focus:border-red-300]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              [class.focus:shadow-outline-red]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              class="form-input block w-full rounded-none rounded-l-md transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                              formControlName="to"
+                              placeholder="To"
+                              type="number" />
+
+                            <div
+                              *ngIf="
+                                filtersForm.get(col.prop).errors &&
+                                filtersForm.get(col.prop)?.dirty
+                              "
+                              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg
+                                class="h-5 w-5 text-red-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                  fill-rule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+
+                          <button
+                            (click)="clearFilter(col.prop, col.type, 'to')"
+                            class="clear-filter-btn"
+                            type="button">
+                            <svg
+                              class="h-5 w-5 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </button>
+                        </div>
+                        <p
+                          *ngIf="
+                            filtersForm.get(col.prop).errors &&
+                            filtersForm.get(col.prop)?.dirty
+                          "
+                          class="absolute mt-2 text-sm text-red-600"
+                          id="text_field-error">
+                          Enter an integer value
+                        </p>
+                      </ng-container>
+
+                      <!-- Percentage range -->
+                      <ng-container
+                        *ngSwitchCase="'percentage'"
+                        formGroupName="{{ col.prop }}">
+                        <label class="filter-label">
+                          {{ forcingCurrencyUppercase(col.name | titlecase) }}
+                        </label>
+
+                        <!-- From -->
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                          <div class="relative flex-grow focus-within:z-10">
+                            <input
+                              [class.border-red-300]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              [class.focus:border-red-300]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              [class.focus:shadow-outline-red]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              class="form-input block w-full rounded-none rounded-l-md transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                              formControlName="from"
+                              placeholder="From"
+                              type="number" />
+                            <div
+                              *ngIf="
+                                filtersForm.get(col.prop).errors &&
+                                filtersForm.get(col.prop)?.dirty
+                              "
+                              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg
+                                class="h-5 w-5 text-red-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                  fill-rule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+
+                          <button
+                            (click)="clearFilter(col.prop, col.type, 'from')"
+                            class="clear-filter-btn"
+                            type="button">
+                            <svg
+                              class="h-5 w-5 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </button>
+                        </div>
+
+                        <!-- To -->
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                          <div class="relative flex-grow focus-within:z-10">
+                            <input
+                              [class.border-red-300]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              [class.focus:border-red-300]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              [class.focus:shadow-outline-red]="
+                                filtersForm.get(col.prop).errors
+                                  ?.greater_than &&
+                                filtersForm.get(col.prop).dirty
+                              "
+                              class="form-input block w-full rounded-none rounded-l-md transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                              formControlName="to"
+                              placeholder="To"
+                              type="number" />
+
+                            <div
+                              *ngIf="
+                                filtersForm.get(col.prop).errors &&
+                                filtersForm.get(col.prop)?.dirty
+                              "
+                              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg
+                                class="h-5 w-5 text-red-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                  fill-rule="evenodd" />
+                              </svg>
+                            </div>
+                          </div>
+
+                          <button
+                            (click)="clearFilter(col.prop, col.type, 'to')"
+                            class="clear-filter-btn"
+                            type="button">
+                            <svg
+                              class="h-5 w-5 text-gray-400"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                          </button>
+                        </div>
+                        <p
+                          *ngIf="
+                            filtersForm.get(col.prop).errors &&
+                            filtersForm.get(col.prop)?.dirty
+                          "
+                          class="absolute mt-2 text-sm text-red-600"
+                          id="percentage_field-error">
+                          Enter a value
+                        </p>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                </form>
+              </div>
+            </div>
+
+            <!-- Filters footer -->
+            <div
+              class="flex-shrink-0 px-4 py-4 space-x-4 flex justify-between items-center">
+              <span class="inline-flex rounded-md shadow-sm">
+                <button
+                  (click)="resetFilters()"
+                  class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out"
+                  type="button">
+                  Reset
+                </button>
+              </span>
+              <div div="flex-shrink-0 space-x-4 flex justify-end">
+                <span class="inline-flex rounded-md shadow-sm mx-1">
+                  <button
+                    (click)="cancelFilters()"
+                    class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out"
+                    type="button">
+                    Cancel
+                  </button>
+                </span>
+                <span class="inline-flex rounded-md shadow-sm mx-1">
+                  <button
+                    (click)="updateFilters()"
+                    class="inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out"
+                    type="submit">
+                    Save
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Slide Over Columns -->
+  <div
+    *ngIf="showColumnsSlideOver"
+    [@slideOverAnimation]
+    class="absolute inset-0 overflow-hidden z-40">
+    <div class="absolute inset-0 overflow-hidden">
+      <section class="absolute inset-y-0 right-0 sm:pl-10 max-w-full flex">
+        <!--
+          Slide-over panel, show/hide based on slide-over state.
+
+          Entering: "transform transition ease-in-out duration-500 sm:duration-700"
+            From: "translate-x-full"
+            To: "translate-x-0"
+          Leaving: "transform transition ease-in-out duration-500 sm:duration-700"
+            From: "translate-x-0"
+            To: "translate-x-full"
+        -->
+        <div class="w-screen max-w-md">
+          <div
+            class="h-full divide-y divide-gray-200 flex flex-col bg-white shadow-xl">
+            <!-- Columns header + body -->
+            <div class="h-0 flex-1 py-6 space-y-6 overflow-y-scroll">
+              <!-- Columns header -->
+              <header class="px-4 sm:px-6">
+                <div class="flex items-start justify-between space-x-3">
+                  <h2 class="text-lg leading-7 font-medium text-gray-900">
+                    Columns
+                  </h2>
+                  <div class="h-7 flex items-center">
+                    <button
+                      (click)="cancelColumns()"
+                      aria-label="Close panel"
+                      class="text-gray-400 hover:text-gray-500 transition ease-in-out duration-150">
+                      <svg
+                        class="h-6 w-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                          d="M6 18L18 6M6 6l12 12"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </header>
+              <!-- Columns body -->
+              <div class="relative flex-1 px-4 sm:px-6">
+                <form [formGroup]="columnsForm" autocomplete="off">
+                  <ng-container *ngFor="let col of allColumns">
+                    <div
+                      *ngIf="
+                        !col?.hidden &&
+                        isSimpleColumn(col) &&
+                        col?.filterable != 'invisible'
+                      "
+                      class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+                      <label
+                        class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2">
+                        {{
+                          forcingCurrencyUppercase(
+                            col.filter_name || col.name | titlecase
+                          )
+                        }}
+                      </label>
+                      <div class="mt-2 sm:mt-0 sm:col-span-2">
+                        <input
+                          class="hidden"
+                          formControlName="{{ col.prop }}"
+                          type="checkbox" />
+                        <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+                        <div
+                          [class.opacity-25]="
+                            columnsForm.get(col.prop).disabled
+                          "
+                          class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                          <span
+                            (click)="toggleColumn(col)"
+                            [ngClass]="[
+                              columnsForm.get(col.prop).value
+                                ? 'bg-indigo-600'
+                                : 'bg-gray-200',
+                              columnsForm.get(col.prop).disabled
+                                ? 'cursor-default'
+                                : 'cursor-pointer'
+                            ]"
+                            aria-checked="false"
+                            class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline"
+                            role="checkbox"
+                            tabindex="0">
+                            <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                            <span
+                              [ngClass]="
+                                columnsForm.get(col.prop).value
+                                  ? 'translate-x-5'
+                                  : 'translate-x-0'
+                              "
+                              aria-hidden="true"
+                              class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </form>
+              </div>
+            </div>
+
+            <!-- Columns footer-->
+            <div class="flex-shrink-0 px-4 py-4 space-x-4 flex justify-end">
+              <span
+                *ngIf="showColumnsError"
+                [@errorMessageAnimation]
+                class="inline-flex text-red-700 items-center">
+                Check at least 1 column
+              </span>
+              <div
+                class="flex-shrink-0 px-4 py-4 space-x-4 flex justify-between items-center w-full">
+                <span class="inline-flex rounded-md shadow-sm">
+                  <button
+                    (click)="resetColumns()"
+                    class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out"
+                    type="button">
+                    Reset
+                  </button>
+                </span>
+                <div class="flex-shrink-0 space-x-4 flex justify-end">
+                  <span class="inline-flex rounded-md shadow-sm">
+                    <button
+                      (click)="cancelColumns()"
+                      class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out"
+                      type="button">
+                      Cancel
+                    </button>
+                  </span>
+                  <span class="inline-flex rounded-md shadow-sm mx-1">
+                    <button
+                      (click)="updateColumns()"
+                      class="inline-flex justify-center py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out"
+                      type="submit">
+                      Save
+                    </button>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Card Header -->
+  <div
+    class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6"
+    *ngIf="displayHeader">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 mt-2">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          {{ title }}
+          <small>{{ count > 0 ? '(' + count + ' result(s))' : '' }}</small>
+        </h3>
+      </div>
+
+      <div class="ml-4 mt-2 flex-shrink-0 table-btns">
+        <!-- Import button -->
+        <span
+          *ngIf="buttonConfig.import"
+          class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+          <button class="action-btn relative" type="button">
+            <svg
+              class="h-5 w-5"
+              fill="currentColor"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24">
+              <path
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+            </svg>
+
+            <input
+              (change)="uploadFile($event.target.files)"
+              accept=".csv, text/plain"
+              class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+              id="upload_file"
+              multiple
+              type="file" />
+          </button>
+          <span class="tooltip">Import {{ title.toLowerCase() }}</span>
+        </span>
+
+        <!-- Refresh Button -->
+        <span
+          *ngIf="buttonConfig.refresh"
+          class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+          <button (click)="refresh()" class="action-btn" type="button">
+            <svg
+              class="w-5 h-5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                clip-rule="evenodd"
+                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                fill-rule="evenodd"></path>
+            </svg>
+          </button>
+          <span class="tooltip"> Refresh {{ title.toLowerCase() }} </span>
+        </span>
+
+        <!-- Export Button -->
+        <span
+          *ngIf="buttonConfig.export"
+          class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+          <button (click)="export()" class="action-btn" type="button">
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          </button>
+          <span class="tooltip"> Export {{ title.toLowerCase() }} </span>
+        </span>
+
+        <!--Columns button-->
+        <span
+          *ngIf="buttonConfig.columns && isColumnCustomizable"
+          class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+          <button (click)="showHideColumns()" class="action-btn" type="button">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                d="M2 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V4zM8 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1H9a1 1 0 01-1-1V4zM15 3a1 1 0 00-1 1v12a1 1 0 001 1h2a1 1 0 001-1V4a1 1 0 00-1-1h-2z"></path>
+            </svg>
+          </button>
+
+          <span class="tooltip"> Columns </span>
+        </span>
+
+        <!--Filters button-->
+        <span
+          *ngIf="buttonConfig.filters && isFilterable"
+          class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+          <button
+            (click)="showHideFilters()"
+            class="action-btn relative"
+            type="button">
+            <span
+              *ngIf="filters?.length > 0"
+              class="absolute top-0 right-0 block h-3 w-3 transform -translate-y-1 translate-x-1 rounded-full text-white shadow-solid bg-green-400"></span>
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                clip-rule="evenodd"
+                d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                fill-rule="evenodd"></path>
+            </svg>
+          </button>
+
+          <span class="tooltip"> Filters </span>
+        </span>
+
+        <!-- Add Button -->
+        <span
+          *ngIf="buttonConfig.add"
+          class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+          <button (click)="add()" class="action-btn" type="button">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                clip-rule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                fill-rule="evenodd"></path>
+            </svg>
+          </button>
+          <span class="tooltip">
+            Add
+            {{
+              title == 'Salary History'
+                ? title.toLowerCase()
+                : title.toLowerCase().slice(0, -1)
+            }}
+          </span>
+        </span>
+
+        <!--Delete button-->
+        <span
+          *ngIf="buttonConfig.delete && this.selection?.length > 0"
+          class="inline-block tooltip-element rounded-full shadow-sm table-btn">
+          <button (click)="delete()" class="action-btn" type="button">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                clip-rule="evenodd"
+                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                fill-rule="evenodd"></path>
+            </svg>
+          </button>
+
+          <span class="tooltip">
+            {{ title == 'Users' ? 'Disable ' : 'Delete ' }}
+            {{
+              title == 'Salary History'
+                ? title.toLowerCase()
+                : title.toLowerCase().slice(0, -1)
+            }}
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showMessage"
+    [@alertAnimation]
+    class="mt-8 mx-auto w-full max-w-xl">
+    <oz-finance-alert
+      [description]="messageDescription"
+      [title]="messageTitle"
+      [type]="messageType">
+    </oz-finance-alert>
+  </div>
+
+  <!-- Card Body -->
+  <div class="h-full px-4 py-5 sm:p-6 relative">
+    <!-- Datatable -->
+    <ngx-datatable
+      #table
+      (page)="paged($event)"
+      (reorder)="reordered($event)"
+      (select)="selected($event)"
+      (sort)="sorted($event)"
+      [columnMode]="'force'"
+      [count]="count"
+      [externalPaging]="true"
+      [externalSorting]="true"
+      [footerHeight]="rows?.length && !disablePaging ? 50 : 0"
+      [limit]="disablePaging ? undefined : pageSize"
+      [messages]="messages"
+      [offset]="page"
+      [reorderable]="reorderable"
+      [rowHeight]="'auto'"
+      [rows]="rows"
+      [scrollbarH]="true"
+      [selected]="selection"
+      [selectionType]="selectionType"
+      [sortType]="sortType"
+      [sorts]="sorts"
+      [virtualization]="false">
+      <!-- Actions Column -->
+      <ngx-datatable-column
+        *ngIf="rowMenuConfig.showMenu && isDropdownMenu()"
+        [draggable]="false"
+        [maxWidth]="80"
+        [resizeable]="false"
+        [sortable]="false"
+        [width]="50">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div
+            *ngIf="showActionCell(row)"
+            #actionRow
+            class="relative w-full inline-block text-left">
+            <div class="flex justify-end items-center">
+              <button
+                (click)="row.showActions = !row.showActions"
+                aria-expanded="true"
+                aria-haspopup="true"
+                aria-label="Options"
+                class="flex items-center focus:outline-none"
+                id="options-menu"
+                type="button">
+                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
+              </button>
+            </div>
+
+            <!--
+              Dropdown panel, show/hide based on dropdown state.
+
+              Entering: "transition ease-out duration-100"
+                From: "transform opacity-0 scale-95"
+                To: "transform opacity-100 scale-100"
+              Leaving: "transition ease-in duration-75"
+                From: "transform opacity-100 scale-100"
+                To: "transform opacity-0 scale-95"
+            -->
+            <div
+              *ngIf="row.showActions"
+              [@menuAnimation]
+              [clickOutsideEnabled]="!!row.showActions"
+              [delayClickOutsideInit]="true"
+              (click)="row.showActions = false"
+              (clickOutside)="row.showActions = false"
+              class="origin-top-left fixed left-0 mt-2 mb-1 mr-6 w-auto rounded-md shadow-lg z-40">
+              <div class="rounded-md bg-white shadow-xs">
+                <div
+                  aria-labelledby="options-menu"
+                  aria-orientation="vertical"
+                  class="py-1"
+                  role="menu">
+                  <a
+                    *ngIf="showEditOrViewOption(row)"
+                    (click)="edit(row)"
+                    class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    role="menuitem">
+                    <ng-container *ngIf="showEditIcon(row); else showViewIcon">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                        <path
+                          clip-rule="evenodd"
+                          d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                          fill-rule="evenodd" />
+                      </svg>
+                      Edit
+                      {{
+                        title == 'Salary History'
+                          ? title.toLowerCase()
+                          : title.toLowerCase().slice(0, -1)
+                      }}
+                    </ng-container>
+
+                    <ng-template #showViewIcon>
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                        <path
+                          clip-rule="evenodd"
+                          d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                          fill-rule="evenodd"></path>
+                      </svg>
+                      {{ getViewTitle() }}
+                    </ng-template>
+                  </a>
+
+                  <a
+                    (click)="invoice(row.id)"
+                    *ngIf="rowMenuConfig.invoice"
+                    class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    role="menuitem">
+                    <svg
+                      class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                      <path
+                        clip-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                        fill-rule="evenodd"></path>
+                    </svg>
+                    Create invoice
+                  </a>
+
+                  <a
+                    *ngIf="showUploadInvoiceOption(row)"
+                    class="relative cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    role="menuitem"
+                    (click)="$event.stopPropagation()">
+                    <svg
+                      class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                        fill-rule="evenodd"></path>
+                    </svg>
+
+                    <input
+                      (change)="uploadInvoice($event.target.files, row)"
+                      accept="application/pdf"
+                      class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                      id="upload_invoice"
+                      type="file" />
+                    Upload invoice
+                  </a>
+
+                  <a
+                    (click)="order($event, row.id, row.date)"
+                    *ngIf="rowMenuConfig.order && row.status === 1"
+                    class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    role="menuitem">
+                    <svg
+                      class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"></path>
+                    </svg>
+                    Create order
+                  </a>
+
+                  <a
+                    (click)="clone(row.id, row.project_id)"
+                    *ngIf="rowMenuConfig.clone && row.type !== 0"
+                    class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    role="menuitem">
+                    <svg
+                      class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z"></path>
+                      <path
+                        d="M3 8a2 2 0 012-2v10h8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"></path>
+                    </svg>
+                    Clone {{ title.toLowerCase().slice(0, -1) }}
+                  </a>
+
+                  <ng-container *ngIf="showDownloadOption(row)">
+                    <a
+                      (click)="download(row)"
+                      class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          clip-rule="evenodd"
+                          d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+                          fill-rule="evenodd"></path>
+                      </svg>
+                      Download {{ title.toLowerCase().slice(0, -1) }}
+                    </a>
+                  </ng-container>
+
+                  <ng-container *ngIf="showCancelOption(row)">
+                    <a
+                      (click)="cancel($event, row)"
+                      class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem">
+                      <svg
+                        class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                        viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path
+                          fill-rule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      Cancel {{ title.toLowerCase().slice(0, -1) }}
+                    </a>
+                  </ng-container>
+
+                  <a
+                    *ngIf="showMarkAsDefaultOption(row)"
+                    (click)="markAsDefault(row)"
+                    class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    role="menuitem">
+                    <svg
+                      class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                    </svg>
+                    Mark as
+                    {{ row.primary_contact === false ? 'primary' : 'default' }}
+                  </a>
+
+                  <a
+                    *ngIf="showMarkAsLocalOption(row)"
+                    (click)="markAsLocal(row)"
+                    class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    role="menuitem">
+                    <svg
+                      class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                    </svg>
+                    Mark as local
+                  </a>
+
+                  <a
+                    (click)="addEmployeeHours(row)"
+                    *ngIf="showAddHoursOption(row)"
+                    class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    role="menuitem">
+                    <svg
+                      class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                      <path
+                        clip-rule="evenodd"
+                        d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                        fill-rule="evenodd" />
+                    </svg>
+                    Add employee hours
+                  </a>
+
+                  <a
+                    (click)="addSalesCommission(row)"
+                    *ngIf="showAddCommissionOption(row)"
+                    class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    role="menuitem">
+                    <svg
+                      class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                      <path
+                        clip-rule="evenodd"
+                        d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                        fill-rule="evenodd" />
+                    </svg>
+                    Add sales commissions
+                  </a>
+
+                  <a
+                    (click)="selection = [row.id]; delete($event)"
+                    *ngIf="showDeleteOption(row)"
+                    class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    role="menuitem">
+                    <svg
+                      class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                        fill-rule="evenodd"></path>
+                    </svg>
+                    {{ title == 'Users' ? 'Disable ' : 'Delete ' }}
+                    {{
+                      title == 'Salary History'
+                        ? title.toLowerCase()
+                        : getViewTitle()
+                    }}
+                  </a>
+
+                  <a
+                    *ngIf="showTemplateEntitiesOption(row)"
+                    (click)="viewTemplateEntities(row)"
+                    class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                    role="menuitem">
+                    <svg
+                      class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                    </svg>
+                    View template entities
+                  </a>
+                  <ng-container *ngFor="let option of menuOptions">
+                    <a
+                      (click)="
+                        selection = [row.id];
+                        option.onAction ? option.onAction(row) : {}
+                      "
+                      *ngIf="!option.visible || option.visible(row)"
+                      class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                      role="menuitem">
+                      <oz-finance-svg-icon
+                        name="{{ option.icon }}"
+                        *ngIf="option.icon"></oz-finance-svg-icon>
+                      {{ option.title }}
+                    </a>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <!-- Expand Detail Row -->
+      <ngx-datatable-column
+        *ngIf="showDetailRow"
+        [draggable]="false"
+        [maxWidth]="50"
+        [resizeable]="false"
+        [sortable]="false"
+        [width]="50">
+        <ng-template
+          let-expanded="expanded"
+          let-row="row"
+          ngx-datatable-cell-template>
+          <svg
+            *ngIf="row.details?.rows?.length > 0"
+            class="cursor-pointer w-5 h-5"
+            (click)="toggleExpandRow(row)"
+            fill="currentColor"
+            viewBox="0 0 20 20">
+            <ng-container *ngIf="!expanded; else collapsed">
+              <path
+                clip-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                fill-rule="evenodd"></path>
+            </ng-container>
+
+            <ng-template #collapsed>
+              <path
+                clip-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                fill-rule="evenodd"></path>
+            </ng-template>
+          </svg>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <!-- Details Row -->
+      <ngx-datatable-row-detail #detailRow [rowHeight]="50">
+        <ng-template let-row="row" ngx-datatable-row-detail-template>
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th
+                  *ngIf="detailConfig.showDetailActions"
+                  class="bg-gray-100"
+                  width="50"></th>
+                <th
+                  *ngFor="let header of row.details?.columns"
+                  class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                  {{ header.name }}
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr
+                *ngFor="let detailRow of row.details?.rows; let odd = odd"
+                [class.bg-gray-50]="odd"
+                class="bg-white">
+                <td *ngIf="detailConfig.showDetailActions" width="50">
+                  <div
+                    *ngIf="showDetailsActionCell(detailRow)"
+                    class="relative w-full inline-block text-left">
+                    <div class="flex justify-end items-center">
+                      <button
+                        (click)="
+                          detailRow['showActions'] = !detailRow['showActions']
+                        "
+                        aria-expanded="true"
+                        aria-haspopup="true"
+                        aria-label="Options"
+                        class="flex items-center focus:outline-none"
+                        id="details-options-menu"
+                        type="button">
+                        <svg class="h-5 w-5" fill="#6b7280" viewBox="0 0 20 20">
+                          <path
+                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div
+                      *ngIf="detailRow['showActions']"
+                      [@menuAnimation]
+                      [delayClickOutsideInit]="true"
+                      (click)="detailRow['showActions'] = false"
+                      (clickOutside)="detailRow['showActions'] = false"
+                      class="origin-top-left fixed left-0 mt-2 mb-2 mr-6 w-48 rounded-md shadow-lg z-40">
+                      <div class="rounded-md bg-white shadow-xs">
+                        <div
+                          aria-labelledby="options-menu"
+                          aria-orientation="vertical"
+                          class="py-1"
+                          role="menu">
+                          <a
+                            *ngIf="
+                              datatableType !== 'resource_purchase_orders' &&
+                              !isAssignEmployee &&
+                              !isAssignCommission
+                            "
+                            (click)="viewDetailPage(detailRow)"
+                            class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                            role="menuitem">
+                            <svg
+                              class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                              xmlns="http://www.w3.org/2000/svg">
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                              <path
+                                clip-rule="evenodd"
+                                d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                            View details
+                          </a>
+
+                          <ng-container *ngIf="showDownloadOption(detailRow)">
+                            <a
+                              (click)="downloadDetail(row, detailRow)"
+                              class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                              role="menuitem">
+                              <svg
+                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+                                  fill-rule="evenodd"></path>
+                              </svg>
+                              Download details
+                            </a>
+                          </ng-container>
+                          <ng-container
+                            *ngIf="isAssignEmployee && !isOwnerReadOnly()">
+                            <a
+                              (click)="editEmployeeHours(row, detailRow)"
+                              class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                              role="menuitem">
+                              <svg
+                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                  fill-rule="evenodd" />
+                              </svg>
+                              Edit employee hours
+                            </a>
+                          </ng-container>
+
+                          <ng-container
+                            *ngIf="isAssignEmployee && !isOwnerReadOnly()">
+                            <a
+                              (click)="deleteEmployeeHours(row, detailRow)"
+                              class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                              role="menuitem">
+                              <svg
+                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                  fill-rule="evenodd"></path>
+                              </svg>
+                              Delete employee hours
+                            </a>
+                          </ng-container>
+
+                          <ng-container
+                            *ngIf="isAssignCommission && !isOwnerReadOnly()">
+                            <a
+                              (click)="editSalesCommission(row, detailRow)"
+                              class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                              role="menuitem">
+                              <svg
+                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                  fill-rule="evenodd" />
+                              </svg>
+                              Edit sales commission
+                            </a>
+                          </ng-container>
+
+                          <ng-container
+                            *ngIf="
+                              isAssignCommission &&
+                              !isOwnerReadOnly() &&
+                              detailRow.commission != detailRow.paid_value
+                            ">
+                            <a
+                              (click)="paySalesCommission(row, detailRow)"
+                              class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                              role="menuitem">
+                              <svg
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500">
+                                <path
+                                  d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                                  fill-rule="evenodd" />
+                              </svg>
+                              Mark sales commission as Paid
+                            </a>
+                          </ng-container>
+
+                          <ng-container
+                            *ngIf="
+                              isAssignCommission &&
+                              !isOwnerReadOnly() &&
+                              detailRow.commission == detailRow.paid_value
+                            ">
+                            <a
+                              (click)="unPaySalesCommission(row, detailRow)"
+                              class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                              role="menuitem">
+                              <svg
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500">
+                                <path
+                                  d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                                  fill-rule="evenodd"></path>
+                              </svg>
+                              Mark sales commission as Unpaid
+                            </a>
+                          </ng-container>
+
+                          <ng-container
+                            *ngIf="isAssignCommission && !isOwnerReadOnly()">
+                            <a
+                              (click)="deleteSalesCommission(row, detailRow)"
+                              class="cursor-pointer group flex items-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                              role="menuitem">
+                              <svg
+                                class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                                fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path
+                                  clip-rule="evenodd"
+                                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                  fill-rule="evenodd"></path>
+                              </svg>
+                              Delete sales commission
+                            </a>
+                          </ng-container>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <td
+                  *ngFor="let header of row.details?.columns"
+                  class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-500">
+                  <ng-container [ngSwitch]="header.type">
+                    <!-- Currency cell -->
+                    <ng-container *ngSwitchCase="'decimal'">
+                      {{
+                        detailRow[header.prop]
+                          | currency
+                            : (getCurrency(row) | enumValue: 'currencycode')
+                      }}
+                    </ng-container>
+
+                    <!-- Date cell -->
+                    <ng-container *ngSwitchCase="'date'">
+                      {{
+                        detailRow[header.prop]
+                          ? (detailRow[header.prop]
+                            | momentDate: dateFormats.Date)
+                          : '-'
+                      }}
+                    </ng-container>
+
+                    <!-- Enum cell -->
+                    <ng-container *ngSwitchCase="'enum'">
+                      <span
+                        *ngIf="header.prop === 'invoice_status'"
+                        class="text-sm"
+                        [ngClass]="
+                          colorStatus(detailRow, 'Commissions InvDetails')
+                        ">
+                        {{ detailRow[header.prop] | enumValue: header.enum }}
+                      </span>
+                      <span
+                        *ngIf="header.prop === 'order_status'"
+                        class="text-sm"
+                        [ngClass]="
+                          colorStatus(detailRow, 'Commissions OrDetails')
+                        ">
+                        {{ detailRow[header.prop] | enumValue: header.enum }}
+                      </span>
+                      <span
+                        *ngIf="
+                          header.prop !== 'invoice_status' &&
+                          header.prop !== 'order_status'
+                        ">
+                        {{ detailRow[header.prop] | enumValue: header.enum }}
+                      </span>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="'uuid'">
+                      <div *ngIf="detailRow[header.prop]; else noLink">
+                        <span
+                          (click)="redirect(header, detailRow)"
+                          [class.link]="!header.no_redirect">
+                          {{
+                            detailRow[
+                              header.prop.substring(0, header.prop.length - 3)
+                            ]
+                          }}
+                        </span>
+                      </div>
+
+                      <ng-template #noLink>-</ng-template>
+                    </ng-container>
+
+                    <!-- String -->
+                    <ng-container *ngSwitchCase="'string'">
+                      {{ detailRow[header.prop] || '-' }}
+                    </ng-container>
+
+                    <!-- Integer -->
+                    <ng-container *ngSwitchCase="'integer'">
+                      {{ detailRow[header.prop] || '-' }}
+                    </ng-container>
+
+                    <!-- Percentage -->
+                    <ng-container *ngSwitchCase="'percentage'">
+                      {{ detailRow[header.prop] }}%
+                    </ng-container>
+                  </ng-container>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-template>
+      </ngx-datatable-row-detail>
+
+      <!-- Columns -->
+      <ngx-datatable-column
+        *ngFor="let col of _columns"
+        [name]="col.name"
+        [prop]="col.prop"
+        [sortable]="sortable"
+        [headerClass]="col.prop === 'details' ? 'column-hidden' : 'flex-auto'"
+        [cellClass]="col.prop === 'details' ? 'column-hidden' : 'flex-auto'">
+        <ng-template
+          [ngSwitch]="col.type"
+          let-row="row"
+          let-value="value"
+          ngx-datatable-cell-template>
+          <!-- Currency cell -->
+          <ng-container *ngSwitchCase="'decimal'">
+            <ng-container *ngIf="col.format == 'in_euro'">
+              {{ value | currency: (43 | enumValue: 'currencycode') }}
+            </ng-container>
+            <ng-container *ngIf="col.format == 'in_dollar'">
+              {{ value | currency: (142 | enumValue: 'currencycode') }}
+            </ng-container>
+            <ng-container *ngIf="col.format == 'currency_code'">
+              {{
+                value
+                  | currency: (row.currency_code | enumValue: 'currencycode')
+              }}
+            </ng-container>
+            <ng-container *ngIf="col.format == 'customer_currency_code'">
+              {{
+                value
+                  | currency
+                    : (row.customer_currency_code | enumValue: 'currencycode')
+              }}
+            </ng-container>
+            <ng-container *ngIf="col.format == 'number'">
+              {{ value }}
+            </ng-container>
+            <ng-container *ngIf="!col.format">
+              {{
+                value | currency: (getCurrency(row) | enumValue: 'currencycode')
+              }}
+            </ng-container>
+          </ng-container>
+
+          <!-- Currency cell EUR -->
+          <ng-container *ngSwitchCase="'in_euro'">
+            {{ value | currency: (43 | enumValue: 'currencycode') }}
+          </ng-container>
+
+          <!-- Currency cell USD -->
+          <ng-container *ngSwitchCase="'in_dollar'">
+            {{ value | currency: (142 | enumValue: 'currencycode') }}
+          </ng-container>
+          <!-- Currency cell USD -->
+          <ng-container *ngSwitchCase="'currency_code'">
+            {{
+              value | currency: (row.currency_code | enumValue: 'currencycode')
+            }}
+          </ng-container>
+          <ng-container *ngSwitchCase="'customer_currency_code'">
+            {{
+              value
+                | currency
+                  : (row.customer_currency_code | enumValue: 'currencycode')
+            }}
+          </ng-container>
+          <!-- Date cell -->
+          <ng-container *ngSwitchCase="'date'">
+            {{ value ? (value | momentDate: dateFormats.Date) : '-' }}
+          </ng-container>
+
+          <!-- Enum cell -->
+          <ng-container *ngSwitchCase="'enum'">
+            <span
+              *ngIf="col.prop === 'status'"
+              class="text-sm"
+              [ngClass]="colorStatus(row, title)">
+              {{ value | enumValue: col.enum }}
+            </span>
+            <span *ngIf="col.prop !== 'status'">
+              {{ value | enumValue: col.enum }}
+            </span>
+          </ng-container>
+
+          <!-- UUID -->
+          <ng-container *ngSwitchCase="'uuid'">
+            <div *ngIf="value; else noLink">
+              <ng-container
+                *ngIf="
+                  title === 'Quotes' &&
+                    (col.prop === 'sales_person_id' ||
+                      col.prop === 'second_sales_person_id');
+                  else defaultContent
+                ">
+                <span
+                  *ngFor="
+                    let salesPerson of row[col.prop.replace('_id', '')].split(
+                      ', '
+                    );
+                    let i = index
+                  "
+                  (click)="redirectIndividual(col, row[col.prop][i])"
+                  [class.link]="!col.no_redirect">
+                  {{ salesPerson
+                  }}<ng-container
+                    *ngIf="
+                      i <
+                      row[col.prop.replace('_id', '')].split(', ').length - 1
+                    "
+                    >,
+                  </ng-container>
+                </span>
+              </ng-container>
+              <ng-template #defaultContent>
+                <div
+                  (click)="redirect(col, row)"
+                  [class.link]="!col.no_redirect">
+                  {{ row[col.prop.substring(0, col.prop.length - 3)] }}
+                </div>
+              </ng-template>
+            </div>
+            <ng-template #noLink>-</ng-template>
+          </ng-container>
+
+          <!-- String -->
+          <ng-container *ngSwitchCase="'string'">
+            {{ value || '-' }}
+          </ng-container>
+
+          <!-- Integer -->
+          <ng-container *ngSwitchCase="'integer'">
+            {{ value || '-' }}
+          </ng-container>
+
+          <!-- Percentage -->
+          <ng-container *ngSwitchCase="'percentage'">
+            {{ value || '-' }}%
+          </ng-container>
+
+          <!-- Boolean -->
+          <ng-container *ngSwitchCase="'boolean'">
+            <svg
+              *ngIf="col.check_on === false ? !value : value"
+              class="w-6 h-6 my-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M5 13l4 4L19 7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"></path>
+            </svg>
+
+            <svg
+              *ngIf="col.check_on === false ? value : !value"
+              class="w-6 h-6 my-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M6 18L18 6M6 6l12 12"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"></path>
+            </svg>
+          </ng-container>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column
+        *ngIf="rowMenuConfig.showMenu && isInlineMenu()"
+        [draggable]="false"
+        [resizeable]="false"
+        [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <div
+            *ngIf="showActionCell(row)"
+            #actionRow
+            class="relative w-full inline-block text-left">
+            <div class="flex justify-end items-center">
+              <button
+                *ngIf="showEditOrViewOption(row)"
+                (click)="edit(row)"
+                type="button"
+                class="inline-flex leading-5 white-button text-indigo-500 hover:text-white hover:bg-indigo-500 hover:border-indigo-500 border border-gray-300 button">
+                <ng-container *ngIf="showEditIcon(row); else showViewIcon">
+                  <svg
+                    class="mr-3 h-5 w-5 text-indigo-400 hover:text-white focus:text-white"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                    <path
+                      clip-rule="evenodd"
+                      d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                      fill-rule="evenodd" />
+                  </svg>
+                  Edit
+                </ng-container>
+
+                <ng-template #showViewIcon>
+                  <svg
+                    class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                    <path
+                      clip-rule="evenodd"
+                      d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                      fill-rule="evenodd"></path>
+                  </svg>
+                  {{ getViewTitle() }}
+                </ng-template>
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </ngx-datatable-column>
+      <ng-container *ngIf="disablePaging">
+        <ngx-datatable-footer></ngx-datatable-footer>
+      </ng-container>
+    </ngx-datatable>
+  </div>
+</div>
+
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>
+<oz-finance-destination-modal #destinationModal></oz-finance-destination-modal>

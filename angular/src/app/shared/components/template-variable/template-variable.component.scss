@@ -1,0 +1,49 @@
+/* app.component.css */
+.floating-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  z-index: 1000; /* Ensure it's above other content */
+}
+.floating-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1010; /* Above the modal */
+  /* Style your button */
+}
+.message {
+  z-index: 1010;
+  position: fixed;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px; /* Adjust the width as needed */
+  height: 100%;
+  background-color: white;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+  overflow-y: auto; /* Make it scrollable */
+}
+.modal-content {
+  padding: 20px 20px;
+}
+.modal-content p {
+  display: block;
+  border-bottom: 1px solid #ddd;
+}
+.modal-content p strong {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.resize-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 10px; /* Width of the resize handle */
+  cursor: w-resize; /* Resize cursor */
+}

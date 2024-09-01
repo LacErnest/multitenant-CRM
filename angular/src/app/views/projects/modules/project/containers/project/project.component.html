@@ -1,0 +1,13 @@
+<oz-finance-page-header
+  [heading]="heading"
+  [showReturn]="true"></oz-finance-page-header>
+<!-- Be sure to use this with a layout container that is full-width on mobile -->
+<div class="max-w-screen-8xl mx-auto sm:px-6 lg:px-8">
+  <div class="block py-4 lg:flex lg:p-6 lg:max-w-screen-8xl">
+    <oz-finance-project-nav
+      class="lg:mr-6 project-nav"></oz-finance-project-nav>
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

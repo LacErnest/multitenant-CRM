@@ -1,0 +1,35 @@
+lint_backend:
+  stage: lint
+  image: $CI_REGISTRY_IMAGE/php:latest
+  before_script:
+    - apt-get update && apt-get install -y wget
+    - wget -O - https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -q -O /usr/local/bin/phpcs
+    - wget -O - https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -q -O /usr/local/bin/phpcbf
+    - chmod +x /usr/local/bin/phpcs
+    - chmod +x /usr/local/bin/phpcbf
+    - 'which ssh-agent || ( apk add bash openssh-client )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - cd api
+    - composer install --no-progress --no-suggest --prefer-dist
+    - composer sniff
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      changes:
+        - api/**/*
+lint_frontend:
+  stage: lint
+  image: node:14.15.3-alpine
+  script:
+    - cd angular
+    - npm install
+    - npm run fmt-fix
+    - npm run fmt-check
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      changes:
+        - angular/**/*

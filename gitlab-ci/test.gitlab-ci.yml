@@ -1,0 +1,59 @@
+unit_test_frontend:
+  stage: test
+
+  script:
+    - /bin/true
+
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      changes:
+        - angular/**/*
+
+unit_test_backend:
+  stage: test
+  image: $CI_REGISTRY_IMAGE/php:latest
+  variables:
+    APP_ENV: testing
+
+  cache:
+    paths:
+      - api/vendor/
+    key:
+      files:
+        - api/composer.lock
+  services:
+    - name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/mysql:8
+      alias: mysql
+    - name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/redis:alpine
+      alias: redis
+    - name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/elasticsearch:6.8.13
+      alias: elasticsearch
+      command: [ "bin/elasticsearch", "-Ediscovery.type=single-node" ]
+  before_script:
+    - 'which ssh-agent || ( apk add bash openssh-client )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - cd api
+    - cp .env.testing .env
+
+    - composer install -n --no-suggest
+    - php artisan o:c
+    - php artisan config:cache
+
+    - mkdir -p tests/_output/
+    - php vendor/bin/phpunit --log-junit=tests/_output/report.xml  --coverage-clover=coverage.xml --exclude-group=fails-ci,slow,deprecated
+  artifacts:
+    paths:
+      - api/tests/_output/report.xml
+      - api/storage/logs/
+    reports:
+      junit:
+        - api/tests/_output/report.xml
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      changes:
+        - api/**/*

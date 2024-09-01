@@ -1,0 +1,17 @@
+variables:
+  ENV_NAME: $CI_COMMIT_BRANCH
+  GIT_STRATEGY: fetch
+  MYSQL_DATABASE: oz-finance
+  MYSQL_ROOT_PASSWORD: secret
+  DB_HOST: mysql
+  DB_USERNAME: root
+  REDIS_HOST: redis
+  PHP_VERSION: "7.4"
+  KUBE_INGRESS_BASE_DOMAIN: 74.220.23.215.nip.io
+  KUBE_NAMESPACE: "oz-finance-45-$CI_COMMIT_REF_SLUG"
+
+stages:
+  - lint
+  - build
+  - deploy
+  - cleanup

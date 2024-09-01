@@ -1,0 +1,440 @@
+<div
+  *ngIf="showRatingModal"
+  [@modalContainerAnimation]
+  class="fixed bottom-0 inset-x-0 px-4 py-4 sm:inset-0 sm:flex sm:items-center sm:justify-center">
+  <!--
+    Background overlay, show/hide based on modal state.
+
+    Entering: "ease-out duration-300"
+      From: "opacity-0"
+      To: "opacity-100"
+    Leaving: "ease-in duration-200"
+      From: "opacity-100"
+      To: "opacity-0"
+  -->
+  <div
+    [@modalBackdropAnimation]
+    (click)="dismissModal()"
+    class="fixed inset-0 transition-opacity">
+    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+  </div>
+
+  <!--
+    Modal panel, show/hide based on modal state.
+
+    Entering: "ease-out duration-300"
+      From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+      To: "opacity-100 translate-y-0 sm:scale-100"
+    Leaving: "ease-in duration-200"
+      From: "opacity-100 translate-y-0 sm:scale-100"
+      To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+  -->
+  <div
+    [@modalAnimation]
+    aria-labelledby="modal-headline"
+    aria-modal="true"
+    class="relative bg-white rounded-lg px-4 pt-5 pb-4 overflow-y-visible shadow-xl transform transition-all sm:max-w-lg sm:w-full sm:p-6"
+    role="dialog">
+    <div class="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+      <button
+        (click)="dismissModal()"
+        aria-label="Close"
+        class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
+        type="button">
+        <svg
+          class="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+            d="M6 18L18 6M6 6l12 12"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="sm:flex sm:items-start">
+      <div class="mt-3 w-full text-center sm:mt-0 sm:text-left">
+        <h3
+          class="text-lg leading-6 font-medium text-gray-900"
+          d="modal-headline-secret">
+          Authorize
+        </h3>
+
+        <form [formGroup]="reasonForm">
+          <!-- Stars -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label class="rating-modal-label required" for="reason">
+              Rating
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg flex rounded-md">
+                <div class="ratings flex px-auto justify-center text-gray-100">
+                  <svg
+                    (click)="setRating(1)"
+                    [ngClass]="{ filled: rating >= 1 }"
+                    class="w-6 h-6"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+
+                  <svg
+                    (click)="setRating(2)"
+                    [ngClass]="{ filled: rating >= 2 }"
+                    class="w-6 h-6"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+
+                  <svg
+                    (click)="setRating(3)"
+                    [ngClass]="{ filled: rating >= 3 }"
+                    class="w-6 h-6"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+
+                  <svg
+                    (click)="setRating(4)"
+                    [ngClass]="{ filled: rating >= 4 }"
+                    class="w-6 h-6"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+
+                  <svg
+                    (click)="setRating(5)"
+                    [ngClass]="{ filled: rating >= 5 }"
+                    class="w-6 h-6"
+                    fill="currentColor"
+                    viewBox="0 0 20 20">
+                    <path
+                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reason -->
+          <div
+            *ngIf="rating === 1 || rating === 5"
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label class="rating-modal-label required" for="reason">
+              Rating explanation
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg flex rounded-md shadow-sm">
+                <textarea
+                  [cdkAutosizeMaxRows]="8"
+                  [cdkAutosizeMinRows]="5"
+                  [class.border-red-300]="
+                    reasonForm.controls.reason?.errors &&
+                    reasonForm.controls.reason?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    reasonForm.controls.reason?.errors &&
+                    reasonForm.controls.reason?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    reasonForm.controls.reason?.errors &&
+                    reasonForm.controls.reason?.dirty
+                  "
+                  cdkTextareaAutosize
+                  class="h-auto form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="reason"
+                  id="reason"
+                  maxlength="1000"
+                  placeholder="Reason...">
+                </textarea>
+              </div>
+
+              <p
+                *ngIf="
+                  reasonForm.controls.reason?.errors?.required &&
+                  reasonForm.controls.reason?.dirty
+                "
+                class="mt-2 text-sm text-red-600"
+                id="textarea--error-required">
+                This field is required
+              </p>
+            </div>
+          </div>
+        </form>
+
+        <form [formGroup]="penaltyForm" autocomplete="off" id="penaltyForm">
+          <!-- Amount -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label class="rating-modal-label" for="penalty">
+                Penalty Amount
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <ng-select
+                    [bindLabel]="'value'"
+                    [bindValue]="'key'"
+                    [class.border-red-300]="
+                      penaltyForm?.errors?.required_penalty_reason_of_penalty &&
+                      !penaltyForm.controls.penalty?.value
+                    "
+                    [class.focus:border-red-300]="
+                      penaltyForm?.errors?.required_penalty_reason_of_penalty &&
+                      !penaltyForm.controls.penalty?.value
+                    "
+                    [class.focus:shadow-outline-red]="
+                      penaltyForm?.errors?.required_penalty_reason_of_penalty &&
+                      !penaltyForm.controls.penalty?.value
+                    "
+                    [clearable]="false"
+                    [items]="amountOptions"
+                    (change)="penaltyChanged()"
+                    class="custom form-select transition duration-150 ease-in-out"
+                    formControlName="penalty"
+                    id="penalty">
+                  </ng-select>
+                </div>
+
+                <p
+                  *ngIf="
+                    penaltyForm?.errors?.required_penalty_reason_of_penalty &&
+                    !penaltyForm.controls.penalty?.value
+                  "
+                  class="mt-2 text-sm text-red-600"
+                  id="penalty-error-required">
+                  Enter an amount
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            *ngIf="penaltyForm.controls.penalty.value == -1"
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="penalty_type">
+              Penalty Type
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [bindLabel]="'value'"
+                  [bindValue]="'key'"
+                  [clearable]="false"
+                  (change)="penaltyTypeChanged()"
+                  [items]="'entitypenaltytype' | enum: 'array'"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="penalty_type"
+                  id="penalty_type">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+          <div
+            class="mt-6 sm:mt-5"
+            *ngIf="penaltyForm.controls.penalty.value == -1">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+                Custom amount
+              </label>
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <ng-container
+                    *ngIf="
+                      penaltyForm.controls.penalty_type?.value === 0;
+                      else fixedQuantity
+                    ">
+                    <input
+                      [class.border-red-300]="
+                        penaltyForm.controls.quantity?.errors &&
+                        penaltyForm.controls.quantity?.dirty
+                      "
+                      [class.focus:border-red-300]="
+                        penaltyForm.controls.quantity?.errors &&
+                        penaltyForm.controls.quantity?.dirty
+                      "
+                      [class.focus:shadow-outline-red]="
+                        penaltyForm.controls.quantity?.errors &&
+                        penaltyForm.controls.quantity?.dirty
+                      "
+                      [max]="100"
+                      [min]="0"
+                      [options]="{
+                        suffix: '%',
+                        align: 'left',
+                        min: 0,
+                        max: 100
+                      }"
+                      ozFinanceAutoFocus
+                      currencyMask
+                      class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                      formControlName="quantity"
+                      id="quantity-percent"
+                      placeholder="quantity"
+                      type="text" />
+                  </ng-container>
+                  <ng-template #fixedQuantity>
+                    <input
+                      [class.border-red-300]="
+                        penaltyForm.controls.quantity?.errors &&
+                        penaltyForm.controls.quantity?.dirty
+                      "
+                      [class.focus:border-red-300]="
+                        penaltyForm.controls.quantity?.errors &&
+                        penaltyForm.controls.quantity?.dirty
+                      "
+                      [class.focus:shadow-outline-red]="
+                        penaltyForm.controls.quantity?.errors &&
+                        penaltyForm.controls.quantity?.dirty
+                      "
+                      [min]="0"
+                      [options]="{ prefix: currencyPrefix, align: 'left' }"
+                      class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                      currencyMask
+                      formControlName="quantity"
+                      id="quantity-fixed"
+                      placeholder="quantity"
+                      type="text" />
+                  </ng-template>
+                  <div
+                    *ngIf="
+                      penaltyForm.controls.quantity?.errors &&
+                      penaltyForm.controls.quantity?.dirty
+                    "
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg
+                      class="h-5 w-5 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        fill-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+                <p
+                  *ngIf="
+                    penaltyForm.controls.quantity?.errors?.required &&
+                    penaltyForm.controls.quantity?.dirty
+                  "
+                  class="mt-2 text-sm text-red-600"
+                  id="text_field-error">
+                  This field is required
+                </p>
+                <p
+                  *ngIf="
+                    penaltyForm.controls.quantity?.errors?.min &&
+                    penaltyForm.controls.quantity?.dirty
+                  "
+                  class="mt-2 text-sm text-red-600"
+                  id="text_field-error-min">
+                  Value must be positive
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reason -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5"
+            *ngIf="
+              penaltyForm.controls.penalty?.value ||
+              penaltyForm.controls.penalty?.value === 0
+            ">
+            <label
+              class="rating-modal-label required whitespace-no-wrap"
+              for="reason_of_penalty">
+              Penalty Description
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg flex rounded-md shadow-sm">
+                <textarea
+                  [cdkAutosizeMaxRows]="8"
+                  [cdkAutosizeMinRows]="5"
+                  [class.border-red-300]="
+                    penaltyForm.controls.reason_of_penalty?.dirty &&
+                    (penaltyForm.controls.reason_of_penalty?.errors ||
+                      (penaltyForm?.errors
+                        ?.required_penalty_reason_of_penalty &&
+                        !penaltyForm.controls.reason_of_penalty?.value))
+                  "
+                  [class.focus:border-red-300]="
+                    penaltyForm.controls.reason_of_penalty?.dirty &&
+                    (penaltyForm.controls.reason_of_penalty?.errors ||
+                      (penaltyForm?.errors
+                        ?.required_penalty_reason_of_penalty &&
+                        !penaltyForm.controls.reason_of_penalty?.value))
+                  "
+                  [class.focus:shadow-outline-red]="
+                    penaltyForm.controls.reason_of_penalty?.dirty &&
+                    (penaltyForm.controls.reason_of_penalty?.errors ||
+                      (penaltyForm?.errors
+                        ?.required_penalty_reason_of_penalty &&
+                        !penaltyForm.controls.reason_of_penalty?.value))
+                  "
+                  cdkTextareaAutosize
+                  class="h-auto form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="reason_of_penalty"
+                  id="reason_of_penalty"
+                  maxlength="256"
+                  placeholder="Penalty reason...">
+                </textarea>
+              </div>
+
+              <p
+                *ngIf="
+                  penaltyForm?.errors?.required_penalty_reason_of_penalty &&
+                  !penaltyForm.controls.reason_of_penalty?.value &&
+                  penaltyForm.controls.reason_of_penalty?.dirty
+                "
+                class="mt-2 text-sm text-red-600"
+                id="penalty-reason_of_penalty-error-required">
+                Enter a description
+              </p>
+              <p
+                *ngIf="
+                  penaltyForm.controls.reason_of_penalty?.errors?.maxlength &&
+                  penaltyForm.controls.reason_of_penalty?.value
+                "
+                class="mt-2 text-sm text-red-600"
+                id="reason_of_penalty-error--maxlength">
+                Description may be no longer than 256 characters
+              </p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+      <span
+        class="mt-3 sm:ml-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+        <button
+          (click)="authorize()"
+          [disabled]="reasonForm.valid && penaltyForm.valid ? undefined : true"
+          class="button indigo-button inline-flex w-full text-base leading-6 sm:text-sm sm:leading-5"
+          type="button">
+          Authorize
+        </button>
+      </span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.app.name }}
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      volumes:
+        - name: mysql-init
+          configMap:
+            name: mysql-init
+{{- if or (eq .Values.environment_slug "dev") (eq .Values.environment_slug "staging") }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+{{- end }}
+      containers:
+        # Mysql container
+        - name: mysql
+          image: "mysql:8"
+          imagePullPolicy: IfNotPresent
+          args: ['--default-authentication-plugin=mysql_native_password']
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "secret"
+          ports:
+            - name: mysql
+              containerPort: 3306
+              protocol: TCP
+          volumeMounts:
+            - name: mysql-init
+              mountPath: /docker-entrypoint-initdb.d
+{{- if or (eq .Values.environment_slug "dev") (eq .Values.environment_slug "staging") }}
+            - name: data
+              mountPath: /var/lib/mysql
+{{- end }}

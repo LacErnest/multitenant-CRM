@@ -1,0 +1,32 @@
+<oz-finance-page-header [heading]="'Orders'"></oz-finance-page-header>
+
+<div
+  class="overflow-x-hidden overflow-y-auto max-w-screen-8xl mx-auto sm:px-6 lg:px-8 py-6">
+  <oz-finance-datatable
+    (columnsUpdated)="columnsUpdated($event)"
+    (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+    (editClicked)="editOrder($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (selectionDeleted)="deleteOrder($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (downloadClicked)="downloadOrder($event)"
+    (exportClicked)="exportOrders()"
+    [allColumns]="preferences?.all_columns"
+    [buttonConfig]="buttonConfig"
+    [columns]="preferences?.columns"
+    [defaultColumns]="preferences?.default_columns"
+    [defaultFilters]="preferences?.default_filters"
+    [count]="orders?.count"
+    [datatableType]="'orders'"
+    [filters]="preferences?.filters"
+    [isLoading]="isLoading"
+    [page]="page"
+    [rowMenuConfig]="rowMenuConfig"
+    [rows]="orders?.data"
+    [selectionType]="'single'"
+    [sorts]="preferences?.sorts"
+    [title]="'Orders'"
+    (refreshClicked)="refreshClicked()"></oz-finance-datatable>
+</div>
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>

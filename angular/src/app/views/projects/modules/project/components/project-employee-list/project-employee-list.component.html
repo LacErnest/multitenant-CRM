@@ -1,0 +1,33 @@
+<oz-finance-datatable
+  [isLoading]="isLoading"
+  [title]="'Employees'"
+  [rows]="rows?.data"
+  [count]="rows?.count"
+  [columns]="preferences.columns"
+  [allColumns]="preferences.all_columns"
+  [page]="page"
+  [disablePaging]="true"
+  [buttonConfig]="buttonConfig"
+  [rowMenuConfig]="rowMenuConfig"
+  [datatableType]="'project-employee'"
+  (addClicked)="addEmployee()"
+  (editClicked)="editEmployee($event)"
+  (selectionDeleted)="deleteEmployees($event)"
+  (pageUpdated)="pageUpdated($event)"
+  (columnsUpdated)="columnsUpdated($event)"
+  (columnsAndSortsUpdated)="columnsAndSortsUpdated($event)"
+  (sortsUpdated)="sortsUpdated($event)"
+  [sorts]="preferences?.sorts"
+  [defaultColumns]="preferences?.default_columns"
+  [defaultFilters]="preferences?.default_filters"
+  [showDetailRow]="true"
+  [detailConfig]="detailConfig"
+  [isAssignEmployee]="true"
+  (addHours)="addEmployee($event)"
+  (editHours)="editEmployee($event)"
+  (deleteHours)="deleteEmployeeHours($event)"
+  (exportClicked)="exportEmployees()">
+</oz-finance-datatable>
+<oz-finance-project-employee-modal
+  #projectEmployeeModal></oz-finance-project-employee-modal>
+<oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>

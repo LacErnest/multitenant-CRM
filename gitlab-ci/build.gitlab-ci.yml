@@ -1,0 +1,110 @@
+build-base-php:
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/docker:20.10.17
+  stage: build
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+  services:
+    - name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/docker:20.10.17-dind
+      alias: docker
+  allow_failure: true
+  script:
+    - docker login -u "$CI_DEPENDENCY_PROXY_USER" -p "$CI_DEPENDENCY_PROXY_PASSWORD" "$CI_DEPENDENCY_PROXY_SERVER"
+    - docker pull "$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX"/php:${PHP_VERSION}-fpm-alpine
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t "${CI_REGISTRY_IMAGE}/php:${CI_COMMIT_REF_SLUG}" --file=docker/php-base.Dockerfile .
+    - if [ "CI_COMMIT_REF_SLUG" == "dev" ]; then docker tag ${CI_REGISTRY_IMAGE}/php:${CI_COMMIT_REF_SLUG} ${CI_REGISTRY_IMAGE}/php:latest; fi
+    - docker push ${CI_REGISTRY_IMAGE}/php --all-tags
+    - docker image prune --force
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "staging" || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "gitlab-ci" || $CI_COMMIT_BRANCH == "legal-decoupling"
+      changes:
+        - docker/php-base.Dockerfile
+        - docker/php/**/*
+        - gitlab-ci/**/*
+
+build-php:
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/docker:20.10.17
+  stage: build
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+    BASE_IMAGE: ${CI_REGISTRY_IMAGE}/php:${CI_COMMIT_REF_SLUG}
+    TAG_NAME: ${CI_COMMIT_REF_SLUG}
+  services:
+    - name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/docker:20.10.17-dind
+      alias: docker
+  allow_failure: true
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker image pull "${CI_REGISTRY_IMAGE}/php-fpm:${TAG_NAME}" || true
+    - docker build -t "${CI_REGISTRY_IMAGE}/php-fpm:${TAG_NAME}" --cache-from "${CI_REGISTRY_IMAGE}/php-fpm:${TAG_NAME}" --file=docker/php.Dockerfile --target=api_php --build-arg GITLAB_COMPOSER_TOKEN=$GITLAB_TOKEN .
+    - if [ "${TAG_NAME}" == "dev" ]; then docker tag ${CI_REGISTRY_IMAGE}/php-fpm:${TAG_NAME} ${CI_REGISTRY_IMAGE}/php-fpm:latest; fi
+    - docker push ${CI_REGISTRY_IMAGE}/php-fpm --all-tags
+    - docker image pull "${CI_REGISTRY_IMAGE}/php-cli:${TAG_NAME}" || true
+    - docker build -t "${CI_REGISTRY_IMAGE}/php-cli:${TAG_NAME}" --cache-from "${CI_REGISTRY_IMAGE}/php-cli:${TAG_NAME}" --file=docker/php.Dockerfile --target=cli_php --build-arg GITLAB_COMPOSER_TOKEN=$GITLAB_TOKEN .
+    - if [ "${TAG_NAME}" == "dev" ]; then docker tag ${CI_REGISTRY_IMAGE}/php-cli:${TAG_NAME} ${CI_REGISTRY_IMAGE}/php-cli:latest; fi
+    - docker push ${CI_REGISTRY_IMAGE}/php-cli --all-tags
+    - docker image prune --force
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "staging" || $CI_COMMIT_BRANCH == "dev"
+      changes:
+        - docker/php.Dockerfile
+        - docker/php/**/*
+        - api/**/*
+        - gitlab-ci/**/*
+    - if: $CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "master" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "staging"
+      variables:
+        BASE_IMAGE: ${CI_REGISTRY_IMAGE}/php:latest
+
+build-front:
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/docker:20.10.17
+  stage: build
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+    BUILD_ENV: ${CI_COMMIT_REF_SLUG}
+    TAG_NAME: ${CI_COMMIT_REF_SLUG}
+  services:
+    - name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/docker:20.10.17-dind
+      alias: docker
+  allow_failure: true
+  script:
+    - docker login -u "$CI_DEPENDENCY_PROXY_USER" -p "$CI_DEPENDENCY_PROXY_PASSWORD" "$CI_DEPENDENCY_PROXY_SERVER"
+    - docker pull "$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX"/node:14.15.3-alpine
+    - docker pull "$CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX"/nginx:1.15
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker image pull "${CI_REGISTRY_IMAGE}/nginx:${TAG_NAME}" || true
+    - docker build -t "${CI_REGISTRY_IMAGE}/nginx:${TAG_NAME}" --cache-from "${CI_REGISTRY_IMAGE}/nginx:${TAG_NAME}" --file=docker/nginx.Dockerfile --build-arg configuration=${BUILD_ENV} .
+    - if [ "${TAG_NAME}" == "dev" ]; then docker tag ${CI_REGISTRY_IMAGE}/nginx:${TAG_NAME} ${CI_REGISTRY_IMAGE}/nginx:latest; fi
+    - docker push ${CI_REGISTRY_IMAGE}/nginx --all-tags
+    - docker image prune --force
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "staging" || $CI_COMMIT_BRANCH == "dev"
+      changes:
+        - docker/nginx.Dockerfile
+        - angular/**/*
+        - gitlab-ci/**/*
+    - if: $CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "master" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "staging"
+      variables:
+        BUILD_ENV: dev
+
+build-helm:
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/docker:20.10.17
+  stage: build
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+    IMAGE_TAG: $CI_REGISTRY_IMAGE/helm:latest
+  services:
+    - name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/docker:20.10.17-dind
+      alias: docker
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t "$IMAGE_TAG" --file=docker/helm.Dockerfile .
+    - docker push $IMAGE_TAG
+    - docker image prune --force
+  rules:
+    - if: $CI_COMMIT_BRANCH == "gitlab-ci"
+      when: manual
+      allow_failure: true

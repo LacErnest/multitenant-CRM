@@ -1,0 +1,277 @@
+<oz-finance-page-header
+  [heading]="contactHeadingContent"
+  [showReturn]="true"></oz-finance-page-header>
+
+<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+  <div class="py-6">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+        <div
+          class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+          <div class="ml-4 mt-2">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Contact</h3>
+          </div>
+        </div>
+      </div>
+      <div class="px-4 py-5 sm:p-6">
+        <form
+          (submit)="submitForm()"
+          [formGroup]="contactForm"
+          autocomplete="off">
+          <!-- First Name -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="first_name">
+                First name
+              </label>
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [autoFocusEnabled]="!contact"
+                    [maxLength]="128"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="first_name"
+                    id="first_name"
+                    ozFinanceAutoFocus
+                    placeholder="first name"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Last Name -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="last_name">
+                Last name
+              </label>
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [maxLength]="128"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="last_name"
+                    id="last_name"
+                    placeholder="last name"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gender -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="gender">
+                Gender
+              </label>
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                  <ng-select
+                    [bindLabel]="'key'"
+                    [bindValue]="'value'"
+                    [clearable]="false"
+                    [items]="genders"
+                    class="custom form-select transition duration-150 ease-in-out"
+                    formControlName="gender"
+                    id="gender">
+                  </ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="email">
+                Email
+              </label>
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      contactForm.controls.email?.errors &&
+                      contactForm.controls.email?.dirty
+                    "
+                    [class.focus:border-red-300]="
+                      contactForm.controls.email?.errors &&
+                      contactForm.controls.email?.dirty
+                    "
+                    [class.focus:shadow-outline-red]="
+                      contactForm.controls.email?.errors &&
+                      contactForm.controls.email?.dirty
+                    "
+                    [maxLength]="256"
+                    [minLength]="5"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="email"
+                    id="email"
+                    placeholder="user@example.com"
+                    type="email" />
+                </div>
+                <p
+                  *ngIf="
+                    contactForm.controls.email?.errors &&
+                    contactForm.controls.email?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="absolute mt-2 text-sm text-red-600"
+                  id="email-error">
+                  <ng-container
+                    *ngIf="
+                      contactForm.controls.email?.errors.required ||
+                      contactForm.controls.email?.errors.pattern
+                    ">
+                    Please provide a valid email address
+                  </ng-container>
+
+                  <ng-container
+                    *ngIf="contactForm.controls.email?.errors.error">
+                    {{ contactForm.controls.email?.errors.error }}
+                  </ng-container>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="phone_number">
+                Phone
+              </label>
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="phone_number"
+                    id="phone_number"
+                    placeholder="phone number"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Department -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="first_name">
+                Department
+              </label>
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [maxLength]="128"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="department"
+                    id="department"
+                    placeholder="department"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role/Title -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="first_name">
+                Role / Title
+              </label>
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [maxLength]="128"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="title"
+                    id="title"
+                    placeholder="title"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Linked In -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="linked_in_profile">
+                LinkedIn
+              </label>
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      contactForm.controls.linked_in_profile?.errors &&
+                      contactForm.controls.linked_in_profile?.dirty
+                    "
+                    [class.focus:border-red-300]="
+                      contactForm.controls.linked_in_profile?.errors &&
+                      contactForm.controls.linked_in_profile?.dirty
+                    "
+                    [class.focus:shadow-outline-red]="
+                      contactForm.controls.linked_in_profile?.errors &&
+                      contactForm.controls.linked_in_profile?.dirty
+                    "
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="linked_in_profile"
+                    id="linked_in_profile"
+                    placeholder="https://www.linkedin.com/in/example..."
+                    type="text" />
+                </div>
+                <p
+                  *ngIf="
+                    contactForm.controls.linked_in_profile?.errors &&
+                    contactForm.controls.linked_in_profile?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="absolute mt-2 text-sm text-red-600"
+                  id="linked_in_profile-error">
+                  Please enter a valid LinkedIn profile URL
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save -->
+          <div class="mt-8 border-t border-gray-200 pt-5">
+            <div class="flex justify-end">
+              <span class="ml-3 inline-flex rounded-md shadow-sm">
+                <button
+                  [class.cursor-not-allowed]="isLoading || contactForm.invalid"
+                  [class.hover:bg-indigo-500]="!isLoading && contactForm.valid"
+                  [class.opacity-50]="isLoading || contactForm.invalid"
+                  [disabled]="
+                    !isLoading && contactForm.valid ? undefined : true
+                  "
+                  class="inline-flex leading-5 indigo-button button"
+                  type="submit">
+                  {{ contact ? 'Update' : 'Create' }}
+                </button>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

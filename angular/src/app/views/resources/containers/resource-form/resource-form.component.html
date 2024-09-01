@@ -1,0 +1,895 @@
+<oz-finance-page-header
+  [heading]="resource ? resource.name : 'Create resource'"
+  [showReturn]="true"></oz-finance-page-header>
+
+<div *ngIf="resourceForm" class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+  <div class="py-6">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+        <div
+          class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+          <div class="ml-4 mt-2">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+              Resource
+            </h3>
+
+            <div *ngIf="showRating" class="ratings flex text-gray-100">
+              <span class="leading-6 text-indigo-700 mr-2">Rating:</span>
+
+              <svg
+                [ngClass]="{ 'text-yellow-300': resource?.average_rating >= 1 }"
+                class="w-6 h-6"
+                fill="currentColor"
+                viewBox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+              </svg>
+
+              <svg
+                [ngClass]="{ 'text-yellow-300': resource?.average_rating >= 2 }"
+                class="w-6 h-6"
+                fill="currentColor"
+                viewBox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+              </svg>
+
+              <svg
+                [ngClass]="{ 'text-yellow-300': resource?.average_rating >= 3 }"
+                class="w-6 h-6"
+                fill="currentColor"
+                viewBox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+              </svg>
+
+              <svg
+                [ngClass]="{ 'text-yellow-300': resource?.average_rating >= 4 }"
+                class="w-6 h-6"
+                fill="currentColor"
+                viewBox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+              </svg>
+
+              <svg
+                [ngClass]="{ 'text-yellow-300': resource?.average_rating >= 5 }"
+                class="w-6 h-6"
+                fill="currentColor"
+                viewBox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div *ngIf="resource" class="ml-4 mt-2 flex-shrink-0 table-btns">
+            <!-- Export -->
+            <span
+              class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+              <button
+                (click)="download()"
+                class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+                type="button">
+                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    clip-rule="evenodd"
+                    d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+                    fill-rule="evenodd"></path>
+                </svg>
+              </button>
+
+              <span class="tooltip whitespace-no-wrap">Download</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative px-4 py-5 sm:p-6">
+        <div *ngIf="isLoading" class="loading-overlay">
+          <div class="spinner">
+            <div class="double-bounce1"></div>
+            <div class="double-bounce2"></div>
+          </div>
+        </div>
+
+        <form
+          (ngSubmit)="submit()"
+          [formGroup]="resourceForm"
+          autocomplete="off">
+          <!-- Details Heading -->
+          <div>
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Details</h3>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+              Enter the details, type of contact, and their status below. Items
+              marked with an asterisk are required fields.
+            </p>
+          </div>
+
+          <!-- Name -->
+          <div class="mt-6 sm:mt-5">
+            <div
+              class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+              <label
+                class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="name">
+                Name
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [autoFocusEnabled]="!resource"
+                    [class.border-red-300]="showResourceRequiredError('name')"
+                    [class.focus:border-red-300]="
+                      showResourceRequiredError('name')
+                    "
+                    [class.focus:shadow-outline-red]="
+                      showResourceRequiredError('name')
+                    "
+                    [maxLength]="128"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="name"
+                    id="name"
+                    ozFinanceAutoFocus
+                    placeholder="resource name"
+                    type="text" />
+
+                  <div
+                    *ngIf="showResourceRequiredError('name')"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg
+                      class="h-5 w-5 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        fill-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                <p
+                  *ngIf="showResourceRequiredError('name')"
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="name-error-required">
+                  This field is required
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Type -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="type">
+              Type
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  (change)="onResourceTypeChange($event)"
+                  [bindLabel]="'value'"
+                  [bindValue]="'key'"
+                  [clearable]="false"
+                  [items]="'resourcetype' | enum: 'array'"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="type"
+                  id="type">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="status">
+              Status
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  [bindLabel]="'value'"
+                  [bindValue]="'key'"
+                  [clearable]="false"
+                  [items]="resourceStatuses"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="status"
+                  id="status">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legal entity -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="legal_entity_id">
+                Legal Entity
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <oz-finance-legal-entity-select
+                    [canUpdateLegalEntity]="true"
+                    [legalEntityFormControlName]="'legal_entity_id'"
+                    [legalEntityParentFormGroup]="resourceForm"
+                    [selectedLegalEntity]="resource?.legal_entity"
+                    id="legal_entity_id">
+                  </oz-finance-legal-entity-select>
+                </div>
+                <p
+                  *ngIf="
+                    resourceForm.controls.legal_entity_id?.errors &&
+                    resourceForm.controls.legal_entity_id?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="legal_entity_id_error">
+                  This field is required
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Job title -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="job_title">
+                Job Title
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="job_title"
+                    id="job_title"
+                    placeholder="job title"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PI Heading -->
+          <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+              Personal Information
+            </h3>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+              Enter the personal details of the contact below. Items marked with
+              an asterisk are required fields.
+            </p>
+          </div>
+
+          <!-- First Name -->
+          <div class="mt-6 sm:mt-5">
+            <div
+              class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="first_name">
+                First Name
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [maxLength]="128"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="first_name"
+                    id="first_name"
+                    placeholder="first name"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Last Name -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="last_name">
+                Last Name
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [maxLength]="128"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="last_name"
+                    id="last_name"
+                    placeholder="last name"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="email">
+              Email Address
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg rounded-md shadow-sm">
+                <input
+                  [class.border-red-300]="
+                    resourceForm.controls.email?.errors &&
+                    resourceForm.controls.email?.dirty
+                  "
+                  [class.focus:border-red-300]="
+                    resourceForm.controls.email?.errors &&
+                    resourceForm.controls.email?.dirty
+                  "
+                  [class.focus:shadow-outline-red]="
+                    resourceForm.controls.email?.errors &&
+                    resourceForm.controls.email?.dirty
+                  "
+                  class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  formControlName="email"
+                  id="email"
+                  placeholder="you@example.com"
+                  type="email" />
+              </div>
+
+              <p
+                *ngIf="
+                  resourceForm.controls.email?.errors?.pattern &&
+                  resourceForm.controls.email?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="email-error">
+                Please provide a valid email address
+              </p>
+
+              <p
+                *ngIf="
+                  resourceForm.controls.email?.errors?.email_taken &&
+                  resourceForm.controls.email?.dirty
+                "
+                [@errorMessageAnimation]
+                class="mt-2 text-sm text-red-600"
+                id="email_taken-error">
+                This is email address is taken
+              </p>
+            </div>
+          </div>
+
+          <!-- Phone number -->
+          <div class="mt-6">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="phone_number">
+                Phone number
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="phone_number"
+                    id="phone_number"
+                    placeholder="phone number"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address Heading -->
+          <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Address</h3>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+              Enter the contact’s address below.
+            </p>
+          </div>
+
+          <!-- Addressline 1 -->
+          <div class="mt-6 sm:mt-5 sm:border-t sm:border-gray-200">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="addressline_1">
+                Line 1
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="addressline_1"
+                    id="addressline_1"
+                    placeholder="line 1"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Addressline 2 -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="addressline_2">
+                Line 2
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="addressline_2"
+                    id="addressline_2"
+                    placeholder="line 2"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- City -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="city">
+                City
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="city"
+                    id="city"
+                    placeholder="city"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Region -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="region">
+                Region
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="region"
+                    id="region"
+                    placeholder="region"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Country -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="country">
+                Country
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                  <ng-select
+                    [bindLabel]="'value'"
+                    [bindValue]="'key'"
+                    [clearable]="false"
+                    [items]="'country' | enum: 'array'"
+                    (change)="onCountryChange($event)"
+                    class="custom form-select transition duration-150 ease-in-out"
+                    formControlName="country"
+                    id="country">
+                  </ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Postal code -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="postal_code">
+                Postal Code
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="postal_code"
+                    id="postal_code"
+                    placeholder="postal code"
+                    type="text" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Heading -->
+          <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+              Financial
+            </h3>
+
+            <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+              Enter the contact’s default currency below. If available, include
+              their daily and/or hourly rate. Items marked with an asterisk are
+              required fields.
+            </p>
+          </div>
+
+          <!-- VAT number -->
+          <div
+            *ngIf="
+              europeanCountries.includes(resourceForm.controls.country.value)
+            "
+            class="mt-6 sm:mt-5 sm:border-t sm:border-gray-200">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="tax_number">
+                VAT Number
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      resourceForm.controls.tax_number?.errors?.required &&
+                      resourceForm.controls.tax_number?.dirty
+                    "
+                    [class.focus:border-red-300]="
+                      resourceForm.controls.tax_number?.errors?.required &&
+                      resourceForm.controls.tax_number?.dirty
+                    "
+                    [class.focus:shadow-outline-red]="
+                      resourceForm.controls.tax_number?.errors?.required &&
+                      resourceForm.controls.tax_number?.dirty
+                    "
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    formControlName="tax_number"
+                    id="tax_number"
+                    placeholder="VAT number"
+                    type="text" />
+
+                  <div
+                    *ngIf="
+                      resourceForm.controls.tax_number?.errors?.required &&
+                      resourceForm.controls.tax_number?.dirty
+                    "
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg
+                      class="h-5 w-5 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        fill-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                <p
+                  *ngIf="
+                    resourceForm.controls.tax_number?.errors?.required &&
+                    resourceForm.controls.tax_number?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="tax_number-error">
+                  This field is required
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- non VAT liable -->
+          <div
+            *ngIf="
+              europeanCountries.includes(resourceForm.controls.country.value)
+            "
+            class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="tax_number">
+                Non VAT liable
+              </label>
+              <div class="mt-2 sm:mt-0 sm:col-span-2">
+                <input
+                  formControlName="non_vat_liable"
+                  class="hidden"
+                  type="checkbox" />
+                <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+                <div
+                  class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                  <span
+                    [ngClass]="
+                      resourceForm.get('non_vat_liable').value
+                        ? 'bg-indigo-600'
+                        : 'bg-gray-200'
+                    "
+                    (click)="toggleNonVatLiable()"
+                    aria-checked="false"
+                    class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline"
+                    role="checkbox"
+                    tabindex="0">
+                    <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                    <span
+                      [ngClass]="
+                        resourceForm.get('non_vat_liable').value
+                          ? 'translate-x-5'
+                          : 'translate-x-0'
+                      "
+                      aria-hidden="true"
+                      class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Default currency -->
+          <div
+            class="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="default_currency">
+              Default Currency
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                <ng-select
+                  (change)="currencyChanged($event)"
+                  [bindLabel]="'value'"
+                  [bindValue]="'key'"
+                  [clearable]="false"
+                  [items]="'currencycode' | enum: 'array'"
+                  class="custom form-select transition duration-150 ease-in-out"
+                  formControlName="default_currency"
+                  id="default_currency">
+                </ng-select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Daily rate -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="daily_rate">
+                Daily Rate
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      resourceForm.controls.daily_rate?.errors?.pattern &&
+                      resourceForm.controls.daily_rate?.dirty
+                    "
+                    [class.focus:border-red-300]="
+                      resourceForm.controls.daily_rate?.errors?.pattern &&
+                      resourceForm.controls.daily_rate?.dirty
+                    "
+                    [class.focus:shadow-outline-red]="
+                      resourceForm.controls.daily_rate?.errors?.pattern &&
+                      resourceForm.controls.daily_rate?.dirty
+                    "
+                    [maxLength]="128"
+                    [options]="{ align: 'left', prefix: currencyPrefix }"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    currencyMask
+                    formControlName="daily_rate"
+                    id="daily_rate"
+                    placeholder="daily rate"
+                    type="text" />
+
+                  <div
+                    *ngIf="
+                      resourceForm.controls.daily_rate?.errors?.pattern &&
+                      resourceForm.controls.daily_rate?.dirty
+                    "
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg
+                      class="h-5 w-5 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        fill-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                <p
+                  *ngIf="
+                    resourceForm.controls.daily_rate?.errors?.pattern &&
+                    resourceForm.controls.daily_rate?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="daily_rate-error-required">
+                  Please enter a numeric value
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hourly Rate -->
+          <div class="mt-6 sm:mt-5">
+            <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+              <label
+                class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+                for="hourly_rate">
+                Hourly Rate
+              </label>
+
+              <div class="mt-1 sm:mt-0 sm:col-span-2">
+                <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    [class.border-red-300]="
+                      resourceForm.controls.hourly_rate?.errors?.pattern &&
+                      resourceForm.controls.hourly_rate?.dirty
+                    "
+                    [class.focus:border-red-300]="
+                      resourceForm.controls.hourly_rate?.errors?.pattern &&
+                      resourceForm.controls.hourly_rate?.dirty
+                    "
+                    [class.focus:shadow-outline-red]="
+                      resourceForm.controls.hourly_rate?.errors?.pattern &&
+                      resourceForm.controls.hourly_rate?.dirty
+                    "
+                    [maxLength]="128"
+                    [options]="{ align: 'left', prefix: currencyPrefix }"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                    currencyMask
+                    formControlName="hourly_rate"
+                    id="hourly_rate"
+                    placeholder="hourly rate"
+                    type="text" />
+
+                  <div
+                    *ngIf="
+                      resourceForm.controls.hourly_rate?.errors?.pattern &&
+                      resourceForm.controls.hourly_rate?.dirty
+                    "
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg
+                      class="h-5 w-5 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        fill-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                <p
+                  *ngIf="
+                    resourceForm.controls.hourly_rate?.errors?.pattern &&
+                    resourceForm.controls.hourly_rate?.dirty
+                  "
+                  [@errorMessageAnimation]
+                  class="mt-2 text-sm text-red-600"
+                  id="hourly_rate-error-required">
+                  Please enter a numeric value
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <ng-container *ngIf="showManagementBlock()">
+            <!-- Management Heading -->
+            <div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Management
+              </h3>
+              <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+                Upload/download freelancer contract.
+              </p>
+            </div>
+
+            <!-- Contract -->
+            <oz-finance-file-upload-download
+              (fileDownloadClicked)="downloadManagementFile($event)"
+              (fileUploaded)="patchUploadedFile($event)"
+              [controlName]="'contract_file'"
+              [fileName]="resourceFileNames?.contract_file"
+              [fileType]="'Contract'"
+              [isSavedFile]="!!resource?.contract_file"
+              [readonlyMode]="
+                isOwnerReadOnly()
+              "></oz-finance-file-upload-download>
+          </ng-container>
+
+          <div class="mt-8 mb-6 shadow rounded-lg">
+            <oz-finance-services-list
+              (resourceServiceAdded)="unsavedServicesAdded($event)"
+              (resourceServiceRemoved)="unsavedServicesRemoved($event)"
+              [isGlobalServiceList]="false"
+              [resourceCurrency]="resourceForm.get('default_currency').value"
+              [resourceId]="resource?.id"></oz-finance-services-list>
+          </div>
+
+          <div class="mt-8 border-t border-gray-200 pt-5">
+            <div class="flex justify-end">
+              <span class="ml-3 inline-flex rounded-md shadow-sm">
+                <button
+                  [class.disabled]="resourceForm?.invalid"
+                  [disabled]="
+                    !isLoading && resourceForm.valid ? undefined : true
+                  "
+                  class="inline-flex leading-5 indigo-button button"
+                  type="submit">
+                  Save
+                </button>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-12">
+    <oz-finance-resource-purchase-order-list
+      *ngIf="resource && resourcePurchaseOrdersPreferences"
+      [preferences]="resourcePurchaseOrdersPreferences"
+      [resource]="resource"></oz-finance-resource-purchase-order-list>
+  </div>
+</div>
+
+<oz-finance-resource-export-modal
+  #exportResourceModal></oz-finance-resource-export-modal>
+
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>

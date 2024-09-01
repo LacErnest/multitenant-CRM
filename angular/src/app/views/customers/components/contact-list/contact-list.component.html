@@ -1,0 +1,25 @@
+<div class="py-6">
+  <oz-finance-datatable
+    [isLoading]="isLoading"
+    [title]="'Contacts'"
+    [rows]="contacts"
+    [count]="contacts?.length"
+    [columns]="contactsColumns"
+    [allColumns]="contactsColumns"
+    [buttonConfig]="buttonConfig"
+    [rowMenuConfig]="rowMenuConfig"
+    [filters]="preferences?.filters"
+    [defaultColumns]="preferences?.default_columns"
+    [defaultFilters]="preferences?.default_filters"
+    [sorts]="preferences?.sorts"
+    [page]="page"
+    (addClicked)="addContact()"
+    (editClicked)="editContact($event)"
+    (selectionDeleted)="deleteContacts($event)"
+    (filtersUpdated)="filtersUpdated($event)"
+    (sortsUpdated)="sortsUpdated($event)"
+    (pageUpdated)="pageUpdated($event)"
+    (markAsDefaultClicked)="
+      markContactAsPrimary($event)
+    "></oz-finance-datatable>
+</div>

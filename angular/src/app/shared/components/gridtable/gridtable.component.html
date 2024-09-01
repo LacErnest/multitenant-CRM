@@ -1,0 +1,80 @@
+<!-- TODO: refactor -->
+<div
+  className="relative bg-white shadow rounded-lg oz-datatable {{
+    className || ''
+  }}"
+  [class.datatable-wrapper]="minTableHeight"
+  [class.large-table]="!minTableHeight">
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="loading-overlay rounded-lg">
+    <div class="spinner">
+      <div class="double-bounce1"></div>
+      <div class="double-bounce2"></div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="showMessage"
+    [@alertAnimation]
+    class="mt-8 mx-auto w-full max-w-xl">
+    <oz-finance-alert
+      [description]="messageDescription"
+      [title]="messageTitle"
+      [type]="messageType">
+    </oz-finance-alert>
+  </div>
+
+  <!-- Card Body -->
+  <div class="h-full px-4 py-5 sm:p-6 relative">
+    <!-- Datatable -->
+    <div
+      class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 mt-5 justify-center md:max-h-96 overflow-y-auto">
+      <div
+        class="h-24 sm:h-32 md:h-64 hover:border-indigo-500 cursor-pointer card p-0 border rounded-lg shadow-xl w-full flex items-center justify-center"
+        (click)="add()">
+        <div class="px-4 py-3 items-center flex flex-col">
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button class="action-btn" type="button">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  clip-rule="evenodd"
+                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                  fill-rule="evenodd"></path>
+              </svg>
+            </button>
+          </span>
+          <h5
+            class="text-gray-400 text-sm font-bold tracking-tight text-center p-3">
+            Create email template
+          </h5>
+        </div>
+      </div>
+      <ng-container *ngFor="let item of data; let index = index">
+        <div
+          class="h-24 sm:h-32 md:h-64 cursor-pointer card p-0 border rounded-lg shadow-xl w-full flex flex-col"
+          (mouseenter)="isHovering = index"
+          (mouseleave)="isHovering = index"
+          (click)="edit(item)">
+          <div class="flex-grow bg-gray-200 px-4 pt-4 overflow-hidden">
+            <ng-container *ngIf="item[image] || item.image">
+              <img
+                [src]="item[image] || item.image"
+                alt="Converted Image"
+                class="w-full" />
+            </ng-container>
+          </div>
+          <div
+            class="rounded-b-lg text-black"
+            [ngClass]="isHovering == index ? 'bg-indigo-500' : 'bg-gray-100'">
+            <h5
+              [ngClass]="isHovering == index ? 'text-white' : 'text-gray-400'"
+              class="text-sm font-bold tracking-tight text-center p-3">
+              {{ item[label] || item.title }}
+            </h5>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

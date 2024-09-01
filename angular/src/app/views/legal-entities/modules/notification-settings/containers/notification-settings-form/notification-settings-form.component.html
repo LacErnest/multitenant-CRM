@@ -1,0 +1,215 @@
+<div class="bg-white overflow-hidden shadow rounded-lg relative">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 mt-2">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Notification Settings
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-4 py-5 sm:p-6">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <oz-finance-loading-overlay
+        *ngIf="isLoading"></oz-finance-loading-overlay>
+
+      <form
+        autocomplete="off"
+        [formGroup]="settingsForm"
+        (submit)="submitForm()">
+        <!-- Details Heading -->
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Details</h3>
+
+          <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+            Items marked with an asterisk are required fields.
+          </p>
+        </div>
+        <!-- Quote number -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="enable_submited_invoice_notification">
+              Notify when invoice is submitted
+            </label>
+
+            <div class="relative mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <div class="mt-2 sm:mt-0 sm:col-span-2">
+                  <input
+                    class="hidden"
+                    formControlName="enable_submited_invoice_notification"
+                    type="checkbox" />
+                  <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+                  <div
+                    [class.opacity-25]="
+                      settingsForm.get('enable_submited_invoice_notification')
+                        .disabled
+                    "
+                    class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                    <span
+                      (click)="
+                        toggleSetting('enable_submited_invoice_notification')
+                      "
+                      [ngClass]="[
+                        settingsForm.get('enable_submited_invoice_notification')
+                          .value
+                          ? 'bg-indigo-600'
+                          : 'bg-gray-200',
+                        settingsForm.get('enable_submited_invoice_notification')
+                          .disabled
+                          ? 'cursor-default'
+                          : 'cursor-pointer'
+                      ]"
+                      aria-checked="false"
+                      class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none focus:shadow-outline"
+                      role="checkbox"
+                      tabindex="0">
+                      <!-- On: "translate-x-5", Off: "translate-x-0" -->
+                      <span
+                        [ngClass]="
+                          settingsForm.get(
+                            'enable_submited_invoice_notification'
+                          ).value
+                            ? 'translate-x-5'
+                            : 'translate-x-0'
+                        "
+                        aria-hidden="true"
+                        class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quote number format -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+              for="quote_number_format">
+              Contacts to be notified
+            </label>
+
+            <div class="mt-1 sm:mt-0 sm:col-span-2">
+              <div class="max-w-lg relative rounded-md shadow-sm sm:max-w-xs">
+                <div class="mt-1 sm:mt-0 sm:col-span-2">
+                  <div
+                    class="relative max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                    <ng-select
+                      [bindLabel]="'name'"
+                      [bindValue]="'id'"
+                      [class.border-red-300]="
+                        settingsForm.controls.notification_contacts.errors
+                          ?.required &&
+                        settingsForm.controls.notification_contacts?.dirty
+                      "
+                      [class.focus:border-red-300]="
+                        settingsForm.controls.notification_contacts.errors
+                          ?.required &&
+                        settingsForm.controls.notification_contacts?.dirty
+                      "
+                      [class.focus:shadow-outline-red]="
+                        settingsForm.controls.notification_contacts.errors
+                          ?.required &&
+                        settingsForm.controls.notification_contacts?.dirty
+                      "
+                      [clearable]="false"
+                      [items]="contactSelect$ | async"
+                      [loading]="contactLoading"
+                      [typeahead]="contactInput$"
+                      [required]="
+                        settingsForm.get('enable_submited_invoice_notification')
+                          .value
+                      "
+                      [readonly]="
+                        !settingsForm.get(
+                          'enable_submited_invoice_notification'
+                        ).value
+                      "
+                      [multiple]="true"
+                      class="custom form-select transition duration-150 ease-in-out"
+                      formControlName="notification_contacts"
+                      id="notification_contacts">
+                    </ng-select>
+
+                    <div
+                      *ngIf="
+                        settingsForm.controls.notification_contacts.errors
+                          ?.required &&
+                        settingsForm.controls.notification_contacts?.dirty
+                      "
+                      class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <svg
+                        class="h-5 w-5 text-red-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path
+                          clip-rule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          fill-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <oz-finance-control-error-icon
+                  *ngIf="
+                    settingsControlHasErrors('notification_contacts')
+                  "></oz-finance-control-error-icon>
+              </div>
+
+              <oz-finance-control-required-error
+                *ngIf="showRequiredError('notification_contacts')">
+              </oz-finance-control-required-error>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order number -->
+        <div class="mt-6 sm:mt-5">
+          <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
+            <label
+              for="order_number"
+              class="required block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              Footer template
+            </label>
+          </div>
+          <div class="sm:grid sm:grid-cols-1 sm:gap-4 sm:items-start sm:pt-5">
+            <oz-finance-html-editor
+              [disabled]="
+                !settingsForm.get('enable_submited_invoice_notification').value
+              "
+              [control]="
+                settingsForm.get('notification_footer')
+              "></oz-finance-html-editor>
+          </div>
+        </div>
+
+        <!-- Submit button -->
+        <div class="mt-8 border-t border-gray-200 pt-5">
+          <div class="flex justify-center lg:justify-end">
+            <span
+              class="ml-3 inline-flex rounded-md shadow-sm w-full md:w-64 lg:w-32">
+              <button
+                class="inline-flex leading-5 indigo-button button w-full"
+                type="submit"
+                [class.opacity-50]="cannotSubmit"
+                [class.cursor-not-allowed]="cannotSubmit"
+                [class.hover:bg-indigo-500]="cannotSubmit"
+                [disabled]="cannotSubmit">
+                Save
+              </button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

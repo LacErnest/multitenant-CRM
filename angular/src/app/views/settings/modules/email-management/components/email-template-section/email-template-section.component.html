@@ -1,0 +1,74 @@
+<div class="mt-8 border-t border-gray-200 pt-8 sm:mt-5 sm:pt-10">
+  <h3 class="text-lg leading-6 font-medium text-gray-900">Email Template</h3>
+
+  <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+    Choose the template email for this invoice
+  </p>
+</div>
+<span
+  class="inline-flex rounded-md shadow-sm w-full md:w-48 lg:w-48 mt-5"
+  *ngIf="!emailTemplate">
+  <button
+    (click)="selectEmailTemplate()"
+    type="button"
+    class="inline-flex leading-5 white-button button w-full text-indigo-500 border-indigo-500">
+    Select email template
+  </button>
+</span>
+<div *ngIf="emailTemplate">
+  <div class="mt-0 pt-2 sm:mt-5 sm:pt-5">
+    <h3 class="text-xs leading-6 font-medium text-gray-500 uppercase">
+      Email Template
+    </h3>
+  </div>
+  <div class="mt-3 flex flex-row gap-4">
+    <div class="w-sm max-w-xs" *ngIf="!hideEmailTemplatePreview">
+      <ng-container>
+        <oz-finance-email-template-card
+          [emailTemplate]="emailTemplate"
+          [isSelected]="true"></oz-finance-email-template-card>
+      </ng-container>
+    </div>
+    <div class="flex items-center justify-center">
+      <div
+        class="items-center flex gap-4"
+        [ngClass]="
+          hideEmailTemplatePreview
+            ? 'lg:flex-row md:flex-row flex-col '
+            : 'flex-col'
+        ">
+        <span
+          class="sm:ml-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+          <button
+            (click)="selectEmailTemplate()"
+            class="button modal-button w-60 white-button text-gray-400 border-gray-400 sm:text-sm sm:leading-5"
+            type="button"
+            [disabled]="readOnly">
+            Select email template
+          </button>
+        </span>
+        <span
+          class="mt-3 sm:ml-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+          <a
+            [routerLink]="emailTemplateUpdatingUrl"
+            class="button modal-button w-60 white-button text-gray-400 sm:text-sm sm:leading-5 border-gray-400"
+            type="button">
+            Edit Template
+          </a>
+        </span>
+        <span
+          class="mt-3 sm:ml-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
+          <button
+            (click)="hideEmailTemplatePreview = !hideEmailTemplatePreview"
+            class="button modal-button w-60 white-button text-gray-400 sm:text-sm sm:leading-5 border-gray-400"
+            type="button">
+            {{ hideEmailTemplatePreview ? 'Show preview' : 'Hide preview' }}
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<oz-finance-email-template-modal
+  #emailTemplateModal></oz-finance-email-template-modal>

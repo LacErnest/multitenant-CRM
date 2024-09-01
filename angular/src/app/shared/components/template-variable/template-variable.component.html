@@ -1,0 +1,28 @@
+<!-- app.component.html -->
+<div class="floating-container">
+  <button
+    type="button"
+    [disabled]="disabled"
+    (click)="toggleModal()"
+    class="inline-flex leading-5 indigo-button button floating-button">
+    Dynamic Variables
+  </button>
+  <div *ngIf="isModalVisible" class="modal" #modalElement>
+    <div class="resize-handle" (mousedown)="initResize($event)"></div>
+    <!-- Your HTML content here -->
+    <div class="modal-content">
+      <p class="text-3xl font-bold leading-tight text-gray-900 my-3">
+        Dynamic Variables
+      </p>
+      <div *ngFor="let variable of dynamicVariables">
+        <p class="tooltip-element">
+          <strong class="text-md">{{ variable.key }}:</strong>
+          <span
+            class="inline-block bg-gray-100 text-black text-md font-semibold mr-2 px-2.5 py-0.5 rounded"
+            >{{ '{' }}{{ '{' }} {{ variable.value }} {{ '}' }}{{ '}' }}</span
+          >
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,77 @@
+<div class="mt-6 sm:mt-5">
+  <div class="sm:grid sm:grid-cols-5 sm:gap-4 sm:items-start sm:pt-5">
+    <label
+      class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2"
+      [for]="controlName">
+      {{ fileType }}
+      <span class="ml-2 text-gray-500 italic">{{ fileName }}</span>
+    </label>
+
+    <div
+      *ngIf="readonlyMode === false"
+      [ngClass]="
+        onlyDownload === true
+          ? 'mt-1 sm:mt-0 sm:col-span-1'
+          : 'mt-1 sm:mt-0 sm:col-span-2'
+      ">
+      <span
+        *ngIf="onlyDownload === false"
+        class="flex text-indigo-700 justify-center relative">
+        <input
+          #fileInput
+          (change)="uploadFile($event.target.files)"
+          [id]="controlName"
+          accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, application/pdf"
+          class="h-7 w-7 absolute top-0 left-0 opacity-0 cursor-pointer"
+          type="file" />
+        <svg
+          (click)="triggerInputChange(fileInput)"
+          class="h-6 w-6 cursor-pointer"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            clip-rule="evenodd"
+            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+            fill-rule="evenodd"></path>
+        </svg>
+      </span>
+    </div>
+
+    <div class="mt-1 sm:mt-0 sm:col-span-1">
+      <span
+        (click)="downloadDocument()"
+        class="icon-wrapper flex sm:inline-block justify-center items-center relative">
+        <svg
+          [class.cursor-not-allowed]="!isSavedFile"
+          [class.opacity-50]="!isSavedFile"
+          class="h-6 w-6 cursor-pointer"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            clip-rule="evenodd"
+            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+            fill-rule="evenodd"></path>
+        </svg>
+      </span>
+    </div>
+
+    <div *ngIf="onlyDownload === true" class="mt-1 sm:mt-0 sm:col-span-2">
+      <span
+        (click)="deleteDocument()"
+        class="icon-wrapper flex sm:inline-block justify-center items-center relative">
+        <svg
+          class="h-6 w-6 cursor-pointer"
+          fill="#ef4444"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clip-rule="evenodd" />
+        </svg>
+      </span>
+    </div>
+  </div>
+</div>

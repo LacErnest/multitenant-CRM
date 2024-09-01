@@ -1,0 +1,37 @@
+<div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+  <div
+    class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+    <div class="ml-4 mt-2">
+      <a
+        *ngIf="goBackUrl"
+        [routerLink]="goBackUrl"
+        class="-ml-1 text-gray-400 text-sm">
+        <svg
+          class="inline-block"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          xmlns="http://www.w3.org/2000/svg">
+          <g stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <path
+              d="M6 12H18M6 12L11 7M6 12L11 17"
+              stroke="currentColor"
+              stroke-width="1"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </g>
+        </svg>
+        <span class="inline-block">Back</span></a
+      >
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        {{ heading }}
+      </h3>
+    </div>
+  </div>
+</div>

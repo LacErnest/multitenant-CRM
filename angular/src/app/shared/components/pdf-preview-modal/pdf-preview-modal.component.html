@@ -1,0 +1,17 @@
+<oz-finance-modal
+  #modal
+  [htmlTemplate]="pdfPreviewModal"
+  [isFromDisabled]="false"
+  [modalClass]="'pdf-modal-wrapper'"
+  [modalHeading]="previewModalHeading"
+  [showCancelBtn]="false"
+  [submitBtnText]="'Download'">
+</oz-finance-modal>
+
+<ng-template #pdfPreviewModal>
+  <pdf-viewer
+    [src]="file"
+    [original-size]="false"
+    [render-text]="true"
+    [stick-to-page]="true"></pdf-viewer>
+</ng-template>

@@ -1,0 +1,216 @@
+<div class="mx-auto">
+  <div class="bg-white overflow-hidden shadow rounded-lg">
+    <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+      <div
+        class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+        <div
+          class="ml-4 mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap w-full">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Comments</h3>
+          <span
+            class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+            <button (click)="refresh()" class="action-btn" type="button">
+              <svg
+                class="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  clip-rule="evenodd"
+                  d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                  fill-rule="evenodd"></path>
+              </svg>
+            </button>
+            <span class="tooltip"> Refresh comments </span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col relative">
+      <div *ngIf="isLoading" class="loading-overlay rounded">
+        <div class="spinner">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-x-auto shadow rounded-lg">
+        <!-- Items -->
+        <table
+          (cdkDropListDropped)="itemDropped($event)"
+          [cdkDropListDisabled]="readOnly"
+          cdkDropList
+          class="min-w-full">
+          <!-- Item header -->
+          <thead>
+            <tr>
+              <th
+                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Description
+              </th>
+
+              <th
+                class="text-center px-6 py-3 border-b border-gray-200 bg-gray-50 text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Author
+              </th>
+
+              <th
+                class="text-center px-6 py-3 border-b border-gray-200 bg-gray-50 text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Date
+              </th>
+
+              <th
+                *ngIf="!readOnly"
+                class="px-6 py-3 text-right border-b border-gray-200 bg-gray-50">
+                <div class="flex comments-center justify-end">
+                  <button
+                    (click)="addComment()"
+                    class="text-indigo-700 focus:outline-none hover:text-indigo-500"
+                    type="button">
+                    <svg
+                      class="h-6 w-6"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        clip-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                        fill-rule="evenodd"></path>
+                    </svg>
+                  </button>
+                </div>
+              </th>
+            </tr>
+          </thead>
+
+          <!-- Item body -->
+          <ng-container *ngIf="comments?.length > 0; else noItems">
+            <tbody
+              *ngFor="let comment of comments; let even = even; let i = index"
+              [ngClass]="{ 'cursor-move': !readOnly }"
+              cdkDrag
+              cdkDragLockAxis="y">
+              <!-- Item row -->
+              <tr [ngClass]="even ? 'bg-white' : 'bg-gray-50'">
+                <td
+                  class="px-6 py-4 whitespace-pre-wrap break-all text-sm leading-5 font-medium text-gray-900">
+                  <span>{{ comment.content }}</span>
+                </td>
+
+                <td
+                  class="px-6 py-4 text-center whitespace-no-wrap text-sm leading-5 text-gray-500">
+                  {{ comment.creator.name }}
+                </td>
+
+                <td
+                  class="px-6 py-4 text-center whitespace-no-wrap text-sm leading-5 text-gray-500">
+                  {{ comment.created_at | momentDate: 'DD/MM/YYYY HH:mm' }}
+                </td>
+
+                <!-- Actions column -->
+                <td
+                  *ngIf="!readOnly"
+                  class="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 text-gray-500 font-medium">
+                  <div class="relative inline-block text-left">
+                    <div>
+                      <button
+                        *ngIf="user.id === comment.creator.id"
+                        (click)="comment.showActions = !comment.showActions"
+                        aria-expanded="true"
+                        aria-haspopup="true"
+                        aria-label="Options"
+                        class="flex comments-center focus:outline-none"
+                        id="options-menu"
+                        type="button">
+                        <svg
+                          class="h-5 w-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20">
+                          <path
+                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div
+                      *ngIf="comment.showActions"
+                      [@menuAnimation]
+                      [clickOutsideEnabled]="!!comment.showActions"
+                      [delayClickOutsideInit]="true"
+                      (clickOutside)="comment.showActions = false"
+                      class="origin-top-right absolute right-0 mt-2 rounded-md shadow-lg z-50">
+                      <div class="rounded-md bg-white shadow-xs">
+                        <div
+                          aria-labelledby="options-menu"
+                          aria-orientation="vertical"
+                          class="py-2"
+                          role="menu">
+                          <button
+                            (click)="
+                              editComment(i, comment);
+                              comment.showActions = false
+                            "
+                            class="group w-full flex comments-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                            role="menuitem"
+                            type="button">
+                            <svg
+                              class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                              <path
+                                clip-rule="evenodd"
+                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                fill-rule="evenodd" />
+                            </svg>
+                            Edit
+                          </button>
+
+                          <button
+                            (click)="
+                              deleteComment(comment);
+                              comment.showActions = false
+                            "
+                            class="group w-full flex comments-center px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
+                            role="menuitem"
+                            type="button">
+                            <svg
+                              class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 group-focus:text-gray-500"
+                              fill="currentColor"
+                              viewBox="0 0 20 20">
+                              <path
+                                clip-rule="evenodd"
+                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                fill-rule="evenodd"></path>
+                            </svg>
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </ng-container>
+
+          <!-- No comments body -->
+          <ng-template #noItems>
+            <tbody>
+              <tr>
+                <td
+                  class="px-6 py-4 whitespace-no-wrap text-sm leading-5 font-medium text-gray-900">
+                  No comments...
+                </td>
+              </tr>
+            </tbody>
+          </ng-template>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <oz-finance-confirm-modal #confirmModal></oz-finance-confirm-modal>
+  <oz-finance-entity-comment-modal
+    #entityCommentModal></oz-finance-entity-comment-modal>
+</div>

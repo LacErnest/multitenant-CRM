@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" modified="2023-09-08T12:14:14.827Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36" etag="c3vBlcAeNF9NF1T_LB73" version="21.7.2" type="device">
+  <diagram id="R2lEEEUBdFMjLlhIrx00" name="Page-1">
+    <mxGraphModel dx="1157" dy="656" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" extFonts="Permanent Marker^https://fonts.googleapis.com/css?family=Permanent+Marker">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="d_ExPzNAseQ-QK5YSOJA-1" target="d_ExPzNAseQ-QK5YSOJA-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-1" value="CONTROLLER" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="214" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="d_ExPzNAseQ-QK5YSOJA-2" target="d_ExPzNAseQ-QK5YSOJA-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-2" value="SERVICES" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="310" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="d_ExPzNAseQ-QK5YSOJA-3" target="d_ExPzNAseQ-QK5YSOJA-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-3" value="REPOSITORY" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="410" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="d_ExPzNAseQ-QK5YSOJA-4" target="d_ExPzNAseQ-QK5YSOJA-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-4" value="ELOQUENT / MODEL" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="510" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-5" value="DATABASE" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="610" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="d_ExPzNAseQ-QK5YSOJA-11" target="d_ExPzNAseQ-QK5YSOJA-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-11" value="ELASTIC(OBSERVER)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="510" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-14" value="Action Cycle (Create / Update)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="220" y="20" width="330" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="d_ExPzNAseQ-QK5YSOJA-15" target="d_ExPzNAseQ-QK5YSOJA-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d_ExPzNAseQ-QK5YSOJA-15" value="CLIENT (ANGULAR)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="279" y="116" width="200" height="70" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

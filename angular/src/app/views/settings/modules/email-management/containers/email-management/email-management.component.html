@@ -1,0 +1,49 @@
+<div class="flex flex-col bg-white shadow rounded-lg relative">
+  <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+    <div
+      class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-no-wrap">
+      <div class="ml-4 mt-2">
+        <h3 class="text-xl leading-6 font-medium text-gray-900">
+          Email Management
+        </h3>
+      </div>
+    </div>
+  </div>
+  <div class="px-4 py-5 sm:p-6 py-4">
+    <div class="max-w-7xl mx-auto">
+      <nav class="flex" aria-label="Buttons">
+        <a
+          [routerLink]="emailTemplateListUrl"
+          class="bg-white inline-flex items-center py-2 px-6 border border-r-0 font-medium text-sm hover:text-white hover:bg-indigo-300"
+          [ngClass]="
+            isActiveTab('templates')
+              ? 'bg-indigo-500 text-white'
+              : 'text-gray-500'
+          ">
+          Email Templates
+        </a>
+        <a
+          [routerLink]="emailDesignListUrl"
+          class="bg-white inline-flex items-center py-2 px-6 border border-r-0 font-medium text-sm hover:text-white hover:bg-indigo-300"
+          [ngClass]="
+            isActiveTab('design_templates')
+              ? 'bg-indigo-500 text-white'
+              : 'text-gray-500'
+          ">
+          Email Designs
+        </a>
+        <a
+          [routerLink]="smtpSettingsListUrl"
+          class="bg-white inline-flex items-center py-2 px-6 border font-medium text-sm hover:text-white hover:bg-indigo-300"
+          [ngClass]="
+            isActiveTab('configurations')
+              ? 'bg-indigo-500 text-white'
+              : 'text-gray-500'
+          ">
+          Email Configurations
+        </a>
+      </nav>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

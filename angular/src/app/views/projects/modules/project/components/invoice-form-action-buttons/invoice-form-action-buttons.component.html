@@ -1,0 +1,269 @@
+<div class="table-btns flex flex-shrink-0 ml-2">
+  <ng-container *ngIf="statusChangeEnabled" [ngSwitch]="invoice?.status">
+    <ng-container *ngSwitchCase="invoiceStatusEnum.DRAFT">
+      <!-- Set authorized -->
+      <span
+        class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+        <button
+          (click)="changeStatus(invoiceStatusEnum.APPROVAL)"
+          class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+          type="button">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              clip-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              fill-rule="evenodd"></path>
+          </svg>
+        </button>
+
+        <span class="tooltip w-auto">Mark invoice as approved</span>
+      </span>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="invoiceStatusEnum.APPROVAL">
+      <!-- Set authorized -->
+      <span
+        class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+        <button
+          (click)="changeStatus(invoiceStatusEnum.AUTHORISED)"
+          class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+          type="button">
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd"></path>
+          </svg>
+        </button>
+
+        <span class="tooltip w-auto">Mark invoice as authorized</span>
+      </span>
+    </ng-container>
+
+    <ng-container
+      *ngIf="
+        isResourceInvoice &&
+        (invoice?.status == invoiceStatusEnum.DRAFT ||
+          invoice?.status == invoiceStatusEnum.APPROVAL)
+      ">
+      <!-- Decline -->
+      <span
+        class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+        <button
+          (click)="changeStatus(invoiceStatusEnum.REFUSED)"
+          class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+          type="button">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              clip-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              fill-rule="evenodd"></path>
+          </svg>
+        </button>
+
+        <span class="tooltip w-auto">Mark invoice as refused</span>
+      </span>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="invoiceStatusEnum.AUTHORISED">
+      <!-- Set Submitted -->
+      <span
+        class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+        <button
+          (click)="changeStatus(invoiceStatusEnum.SUBMITTED)"
+          class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+          type="button">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+            <path
+              d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+          </svg>
+        </button>
+
+        <span class="tooltip w-auto">Mark invoice as submitted</span>
+      </span>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="invoiceStatusEnum.SUBMITTED">
+      <!-- Set paid -->
+      <ng-container *ngTemplateOutlet="setPaid"></ng-container>
+
+      <!-- Set unpaid -->
+      <span
+        *ngIf="
+          invoice?.status === invoiceStatusEnum.SUBMITTED && !isResourceInvoice
+        "
+        class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+        <button
+          (click)="changeStatus(invoiceStatusEnum.UNPAID)"
+          class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+          type="button">
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </button>
+
+        <span class="tooltip w-auto">Mark invoice as unpaid</span>
+      </span>
+    </ng-container>
+
+    <ng-container
+      *ngIf="
+        invoice?.status === invoiceStatusEnum.UNPAID ||
+        invoice?.status === invoiceStatusEnum.PARTIAL_PAID
+      ">
+      <!-- Set paid -->
+      <ng-container *ngTemplateOutlet="setPaid"></ng-container>
+    </ng-container>
+  </ng-container>
+
+  <!-- Export -->
+  <span
+    *ngIf="downloadEnabled"
+    class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+    <button
+      (click)="download()"
+      class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+      type="button">
+      <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          clip-rule="evenodd"
+          d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+          fill-rule="evenodd"></path>
+      </svg>
+    </button>
+
+    <span class="tooltip w-auto">Download invoice</span>
+  </span>
+
+  <!-- Cancel -->
+  <span
+    *ngIf="
+      userRole === userRoleEnum.ADMINISTRATOR &&
+      invoice?.status !== invoiceStatusEnum.CANCELED
+    "
+    class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+    <button
+      (click)="changeStatus(invoiceStatusEnum.CANCELED)"
+      class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+      type="button">
+      <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+          clip-rule="evenodd" />
+      </svg>
+    </button>
+    <span class="tooltip w-auto">Cancel invoice</span>
+  </span>
+  <!-- Set to draft -->
+  <span class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+    <button
+      (click)="setInvoiceAsDraft(invoiceStatusEnum.DRAFT)"
+      *ngIf="showDraftButton()"
+      class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+      type="button">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          clip-rule="evenodd"
+          d="M5 2a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V4a2 2 0 00-2-2H5zm4.707 3.707a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L8.414 9H10a3 3 0 013 3v1a1 1 0 102 0v-1a5 5 0 00-5-5H8.414l1.293-1.293z"
+          fill-rule="evenodd"></path>
+      </svg>
+    </button>
+    <span class="tooltip w-auto">Mark invoice as draft</span>
+  </span>
+</div>
+
+<oz-finance-confirm-modal
+  #confirmModal
+  [yesLabel]="invoiceStatusConfirmationLabel">
+  <!-- Manual input -->
+  <ng-container
+    *ngIf="
+      !invoice?.email_template_globally_disabled &&
+      invoiceStatusForm &&
+      showInvoiceStatusForm()
+    ">
+    <div
+      [formGroup]="invoiceStatusForm"
+      class="sm:grid sm:grid-cols-2 sm:gap-4 sm:items-start">
+      <label
+        class="block text-sm leading-5 font-medium text-gray-700 sm:mt-px sm:pt-2"
+        for="master">
+        Send E-mail to the client
+      </label>
+
+      <div class="mt-2 sm:mt-0 sm:col-span-1">
+        <input
+          class="hidden"
+          formControlName="notify_client"
+          id="notify_client"
+          type="checkbox" />
+
+        <!-- On: "bg-indigo-600", Off: "bg-gray-200" -->
+        <div
+          class="form-input border-0 block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+          <span
+            (click)="toggleClientNotification()"
+            [ngClass]="[
+              invoiceStatusForm.get('notify_client')?.value
+                ? 'bg-indigo-600'
+                : 'bg-gray-200',
+              'cursor-default'
+            ]"
+            aria-checked="false"
+            class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full transition-colors ease-in-out duration-200 focus:outline-none"
+            role="checkbox"
+            tabindex="0">
+            <!-- On: "translate-x-5", Off: "translate-x-0" -->
+            <span
+              [ngClass]="
+                invoiceStatusForm.get('notify_client')?.value
+                  ? 'translate-x-5'
+                  : 'translate-x-0'
+              "
+              aria-hidden="true"
+              class="translate-x-0 inline-block h-5 w-5 rounded-full bg-white shadow transform transition ease-in-out duration-200">
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</oz-finance-confirm-modal>
+<oz-finance-confirm-modal #backDraftConfirmModal></oz-finance-confirm-modal>
+<oz-finance-download-modal #downloadModal></oz-finance-download-modal>
+<oz-finance-paid-date-modal #paidDateModal></oz-finance-paid-date-modal>
+<oz-finance-partial-paid-modal
+  [currency]="currency"
+  #partialPaidModal></oz-finance-partial-paid-modal>
+
+<ng-template #setPaid>
+  <span class="tooltip-element inline-block rounded-full shadow-sm table-btn">
+    <button
+      (click)="setPartialPaidStatus()"
+      class="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150"
+      type="button">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+        <path
+          clip-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+          fill-rule="evenodd"></path>
+      </svg>
+    </button>
+
+    <span class="tooltip w-auto">Mark invoice as paid</span>
+  </span>
+</ng-template>

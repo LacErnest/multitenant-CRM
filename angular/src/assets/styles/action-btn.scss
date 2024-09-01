@@ -1,0 +1,16 @@
+.action-btn {
+  @apply inline-flex items-center px-2 py-2 border border-transparent text-sm leading-5 font-medium rounded-full
+  text-white bg-indigo-600 transition ease-in-out duration-150;
+
+  &:hover {
+    @apply bg-indigo-500;
+  }
+
+  &:focus {
+    @apply outline-none border-indigo-700 shadow-outline-indigo;
+  }
+
+  &:active {
+    @apply bg-indigo-700;
+  }
+}

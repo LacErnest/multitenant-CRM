@@ -1,0 +1,29 @@
+.nav-wrapper {
+  @apply w-full;
+
+  @screen lg {
+    @apply mr-6;
+    width: $nav-wrapper-width;
+  }
+}
+
+.nav-link {
+  @apply flex items-center px-3 py-2 text-sm leading-5 font-medium text-gray-600 rounded-md transition ease-in-out
+  duration-150;
+
+  &:hover {
+    @apply text-gray-900 bg-gray-100;
+  }
+
+  &:focus {
+    @apply outline-none;
+  }
+
+  &.active-nav-link {
+    @apply bg-gray-200 text-gray-900;
+  }
+
+  .nav-icon {
+    @apply flex-shrink-0 -ml-1 mr-3 h-6 w-6 text-gray-500 transition ease-in-out duration-150;
+  }
+}

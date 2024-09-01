@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: {{ .Values.app.name }}
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+    kubernetes.io/ingress.class: public
+  name: {{ .Values.app.name }}
+spec:
+  tls:
+    - hosts:
+      - {{ .Values.app.name }}.dev-k8s.cyrextech.net
+      secretName: wildcard-cert
+  rules:
+    - host: {{ .Values.app.name }}.dev-k8s.cyrextech.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-svc
+                port:
+                  number: 80

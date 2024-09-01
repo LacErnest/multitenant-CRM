@@ -1,0 +1,13 @@
+<oz-finance-page-header [heading]="'Settings'"></oz-finance-page-header>
+
+<div class="max-w-screen-8xl mx-auto sm:px-6 lg:px-8 overflow-y-visible">
+  <div class="block py-4 lg:flex lg:p-6 lg:max-w-screen-8xl">
+    <oz-finance-settings-nav
+      *ngIf="showSettingsNav"
+      class="lg:mr-6 settings-nav"></oz-finance-settings-nav>
+
+    <div class="settings-wrapper" [class.with-nav]="showSettingsNav">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
