@@ -1,6 +1,5 @@
-Welcome to the OZ Finance project! This guide will help you get up and running quickly.
+Welcome to the CRM! This guide will help you get up and running quickly.
 
-Find further documentation in the [project's confluence page](https://confluence.magicmedia.studio/display/OZ).
 
 ## Local environment
 
@@ -91,40 +90,3 @@ php artisan maintenance:elastic_refresh
 # attach sales persons and lead gens to existent projects and quotes:
 php artisan maintenance:update_project_quote_sales_persons
 ```
-
-## CI/CD
-
-#### DOCKER_AUTH_CONFIG
-This variable contains the contents of the docker config JSON file, with the necessary authentication data used by the GitLab runner to interact with the Container Registry.
-If an "auanthorized" error happens in early stages of a CI job, during a setup phase, it probably means this token is no longer valid.
-An admin/owner should handle the process of replacing it.
-
-To generate a new token:
-- create a new Personal Access Token with at least the `read_registry` scope
-- locally authenticate in Docker with the token: `echo "$TOKEN" | docker login gitlab.cyrextech.net -u tkn  --password-stdin` (note: username can be any value)
-- grab the auth token from `~/.docker/config.json`
-- replace the token in the JSON object and set as the new environment variable value (see JSON format below)
-
-```
-{
-    "auths": {
-        "https://gitlab.cyrextech.net:443": {
-            "auth": "TOKEN_HERE"
-        }
-    }
-}
-```
-
-
-(should be possible to achieve a similar result via `printf "tkn:$TOKEN" | openssl base64 -A`)
-
-See more details [here](https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#determine-your-docker_auth_config-data)
-
-#### GITLAB_TOKEN
-Used during built phases to clone private dependencies from GitLab.
-If a "Failed to execute git clone" error happens during pull/build operations, it probably means this token is no longer valid.
-An admin/owner should handle the process of replacing it.
-
-To generate a new token:
-- create a new Personal Access Token with the `read_repository` scope
-- replace the value of the environment variable
